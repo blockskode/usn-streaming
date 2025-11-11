@@ -54,7 +54,7 @@ export const Landing: React.FC = () => {
                   }}
                   onClick={() => navigate('/register')}
                 >
-                  Get Started Free
+                  Get Started
                 </Button>
                 <Button
                   variant="outlined"
@@ -119,8 +119,7 @@ export const Landing: React.FC = () => {
           Why This Workshop?
         </Typography>
         <Typography variant="body1" align="center" sx={{ mb: 6, maxWidth: 600, mx: 'auto' }}>
-          Learn by doing, not by memorizing. Our hands-on approach uses
-          real-world scenarios and practical examples.
+          Learn by doing. Our hands-on approach uses real-world scenarios and practical examples.
         </Typography>
 
         <Grid container spacing={4}>
