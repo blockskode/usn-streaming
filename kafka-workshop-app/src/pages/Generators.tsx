@@ -213,7 +213,7 @@ export const Generators: React.FC = () => {
       <Header />
 
       {/* Main Content */}
-      <Container sx={{ py: 6 }}>
+      <Container sx={{ pt: 12, pb: 6 }}>
         <Typography variant="h3" gutterBottom>
           Data Stream Control Panel
         </Typography>

@@ -248,16 +248,16 @@ export const Challenges: React.FC = () => {
       <Header />
 
       {/* Main Content */}
-      <Container sx={{ py: 6 }}>
+      <Container sx={{ pt: 12, pb: 6 }}>
         <Typography variant="h3" gutterBottom>
           Progressive Coding Challenges
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-          Complete these challenges to master Kafka and Databricks. Use AI tools to help you learn!
+          Complete these challenges to master Kafka and Databricks streaming.
         </Typography>
 
         <Alert severity="info" sx={{ mb: 4 }}>
-          <strong>Tip:</strong> Each challenge includes an AI prompt suggestion. Use it with ChatGPT, Claude, or Copilot to accelerate your learning.
+          <strong>Tip:</strong> Start with Challenge 1 and work your way through. Each challenge builds on previous concepts.
         </Alert>
 
         <Grid container spacing={3}>

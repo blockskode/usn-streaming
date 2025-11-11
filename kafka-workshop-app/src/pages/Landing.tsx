@@ -14,7 +14,6 @@ import {
   Speed as SpeedIcon,
   School as SchoolIcon,
   Code as CodeIcon,
-  Psychology as PsychologyIcon,
 } from '@mui/icons-material';
 
 export const Landing: React.FC = () => {
@@ -40,8 +39,8 @@ export const Landing: React.FC = () => {
                 Master Kafka & Databricks
               </Typography>
               <Typography variant="h5" sx={{ mb: 4, opacity: 0.9 }}>
-                Learn real-time data streaming through hands-on challenges,
-                powered by AI-assisted learning
+                Learn real-time data streaming through hands-on challenges
+                with practical, beginner-friendly tutorials
               </Typography>
               <Stack direction="row" spacing={2}>
                 <Button
@@ -92,7 +91,7 @@ export const Landing: React.FC = () => {
                     'Interactive tutorials',
                     '9 progressive challenges',
                     'Python & Databricks integration',
-                    'AI-powered learning',
+                    'Real-world examples',
                   ].map((item) => (
                     <Box key={item} sx={{ display: 'flex', alignItems: 'center' }}>
                       <Box
@@ -120,8 +119,8 @@ export const Landing: React.FC = () => {
           Why This Workshop?
         </Typography>
         <Typography variant="body1" align="center" sx={{ mb: 6, maxWidth: 600, mx: 'auto' }}>
-          Learn by doing, not by memorizing. Our hands-on approach combines
-          real-world scenarios with AI-assisted learning.
+          Learn by doing, not by memorizing. Our hands-on approach uses
+          real-world scenarios and practical examples.
         </Typography>
 
         <Grid container spacing={4}>
@@ -136,7 +135,7 @@ export const Landing: React.FC = () => {
               icon: <SchoolIcon sx={{ fontSize: 48 }} />,
               title: 'Interactive Tutorials',
               description:
-                'Learn Kafka and Databricks concepts through visual, interactive lessons.',
+                'Learn Kafka and Databricks concepts through visual, interactive lessons with real-world examples.',
             },
             {
               icon: <CodeIcon sx={{ fontSize: 48 }} />,
@@ -144,14 +143,8 @@ export const Landing: React.FC = () => {
               description:
                 '9 progressive challenges from basic connections to fraud detection systems.',
             },
-            {
-              icon: <PsychologyIcon sx={{ fontSize: 48 }} />,
-              title: 'AI-Enhanced Learning',
-              description:
-                'Get AI prompt suggestions for each challenge. Learn how to learn with AI tools.',
-            },
           ].map((feature) => (
-            <Grid item xs={12} sm={6} md={3} key={feature.title}>
+            <Grid item xs={12} sm={6} md={4} key={feature.title}>
               <Card
                 sx={{
                   height: '100%',
@@ -205,7 +198,7 @@ export const Landing: React.FC = () => {
                 step: '3',
                 title: 'Complete Challenges',
                 description:
-                  'Solve 9 progressive challenges. Track your progress and get AI assistance.',
+                  'Solve 9 progressive challenges. Track your progress and build real-world skills.',
               },
             ].map((item) => (
               <Grid item xs={12} md={4} key={item.step}>

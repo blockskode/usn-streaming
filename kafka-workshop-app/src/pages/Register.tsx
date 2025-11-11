@@ -371,7 +371,7 @@ export const Register: React.FC = () => {
           </Divider>
 
           <Button
-            variant="outlined"
+            variant="contained"
             fullWidth
             size="large"
             startIcon={<GoogleIcon />}
@@ -380,16 +380,16 @@ export const Register: React.FC = () => {
             sx={{
               py: 1.5,
               borderRadius: 2,
-              borderColor: '#dadce0',
-              color: '#3c4043',
+              bgcolor: '#4285F4',
+              color: 'white',
               textTransform: 'none',
               fontSize: '1rem',
-              fontWeight: 500,
+              fontWeight: 600,
+              boxShadow: '0 4px 15px rgba(66, 133, 244, 0.4)',
               '&:hover': {
-                borderColor: '#FF6B35',
-                bgcolor: alpha('#FF6B35', 0.05),
+                bgcolor: '#357ae8',
+                boxShadow: '0 6px 20px rgba(66, 133, 244, 0.6)',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
               },
               transition: 'all 0.3s ease',
             }}
