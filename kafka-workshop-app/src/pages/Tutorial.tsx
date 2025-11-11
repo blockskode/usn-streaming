@@ -379,6 +379,7 @@ export const Tutorial: React.FC = () => {
             flexGrow: 1,
             bgcolor: '#fafafa',
             p: 4,
+            pt: 12,
             fontFamily: "'Palatino', 'Georgia', serif",
             lineHeight: 1.8,
           }}
