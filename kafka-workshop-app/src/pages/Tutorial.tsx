@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -15,6 +15,10 @@ import {
   Grid,
   Card,
   CardContent,
+  Tabs,
+  Tab,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   Storage,
@@ -29,6 +33,8 @@ import {
   Speed,
   TrendingUp,
   CheckCircle,
+  Settings,
+  ContentCopy,
 } from '@mui/icons-material';
 import { Header } from '../components/layout/Header';
 
@@ -41,6 +47,53 @@ interface Section {
   category: 'kafka' | 'databricks' | 'code';
 }
 
+// Reusable CodeBlock component with copy functionality
+interface CodeBlockProps {
+  code: string;
+  language?: string;
+}
+
+const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = 'bash' }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  return (
+    <Box sx={{ position: 'relative', bgcolor: '#1e1e1e', borderRadius: 1, overflow: 'hidden' }}>
+      <Tooltip title={copied ? 'Copied!' : 'Copy code'}>
+        <IconButton
+          onClick={handleCopy}
+          sx={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            color: copied ? '#4CAF50' : '#d4d4d4',
+            bgcolor: 'rgba(0,0,0,0.3)',
+            '&:hover': {
+              bgcolor: 'rgba(0,0,0,0.5)',
+            },
+            zIndex: 1,
+          }}
+          size="small"
+        >
+          <ContentCopy fontSize="small" />
+        </IconButton>
+      </Tooltip>
+      <Box sx={{ color: '#d4d4d4', p: 2, pr: 6, fontFamily: 'Courier, monospace', fontSize: '0.85rem', overflowX: 'auto' }}>
+        <pre style={{ margin: 0 }}>{code}</pre>
+      </Box>
+    </Box>
+  );
+};
+
 const sections: Section[] = [
   { id: 'kafka-intro', title: 'What is Apache Kafka?', icon: <Storage />, category: 'kafka' },
   { id: 'topics', title: 'Topics & Partitions', icon: <ViewModule />, category: 'kafka' },
@@ -50,6 +103,7 @@ const sections: Section[] = [
   { id: 'databricks-intro', title: 'What is Databricks?', icon: <PlayCircleOutline />, category: 'databricks' },
   { id: 'structured-streaming', title: 'Structured Streaming', icon: <Timeline />, category: 'databricks' },
   { id: 'delta-lake', title: 'Delta Lake', icon: <DataObject />, category: 'databricks' },
+  { id: 'env-setup', title: 'Environment Setup', icon: <Settings />, category: 'code' },
   { id: 'code-python', title: 'Python Consumer', icon: <Code />, category: 'code' },
   { id: 'code-databricks', title: 'Databricks Streaming', icon: <Speed />, category: 'code' },
 ];
@@ -64,6 +118,43 @@ export const Tutorial: React.FC = () => {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+
+  // Scroll spy: automatically highlight the current section in the sidebar
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-100px 0px -50% 0px', // Trigger when section is near top of viewport
+      threshold: 0,
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setSelectedSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    // Observe all sections
+    sections.forEach((section) => {
+      const element = document.getElementById(section.id);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    // Cleanup
+    return () => {
+      sections.forEach((section) => {
+        const element = document.getElementById(section.id);
+        if (element) {
+          observer.unobserve(element);
+        }
+      });
+    };
+  }, []);
 
   return (
     <>
@@ -80,96 +171,200 @@ export const Tutorial: React.FC = () => {
               boxSizing: 'border-box',
               top: '64px',
               height: 'calc(100vh - 64px)',
-              bgcolor: '#2c5aa0',
+              background: 'linear-gradient(180deg, #1e3a5f 0%, #2c5aa0 100%)',
               color: 'white',
-              borderRight: 'none',
+              borderRight: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '4px 0 12px rgba(0,0,0,0.15)',
             },
           }}
         >
           <Box sx={{ overflow: 'auto', pt: 3, px: 2 }}>
-            <Typography variant="overline" sx={{ color: '#ffeb99', fontWeight: 'bold', display: 'block', mb: 2 }}>
+            {/* Header with navigation hint */}
+            <Box sx={{
+              bgcolor: 'rgba(255,235,153,0.15)',
+              p: 2,
+              borderRadius: 2,
+              mb: 3,
+              border: '1px solid rgba(255,235,153,0.3)',
+            }}>
+              <Typography variant="caption" sx={{ color: '#ffeb99', fontWeight: 'bold', display: 'block', textAlign: 'center' }}>
+                📚 TUTORIAL NAVIGATION
+              </Typography>
+            </Box>
+
+            <Typography variant="overline" sx={{
+              color: '#ffeb99',
+              fontWeight: 'bold',
+              display: 'block',
+              mb: 1.5,
+              px: 1,
+              fontSize: '0.75rem',
+              letterSpacing: 1.2,
+            }}>
               Apache Kafka
             </Typography>
-            <List dense>
+            <List dense sx={{ mb: 2 }}>
               {sections.filter(s => s.category === 'kafka').map((section) => (
-                <ListItem key={section.id} disablePadding>
+                <ListItem key={section.id} disablePadding sx={{ mb: 0.5 }}>
                   <ListItemButton
                     selected={selectedSection === section.id}
                     onClick={() => scrollToSection(section.id)}
                     sx={{
                       color: '#e6f7ff',
+                      borderRadius: 2,
+                      transition: 'all 0.3s ease',
                       '&.Mui-selected': {
-                        bgcolor: 'rgba(255,255,255,0.2)',
+                        bgcolor: 'rgba(255,235,153,0.25)',
                         borderLeft: '4px solid #ffeb99',
                         color: 'white',
+                        fontWeight: 600,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                        transform: 'translateX(4px)',
                       },
                       '&:hover': {
-                        bgcolor: 'rgba(255,255,255,0.1)',
+                        bgcolor: 'rgba(255,255,255,0.15)',
+                        transform: 'translateX(4px)',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                      },
+                      '&:hover .MuiListItemIcon-root': {
+                        transform: 'scale(1.1)',
                       },
                     }}
                   >
-                    <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>{section.icon}</ListItemIcon>
-                    <ListItemText primary={section.title} primaryTypographyProps={{ fontSize: '0.875rem' }} />
+                    <ListItemIcon sx={{
+                      minWidth: 40,
+                      color: 'inherit',
+                      transition: 'transform 0.2s ease',
+                    }}>
+                      {section.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={section.title}
+                      primaryTypographyProps={{
+                        fontSize: '0.875rem',
+                        fontWeight: selectedSection === section.id ? 600 : 400,
+                      }}
+                    />
                   </ListItemButton>
                 </ListItem>
               ))}
             </List>
 
-            <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.3)' }} />
+            <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.2)' }} />
 
-            <Typography variant="overline" sx={{ color: '#ffeb99', fontWeight: 'bold', display: 'block', mb: 2 }}>
+            <Typography variant="overline" sx={{
+              color: '#ffeb99',
+              fontWeight: 'bold',
+              display: 'block',
+              mb: 1.5,
+              px: 1,
+              fontSize: '0.75rem',
+              letterSpacing: 1.2,
+            }}>
               Databricks
             </Typography>
-            <List dense>
+            <List dense sx={{ mb: 2 }}>
               {sections.filter(s => s.category === 'databricks').map((section) => (
-                <ListItem key={section.id} disablePadding>
+                <ListItem key={section.id} disablePadding sx={{ mb: 0.5 }}>
                   <ListItemButton
                     selected={selectedSection === section.id}
                     onClick={() => scrollToSection(section.id)}
                     sx={{
                       color: '#e6f7ff',
+                      borderRadius: 2,
+                      transition: 'all 0.3s ease',
                       '&.Mui-selected': {
-                        bgcolor: 'rgba(255,255,255,0.2)',
+                        bgcolor: 'rgba(255,235,153,0.25)',
                         borderLeft: '4px solid #ffeb99',
                         color: 'white',
+                        fontWeight: 600,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                        transform: 'translateX(4px)',
                       },
                       '&:hover': {
-                        bgcolor: 'rgba(255,255,255,0.1)',
+                        bgcolor: 'rgba(255,255,255,0.15)',
+                        transform: 'translateX(4px)',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                      },
+                      '&:hover .MuiListItemIcon-root': {
+                        transform: 'scale(1.1)',
                       },
                     }}
                   >
-                    <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>{section.icon}</ListItemIcon>
-                    <ListItemText primary={section.title} primaryTypographyProps={{ fontSize: '0.875rem' }} />
+                    <ListItemIcon sx={{
+                      minWidth: 40,
+                      color: 'inherit',
+                      transition: 'transform 0.2s ease',
+                    }}>
+                      {section.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={section.title}
+                      primaryTypographyProps={{
+                        fontSize: '0.875rem',
+                        fontWeight: selectedSection === section.id ? 600 : 400,
+                      }}
+                    />
                   </ListItemButton>
                 </ListItem>
               ))}
             </List>
 
-            <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.3)' }} />
+            <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.2)' }} />
 
-            <Typography variant="overline" sx={{ color: '#ffeb99', fontWeight: 'bold', display: 'block', mb: 2 }}>
+            <Typography variant="overline" sx={{
+              color: '#ffeb99',
+              fontWeight: 'bold',
+              display: 'block',
+              mb: 1.5,
+              px: 1,
+              fontSize: '0.75rem',
+              letterSpacing: 1.2,
+            }}>
               Code Examples
             </Typography>
-            <List dense>
+            <List dense sx={{ mb: 2 }}>
               {sections.filter(s => s.category === 'code').map((section) => (
-                <ListItem key={section.id} disablePadding>
+                <ListItem key={section.id} disablePadding sx={{ mb: 0.5 }}>
                   <ListItemButton
                     selected={selectedSection === section.id}
                     onClick={() => scrollToSection(section.id)}
                     sx={{
                       color: '#e6f7ff',
+                      borderRadius: 2,
+                      transition: 'all 0.3s ease',
                       '&.Mui-selected': {
-                        bgcolor: 'rgba(255,255,255,0.2)',
+                        bgcolor: 'rgba(255,235,153,0.25)',
                         borderLeft: '4px solid #ffeb99',
                         color: 'white',
+                        fontWeight: 600,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                        transform: 'translateX(4px)',
                       },
                       '&:hover': {
-                        bgcolor: 'rgba(255,255,255,0.1)',
+                        bgcolor: 'rgba(255,255,255,0.15)',
+                        transform: 'translateX(4px)',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                      },
+                      '&:hover .MuiListItemIcon-root': {
+                        transform: 'scale(1.1)',
                       },
                     }}
                   >
-                    <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>{section.icon}</ListItemIcon>
-                    <ListItemText primary={section.title} primaryTypographyProps={{ fontSize: '0.875rem' }} />
+                    <ListItemIcon sx={{
+                      minWidth: 40,
+                      color: 'inherit',
+                      transition: 'transform 0.2s ease',
+                    }}>
+                      {section.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={section.title}
+                      primaryTypographyProps={{
+                        fontSize: '0.875rem',
+                        fontWeight: selectedSection === section.id ? 600 : 400,
+                      }}
+                    />
                   </ListItemButton>
                 </ListItem>
               ))}
@@ -291,6 +486,61 @@ export const Tutorial: React.FC = () => {
               </Alert>
 
               <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 4, mb: 2 }}>
+                Core Components
+              </Typography>
+
+              <Grid container spacing={2} sx={{ my: 2 }}>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #4CAF50' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        📂 Topics
+                      </Typography>
+                      <Typography variant="body2">
+                        Categories that organize messages. Like folders for different types of events (e.g., "orders", "payments", "notifications"). Messages are stored in topics and can be read by multiple consumers.
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #2196F3' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        📤 Producers
+                      </Typography>
+                      <Typography variant="body2">
+                        Applications that send messages to Kafka topics. Any service that generates events (user actions, sensor readings, transactions) is a producer. They write data without knowing who will read it.
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #9C27B0' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        📥 Consumers
+                      </Typography>
+                      <Typography variant="body2">
+                        Applications that read messages from Kafka topics. They subscribe to topics and process events at their own pace. Multiple consumers can read the same data independently.
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #FF9800' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        🖥️ Brokers
+                      </Typography>
+                      <Typography variant="body2">
+                        Kafka servers that store data and serve client requests. They handle reading, writing, and replicating messages. Multiple brokers form a cluster for high availability and scalability.
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 4, mb: 2 }}>
                 Quick Example - Connecting to Kafka
               </Typography>
 
@@ -298,11 +548,7 @@ export const Tutorial: React.FC = () => {
                 Here's how to connect to our Kafka cluster and list available topics:
               </Typography>
 
-              <Box sx={{ bgcolor: '#1e1e1e', color: '#d4d4d4', p: 3, borderRadius: 2, fontFamily: 'Courier, monospace', fontSize: '0.9rem', overflowX: 'auto', position: 'relative' }}>
-                <Typography variant="caption" sx={{ position: 'absolute', top: 8, right: 8, color: '#888', bgcolor: '#2d2d2d', px: 1, py: 0.5, borderRadius: 1 }}>
-                  Python
-                </Typography>
-                <pre style={{ margin: 0 }}>{`from kafka import KafkaAdminClient
+              <CodeBlock code={`from kafka import KafkaAdminClient
 
 # Connect to Confluent Cloud Kafka
 admin = KafkaAdminClient(
@@ -317,8 +563,7 @@ admin = KafkaAdminClient(
 topics = admin.list_topics()
 print("Available topics:", topics)
 
-# Output: ['ecommerce-events', 'iot-sensors', 'social-media', ...]`}</pre>
-              </Box>
+# Output: ['ecommerce-events', 'iot-sensors', 'social-media', ...]`} />
 
               <Alert severity="info" sx={{ mt: 3 }}>
                 <strong>💡 Try it yourself:</strong> Replace YOUR_API_KEY and YOUR_API_SECRET with credentials from the Resources page, then run this code!
@@ -372,11 +617,7 @@ print("Available topics:", topics)
                 Code Example - Create and Use a Topic
               </Typography>
 
-              <Box sx={{ bgcolor: '#1e1e1e', color: '#d4d4d4', p: 3, borderRadius: 2, fontFamily: 'Courier, monospace', fontSize: '0.9rem', overflowX: 'auto', position: 'relative' }}>
-                <Typography variant="caption" sx={{ position: 'absolute', top: 8, right: 8, color: '#888', bgcolor: '#2d2d2d', px: 1, py: 0.5, borderRadius: 1 }}>
-                  Python
-                </Typography>
-                <pre style={{ margin: 0 }}>{`from kafka.admin import KafkaAdminClient, NewTopic
+              <CodeBlock code={`from kafka.admin import KafkaAdminClient, NewTopic
 
 admin = KafkaAdminClient(
     bootstrap_servers='pkc-619z3.us-east1.gcp.confluent.cloud:9092',
@@ -397,8 +638,7 @@ admin.create_topics([topic])
 print("✅ Topic 'my-first-topic' created!")
 
 # List all topics
-print("All topics:", admin.list_topics())`}</pre>
-              </Box>
+print("All topics:", admin.list_topics())`} />
 
               <Alert severity="success" sx={{ mt: 3 }}>
                 <strong>📝 Key Point:</strong> Topics are automatically created when you send your first message, but it's better to create them manually with the right settings.
@@ -452,11 +692,7 @@ print("All topics:", admin.list_topics())`}</pre>
                 Code Example - Send Messages to Kafka
               </Typography>
 
-              <Box sx={{ bgcolor: '#1e1e1e', color: '#d4d4d4', p: 3, borderRadius: 2, fontFamily: 'Courier, monospace', fontSize: '0.9rem', overflowX: 'auto', position: 'relative' }}>
-                <Typography variant="caption" sx={{ position: 'absolute', top: 8, right: 8, color: '#888', bgcolor: '#2d2d2d', px: 1, py: 0.5, borderRadius: 1 }}>
-                  Python
-                </Typography>
-                <pre style={{ margin: 0 }}>{`from kafka import KafkaProducer
+              <CodeBlock code={`from kafka import KafkaProducer
 import json
 from datetime import datetime
 
@@ -486,8 +722,7 @@ result = future.get(timeout=10)
 print(f"✅ Message sent to partition {result.partition} at offset {result.offset}")
 
 # Always close the producer when done
-producer.close()`}</pre>
-              </Box>
+producer.close()`} />
 
               <Alert severity="success" sx={{ mt: 3 }}>
                 <strong>📝 Key Point:</strong> Producers decide which topic to send to. You can send messages as fast as your application generates them - Kafka handles the storage and delivery to consumers!
@@ -541,11 +776,7 @@ producer.close()`}</pre>
                 Code Example - Read Messages from Kafka
               </Typography>
 
-              <Box sx={{ bgcolor: '#1e1e1e', color: '#d4d4d4', p: 3, borderRadius: 2, fontFamily: 'Courier, monospace', fontSize: '0.9rem', overflowX: 'auto', position: 'relative' }}>
-                <Typography variant="caption" sx={{ position: 'absolute', top: 8, right: 8, color: '#888', bgcolor: '#2d2d2d', px: 1, py: 0.5, borderRadius: 1 }}>
-                  Python
-                </Typography>
-                <pre style={{ margin: 0 }}>{`from kafka import KafkaConsumer
+              <CodeBlock code={`from kafka import KafkaConsumer
 import json
 
 # Create a consumer
@@ -569,8 +800,7 @@ for message in consumer:
 
     # Do something with the message
     if data['action'] == 'purchase':
-        print(f"   💰 Purchase: {data['product']} for ${'$'}{data['price']}")`}</pre>
-              </Box>
+        print(f"   💰 Purchase: {data['product']} for ${'$'}{data['price']}")`} />
 
               <Alert severity="info" sx={{ mt: 3 }}>
                 <strong>📝 Key Point:</strong> Multiple consumers with the same <code>group_id</code> automatically share the work! If one crashes, others take over. This makes your application reliable and scalable.
@@ -628,11 +858,7 @@ for message in consumer:
                 Quick Example - Check Broker Connection
               </Typography>
 
-              <Box sx={{ bgcolor: '#1e1e1e', color: '#d4d4d4', p: 3, borderRadius: 2, fontFamily: 'Courier, monospace', fontSize: '0.9rem', overflowX: 'auto', position: 'relative' }}>
-                <Typography variant="caption" sx={{ position: 'absolute', top: 8, right: 8, color: '#888', bgcolor: '#2d2d2d', px: 1, py: 0.5, borderRadius: 1 }}>
-                  Python
-                </Typography>
-                <pre style={{ margin: 0 }}>{`from kafka import KafkaAdminClient
+              <CodeBlock code={`from kafka import KafkaAdminClient
 
 # Connect to broker
 admin = KafkaAdminClient(
@@ -651,8 +877,7 @@ try:
 except Exception as e:
     print(f"❌ Connection failed: {e}")
 
-admin.close()`}</pre>
-              </Box>
+admin.close()`} />
 
               <Alert severity="success" sx={{ mt: 3 }}>
                 <strong>📝 Key Point:</strong> With managed Kafka (like Confluent Cloud), you don't manage brokers directly. Just connect and start producing/consuming messages!
@@ -660,14 +885,24 @@ admin.close()`}</pre>
             </Paper>
 
             {/* ==================== DATABRICKS INTRO ==================== */}
-            <Paper id="databricks-intro" sx={{ p: 4, mb: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <PlayCircleOutline sx={{ fontSize: 40, mr: 2, color: '#FF6B35' }} />
+            <Paper id="databricks-intro" sx={{ p: 4, mb: 4, bgcolor: '#ffffff' }}>
+              <Box
+                sx={{
+                  bgcolor: '#FF6B35',
+                  color: 'white',
+                  p: 3,
+                  borderRadius: 2,
+                  mb: 4,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                <PlayCircleOutline sx={{ fontSize: 48, mr: 2 }} />
                 <Box>
-                  <Typography variant="h4" sx={{ color: '#2c5aa0' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
                     What is Databricks?
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', mt: 1 }}>
                     Unified analytics platform for big data and AI
                   </Typography>
                 </Box>
@@ -757,14 +992,24 @@ admin.close()`}</pre>
             </Paper>
 
             {/* ==================== STRUCTURED STREAMING ==================== */}
-            <Paper id="structured-streaming" sx={{ p: 4, mb: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Timeline sx={{ fontSize: 40, mr: 2, color: '#FF6B35' }} />
+            <Paper id="structured-streaming" sx={{ p: 4, mb: 4, bgcolor: '#ffffff' }}>
+              <Box
+                sx={{
+                  bgcolor: '#2196F3',
+                  color: 'white',
+                  p: 3,
+                  borderRadius: 2,
+                  mb: 4,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                <Timeline sx={{ fontSize: 48, mr: 2 }} />
                 <Box>
-                  <Typography variant="h4" sx={{ color: '#2c5aa0' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
                     Structured Streaming
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', mt: 1 }}>
                     Real-time stream processing on Databricks
                   </Typography>
                 </Box>
@@ -860,14 +1105,24 @@ admin.close()`}</pre>
             </Paper>
 
             {/* ==================== DELTA LAKE ==================== */}
-            <Paper id="delta-lake" sx={{ p: 4, mb: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <DataObject sx={{ fontSize: 40, mr: 2, color: '#FF6B35' }} />
+            <Paper id="delta-lake" sx={{ p: 4, mb: 4, bgcolor: '#ffffff' }}>
+              <Box
+                sx={{
+                  bgcolor: '#9C27B0',
+                  color: 'white',
+                  p: 3,
+                  borderRadius: 2,
+                  mb: 4,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                <DataObject sx={{ fontSize: 48, mr: 2 }} />
                 <Box>
-                  <Typography variant="h4" sx={{ color: '#2c5aa0' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
                     Delta Lake
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', mt: 1 }}>
                     ACID transactions and reliability for data lakes
                   </Typography>
                 </Box>
@@ -952,6 +1207,461 @@ admin.close()`}</pre>
               </Alert>
             </Paper>
 
+            {/* ==================== ENVIRONMENT SETUP ==================== */}
+            <Paper id="env-setup" sx={{ p: 4, mb: 4 }}>
+              <Box
+                sx={{
+                  bgcolor: '#4CAF50',
+                  color: 'white',
+                  p: 3,
+                  borderRadius: 2,
+                  mb: 4,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                <Settings sx={{ fontSize: 48, mr: 2 }} />
+                <Box>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
+                    Environment Setup
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', mt: 1 }}>
+                    Prepare your development environment for Kafka streaming
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Typography variant="body1" paragraph>
+                Follow these step-by-step instructions to set up your environment on Linux, macOS, or Windows. We'll install Python, create a virtual environment, and install all necessary dependencies.
+              </Typography>
+
+              {/* Prerequisites Section */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                📋 Prerequisites
+              </Typography>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <strong>Before you begin:</strong> Make sure you have administrator/sudo access on your machine and a stable internet connection.
+              </Alert>
+
+              <Grid container spacing={2} sx={{ mb: 4 }}>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #4CAF50' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        🐧 Linux (Ubuntu/Debian)
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Recommended for production-like environments
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #2196F3' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        🍎 macOS
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Great for local development
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #FF6B35' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        🪟 Windows
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Use PowerShell or WSL2 for best experience
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+
+              {/* Step 1: Python Installation */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 1: Install Python 3.8+
+              </Typography>
+
+              <Typography variant="body2" paragraph>
+                Choose the instructions for your operating system:
+              </Typography>
+
+              <Box sx={{ mb: 3 }}>
+                {/* Linux */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
+                  🐧 Linux (Ubuntu/Debian)
+                </Typography>
+                <CodeBlock code={`# Update package list
+sudo apt update
+
+# Install Python 3 and pip
+sudo apt install python3 python3-pip python3-venv -y
+
+# Verify installation
+python3 --version
+pip3 --version`} />
+
+                {/* macOS */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🍎 macOS
+                </Typography>
+                <CodeBlock code={`# Install Homebrew (if not already installed)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install Python
+brew install python3
+
+# Verify installation
+python3 --version
+pip3 --version`} />
+
+                {/* Windows */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🪟 Windows
+                </Typography>
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                  <strong>Option 1 (Recommended):</strong> Download Python from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener noreferrer" style={{ color: '#FF6B35' }}>python.org</a> and check "Add Python to PATH" during installation.
+                  <br /><br />
+                  <strong>Option 2 (WSL2):</strong> Use Windows Subsystem for Linux and follow the Linux instructions above.
+                </Alert>
+                <CodeBlock code={`# After installation, verify in PowerShell or Command Prompt
+python --version
+pip --version`} />
+              </Box>
+
+              {/* Step 2: Clone Workshop Repository */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 2: Clone Workshop Repository
+              </Typography>
+
+              <Typography variant="body2" paragraph>
+                Clone the workshop repository to get all starter files, requirements, and example code:
+              </Typography>
+
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <strong>📦 Workshop Repository:</strong> Contains requirements.txt, .env template, starter code, and examples
+              </Alert>
+
+              <CodeBlock code={`# Clone the workshop repository
+git clone [GITHUB_REPO_URL_PLACEHOLDER]
+
+# Navigate into the project directory
+cd kafka-workshop
+
+# Verify you're in the right directory
+pwd  # Linux/Mac
+# or
+cd  # Windows`} />
+
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontStyle: 'italic' }}>
+                Note: The GitHub repository URL will be provided by your instructor or at the workshop.
+              </Typography>
+
+              {/* Step 3: Virtual Environment */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 3: Create Virtual Environment
+              </Typography>
+
+              <Typography variant="body2" paragraph>
+                Virtual environments isolate your project dependencies from system-wide Python packages.
+              </Typography>
+
+              <Box sx={{ mb: 3 }}>
+                {/* Linux/macOS */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
+                  🐧 🍎 Linux / macOS
+                </Typography>
+                <CodeBlock code={`# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate
+
+# You should see (venv) prefix in your terminal`} />
+
+                {/* Windows */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🪟 Windows (PowerShell)
+                </Typography>
+                <CodeBlock code={`# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+.\\venv\\Scripts\\Activate.ps1
+
+# If you get execution policy error, run:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# You should see (venv) prefix in your terminal`} />
+
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🪟 Windows (Command Prompt)
+                </Typography>
+                <CodeBlock code={`# Activate virtual environment
+venv\\Scripts\\activate.bat`} />
+              </Box>
+
+              {/* Step 4: Install Dependencies */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 4: Install Kafka Dependencies
+              </Typography>
+
+              <Typography variant="body2" paragraph>
+                The cloned repository includes a <code>requirements.txt</code> file with all necessary packages. Simply install them:
+              </Typography>
+
+              <CodeBlock code={`# Make sure virtual environment is activated (you should see (venv) prefix)
+
+# Upgrade pip first
+pip install --upgrade pip
+
+# Install all dependencies from requirements.txt
+pip install -r requirements.txt
+
+# Verify installation
+pip list | grep confluent  # Linux/Mac
+# or
+pip list | findstr confluent  # Windows`} />
+
+              <Alert severity="success" sx={{ mb: 3 }}>
+                <strong>✅ What gets installed:</strong> confluent-kafka, pandas, numpy, python-dotenv, and optional packages for Avro support and testing
+              </Alert>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 3, borderLeft: '4px solid #4CAF50' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  📄 requirements.txt (included in the repository)
+                </Typography>
+                <CodeBlock code={`# Kafka client library
+confluent-kafka==2.3.0
+
+# Data processing
+pandas==2.1.4
+numpy==1.26.2
+
+# Logging and utilities
+python-dotenv==1.0.0
+
+# Optional: For Avro/Schema Registry support
+fastavro==1.9.0
+
+# Optional: For testing
+pytest==7.4.3
+pytest-mock==3.12.0`} />
+              </Box>
+
+              {/* Step 5: Environment Variables */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 5: Configure Environment Variables
+              </Typography>
+
+              <Typography variant="body2" paragraph>
+                The repository includes a <code>.env.example</code> template. Copy it and add your Kafka credentials:
+              </Typography>
+
+              <CodeBlock code={`# Copy the example file to create your .env file
+cp .env.example .env
+
+# On Windows (PowerShell)
+Copy-Item .env.example .env
+
+# On Windows (Command Prompt)
+copy .env.example .env`} />
+
+              <Typography variant="body2" paragraph sx={{ mt: 2 }}>
+                Then edit the <code>.env</code> file with your Kafka credentials (credentials will be provided by your instructor):
+              </Typography>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 2, borderLeft: '4px solid #FF6B35' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  📄 .env
+                </Typography>
+                <CodeBlock code={`# Kafka Configuration
+KAFKA_BOOTSTRAP_SERVERS=pkc-619z3.us-east1.gcp.confluent.cloud:9092
+KAFKA_SECURITY_PROTOCOL=SASL_SSL
+KAFKA_SASL_MECHANISM=PLAIN
+KAFKA_API_KEY=YOUR_API_KEY_HERE
+KAFKA_API_SECRET=YOUR_API_SECRET_HERE
+
+# Consumer Configuration
+KAFKA_TOPIC=ecommerce-events
+KAFKA_GROUP_ID=workshop-consumer-group`} />
+              </Box>
+
+              <Alert severity="warning" sx={{ mb: 3 }}>
+                <strong>⚠️ Security Warning:</strong> Add <code>.env</code> to your <code>.gitignore</code> file to prevent committing sensitive credentials!
+              </Alert>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 3, borderLeft: '4px solid #9C27B0' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  📄 .gitignore
+                </Typography>
+                <CodeBlock code={`# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp`} />
+              </Box>
+
+              {/* Step 6: Verify Installation */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 6: Verify Your Setup
+              </Typography>
+
+              <Typography variant="body2" paragraph>
+                Create a simple test script to verify everything is working:
+              </Typography>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 2, borderLeft: '4px solid #2196F3' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  📄 test_setup.py
+                </Typography>
+                <CodeBlock code={`#!/usr/bin/env python3
+"""Test script to verify Kafka setup"""
+
+import sys
+from confluent_kafka import Consumer, KafkaError
+from dotenv import load_dotenv
+import os
+
+def test_setup():
+    print("🔍 Testing Kafka setup...\\n")
+
+    # Load environment variables
+    load_dotenv()
+
+    # Check required environment variables
+    required_vars = [
+        'KAFKA_BOOTSTRAP_SERVERS',
+        'KAFKA_API_KEY',
+        'KAFKA_API_SECRET',
+        'KAFKA_TOPIC'
+    ]
+
+    missing_vars = [var for var in required_vars if not os.getenv(var)]
+
+    if missing_vars:
+        print(f"❌ Missing environment variables: {', '.join(missing_vars)}")
+        print("Please check your .env file")
+        return False
+
+    print("✅ Environment variables loaded")
+
+    # Test Kafka connection
+    config = {
+        'bootstrap.servers': os.getenv('KAFKA_BOOTSTRAP_SERVERS'),
+        'security.protocol': 'SASL_SSL',
+        'sasl.mechanism': 'PLAIN',
+        'sasl.username': os.getenv('KAFKA_API_KEY'),
+        'sasl.password': os.getenv('KAFKA_API_SECRET'),
+        'group.id': 'test-group',
+    }
+
+    try:
+        consumer = Consumer(config)
+        print("✅ Kafka consumer created successfully")
+        consumer.close()
+        print("✅ Connection test passed")
+        print("\\n🎉 Your environment is ready!")
+        return True
+    except Exception as e:
+        print(f"❌ Connection failed: {e}")
+        return False
+
+if __name__ == "__main__":
+    success = test_setup()
+    sys.exit(0 if success else 1)`} />
+              </Box>
+
+              <Typography variant="body2" paragraph sx={{ mt: 2 }}>
+                Run the test script:
+              </Typography>
+
+              <CodeBlock code={`python test_setup.py`} />
+
+              <Alert severity="success" icon={<CheckCircle />} sx={{ mt: 3 }}>
+                <strong>✅ Setup Complete!</strong> If all tests passed, you're ready to start consuming Kafka messages. Proceed to the Python Consumer section below.
+              </Alert>
+
+              {/* Quick Reference */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                📚 Quick Reference
+              </Typography>
+
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#4CAF50">
+                        Activate Virtual Environment
+                      </Typography>
+                      <CodeBlock code={`# Linux/Mac
+source venv/bin/activate
+
+# Windows PowerShell
+.\\venv\\Scripts\\Activate.ps1
+
+# Windows CMD
+venv\\Scripts\\activate.bat`} />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#FF6B35">
+                        Deactivate Virtual Environment
+                      </Typography>
+                      <CodeBlock code={`# All platforms
+deactivate`} />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#2196F3">
+                        Install New Package
+                      </Typography>
+                      <CodeBlock code={`pip install package-name
+pip freeze > requirements.txt`} />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#9C27B0">
+                        Common Issues
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
+                        • Permission denied: Use <code>sudo</code> or run as admin
+                        <br />
+                        • Command not found: Add Python to PATH
+                        <br />
+                        • Module not found: Activate venv first
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Paper>
+
             {/* ==================== PYTHON CONSUMER CODE ==================== */}
             <Paper id="code-python" sx={{ p: 4, mb: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -970,8 +1680,7 @@ admin.close()`}</pre>
                 Below is a complete Python consumer using <code>kafka-python</code> library with best practices for production deployments:
               </Typography>
 
-              <Box sx={{ bgcolor: '#1e1e1e', color: '#d4d4d4', p: 3, borderRadius: 1, fontFamily: 'Courier, monospace', fontSize: '0.85rem', overflowX: 'auto' }}>
-                <pre style={{ margin: 0 }}>{`from kafka import KafkaConsumer
+              <CodeBlock code={`from kafka import KafkaConsumer
 import json
 import logging
 from typing import Dict, Any
@@ -1092,8 +1801,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-`}</pre>
-              </Box>
+`} />
 
               <Alert severity="info" sx={{ mt: 3 }}>
                 <strong>🔑 Key implementation details:</strong>
@@ -1124,8 +1832,7 @@ if __name__ == "__main__":
                 Complete example of reading from Kafka, transforming data, and writing to Delta Lake with watermarking and aggregations:
               </Typography>
 
-              <Box sx={{ bgcolor: '#1e1e1e', color: '#d4d4d4', p: 3, borderRadius: 1, fontFamily: 'Courier, monospace', fontSize: '0.85rem', overflowX: 'auto' }}>
-                <pre style={{ margin: 0 }}>{`from pyspark.sql import SparkSession
+              <CodeBlock code={`from pyspark.sql import SparkSession
 from pyspark.sql.functions import (
     col, from_json, window, count, sum as spark_sum, avg, current_timestamp
 )
@@ -1254,8 +1961,7 @@ print(f"High-value alerts: {alert_query.id}")
 # Keep streams running (Databricks notebooks)
 # In production, use .awaitTermination() or schedule as job
 spark.streams.awaitAnyTermination()
-`}</pre>
-              </Box>
+`} />
 
               <Typography variant="h6" sx={{ color: '#4a7ba7', mt: 4, mb: 2 }}>
                 Query Delta Tables
@@ -1265,8 +1971,7 @@ spark.streams.awaitAnyTermination()
                 Once streaming data lands in Delta Lake, query it with SQL:
               </Typography>
 
-              <Box sx={{ bgcolor: '#1e1e1e', color: '#d4d4d4', p: 3, borderRadius: 1, fontFamily: 'Courier, monospace', fontSize: '0.85rem', overflowX: 'auto' }}>
-                <pre style={{ margin: 0 }}>{`-- Real-time product performance (last hour)
+              <CodeBlock code={`-- Real-time product performance (last hour)
 SELECT
     product_name,
     SUM(purchase_count) as total_purchases,
@@ -1291,8 +1996,7 @@ SELECT
 FROM ecommerce_high_value_purchases
 WHERE DATE(timestamp) = CURRENT_DATE()
 ORDER BY product_price DESC;
-`}</pre>
-              </Box>
+`} />
 
               <Alert severity="success" icon={<CheckCircle />} sx={{ mt: 3 }}>
                 <strong>💡 Production recommendations:</strong> (1) Separate bronze (raw), silver (cleaned), and gold (aggregated) layers; (2) Use Delta Lake's MERGE for CDC instead of append; (3) Run OPTIMIZE on streaming tables weekly; (4) Monitor lag with <code>spark.streams.awaitAnyTermination()</code> metrics; (5) Set appropriate watermarks based on data lateness patterns.
