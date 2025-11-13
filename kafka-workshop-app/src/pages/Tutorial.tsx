@@ -114,6 +114,7 @@ const sections: Section[] = [
   { id: 'producers', title: 'Producers', icon: <CloudQueue />, category: 'kafka' },
   { id: 'consumers', title: 'Consumers & Groups', icon: <Group />, category: 'kafka' },
   { id: 'brokers', title: 'Brokers & Clusters', icon: <Router />, category: 'kafka' },
+  { id: 'databricks-setup', title: 'Environment Setup', icon: <Settings />, category: 'databricks' },
   { id: 'databricks-intro', title: 'What is Databricks?', icon: <PlayCircleOutline />, category: 'databricks' },
   { id: 'structured-streaming', title: 'Structured Streaming', icon: <Timeline />, category: 'databricks' },
   { id: 'delta-lake', title: 'Delta Lake', icon: <DataObject />, category: 'databricks' },
@@ -612,7 +613,31 @@ export const Tutorial: React.FC = () => {
               </Typography>
             </Alert>
 
-            <Divider sx={{ my: 4 }} />
+            {/* ==================== KAFKA SECTION ==================== */}
+            <Box sx={{
+              textAlign: 'center',
+              mb: 6,
+              mt: 4,
+              p: 4,
+              background: 'linear-gradient(180deg, #1e3a5f 0%, #2c5aa0 100%)',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(30, 58, 95, 0.3)'
+            }}>
+              <Typography variant="h2" sx={{
+                fontWeight: 'bold',
+                color: 'white',
+                mb: 2,
+                textShadow: '2px 2px 4px rgba(0,0,0,0.2)'
+              }}>
+                Part 1: Apache Kafka
+              </Typography>
+              <Typography variant="h5" sx={{
+                color: 'rgba(255,255,255,0.95)',
+                fontWeight: 400
+              }}>
+                The Messaging System for Real-Time Data
+              </Typography>
+            </Box>
 
             {/* ==================== WHAT IS KAFKA ==================== */}
             <Paper id="kafka-intro" sx={{ p: 4, mb: 4, bgcolor: '#ffffff' }}>
@@ -1137,17 +1162,7 @@ export const Tutorial: React.FC = () => {
                 </Typography>
               </Box>
 
-              <Box sx={{
-                bgcolor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                p: 3,
-                borderRadius: 2,
-                mb: 3,
-                mt: 4,
-                border: '3px solid #FFD700',
-                boxShadow: '0 4px 20px rgba(102,126,234,0.3)',
-              }}>
+              <Alert severity="info" sx={{ mb: 3, mt: 4 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Star sx={{ fontSize: 32, color: '#FFD700', mr: 1 }} />
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
@@ -1157,10 +1172,10 @@ export const Tutorial: React.FC = () => {
                 <Typography variant="body1" paragraph>
                   Let's get hands-on! Before learning all the technical terms, let's verify you can connect to Kafka. We've prepared a simple test script called <code>00_test_connection.py</code> in the <code>examples/</code> folder. This script loads your credentials from the <code>.env</code> file and attempts to connect to the Kafka cluster. If it succeeds, you'll see a success message!
                 </Typography>
-                <Typography variant="body2" sx={{ fontStyle: 'italic', opacity: 0.9 }}>
+                <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
                   💡 Complete this challenge to unlock the <strong>"First Connection"</strong> achievement!
                 </Typography>
-              </Box>
+              </Alert>
 
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
@@ -1836,7 +1851,327 @@ admin.close()`} />
               </Alert>
             </Paper>
 
-            {/* ==================== DATABRICKS INTRO ==================== */}
+            {/* ==================== DATABRICKS SECTION ==================== */}
+            <Divider sx={{ my: 6, borderWidth: 2, borderColor: '#2c5aa0' }} />
+
+            <Box sx={{
+              textAlign: 'center',
+              mb: 6,
+              mt: 6,
+              p: 4,
+              background: 'linear-gradient(180deg, #1e3a5f 0%, #2c5aa0 100%)',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(30, 58, 95, 0.3)'
+            }}>
+              <Typography variant="h2" sx={{
+                fontWeight: 'bold',
+                color: 'white',
+                mb: 2,
+                textShadow: '2px 2px 4px rgba(0,0,0,0.2)'
+              }}>
+                Part 2: Databricks
+              </Typography>
+              <Typography variant="h5" sx={{
+                color: 'rgba(255,255,255,0.95)',
+                fontWeight: 400
+              }}>
+                Process Your Kafka Streams in Real-Time
+              </Typography>
+            </Box>
+
+            {/* ==================== DATABRICKS ENVIRONMENT SETUP ==================== */}
+            <Paper id="databricks-setup" sx={{ p: 4, mb: 4, bgcolor: '#ffffff' }}>
+              <Box
+                sx={{
+                  bgcolor: '#4CAF50',
+                  color: 'white',
+                  p: 3,
+                  borderRadius: 2,
+                  mb: 4,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                <Settings sx={{ fontSize: 48, mr: 2 }} />
+                <Box>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
+                    Environment Setup
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', mt: 1 }}>
+                    Create your free Databricks account
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Typography variant="body1" paragraph sx={{ mb: 3 }}>
+                Before you can process streaming data with Databricks, you need to set up your free account. This takes less than 2 minutes and gives you access to a powerful cloud-based analytics platform!
+              </Typography>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 1: Create Your Free Databricks Account
+                </Typography>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    1. Go to: <a href="https://login.databricks.com/signup?dbx_source=docs&intent=SIGN_UP&tuuid=2c94cafd-b002-40ec-8bb0-0a98fff9b051&rl_aid=589e997a-0735-4b51-b485-b5912aac3789&provider=DB_FREE_TIER&o=0&sisu_state=eyJsZWdhbFRleHRTZWVuIjp7Ii9zaWdudXAiOnsidG9zIjp0cnVlLCJwcml2YWN5Ijp0cnVlLCJjb3Jwb3JhdGVFbWFpbFNoYXJpbmciOnRydWV9fX0%3D" target="_blank" rel="noopener noreferrer" style={{ color: '#2196F3', textDecoration: 'underline', fontWeight: 'bold' }}>Databricks Community Edition Signup</a>
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    2. You'll see a signup page like this:
+                  </Typography>
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mb: 2,
+                    p: 2,
+                    bgcolor: '#f5f5f5',
+                    borderRadius: 1
+                  }}>
+                    <img
+                      src={`${process.env.PUBLIC_URL}/databricks-signup.png`}
+                      alt="Databricks Free Edition Signup Page"
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                        maxHeight: '500px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }}
+                    />
+                  </Box>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    3. Sign up with your email (use your school/work email if available)
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    4. Verify your email address by clicking the link in the confirmation email
+                  </Typography>
+                  <Typography variant="body2">
+                    5. You'll be redirected to your Databricks workspace homepage
+                  </Typography>
+                </Box>
+                <Typography variant="body2" sx={{ fontStyle: 'italic', fontSize: '0.85rem' }}>
+                  💡 The Community Edition is free forever and includes everything you need for this workshop. No credit card required!
+                </Typography>
+              </Alert>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 2: Verify You Can Access Your Workspace
+                </Typography>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    1. After signing up, you should see the Databricks workspace like this:
+                  </Typography>
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mb: 2,
+                    p: 2,
+                    bgcolor: '#f5f5f5',
+                    borderRadius: 1
+                  }}>
+                    <img
+                      src={`${process.env.PUBLIC_URL}/databricks.png`}
+                      alt="Databricks Workspace"
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                        maxHeight: '500px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }}
+                    />
+                  </Box>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    2. Look for the "Workspace" and "Compute" options in the left sidebar
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    3. If you need to log back in later, go to: <a href="https://community.cloud.databricks.com" target="_blank" rel="noopener noreferrer" style={{ color: '#2196F3' }}>community.cloud.databricks.com</a>
+                  </Typography>
+                  <Typography variant="body2">
+                    4. If you see the sidebar with these options, you're all set!
+                  </Typography>
+                </Box>
+              </Alert>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 3: Create Your First Notebook
+                </Typography>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    Now let's create a notebook where you'll write your streaming code:
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    1. Click on <strong>"Workspace"</strong> in the left sidebar
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    2. Click on <strong>"Create"</strong> button
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    3. Select <strong>"Notebook"</strong> from the dropdown menu
+                  </Typography>
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mb: 2,
+                    p: 2,
+                    bgcolor: '#f5f5f5',
+                    borderRadius: 1
+                  }}>
+                    <img
+                      src={`${process.env.PUBLIC_URL}/notebook.png`}
+                      alt="Create Databricks Notebook"
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                        maxHeight: '500px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }}
+                    />
+                  </Box>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    4. Name your notebook: <strong>read_kafka_data</strong>
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    5. Select <strong>Python</strong> as the default language
+                  </Typography>
+                  <Typography variant="body2">
+                    6. Click <strong>Create</strong> - Your notebook is ready!
+                  </Typography>
+                </Box>
+              </Alert>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 4: Create a Catalog and Schema
+                </Typography>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 3 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                    📚 Understanding Catalogs and Schemas
+                  </Typography>
+                  <Typography variant="body2" paragraph sx={{ mb: 2 }}>
+                    <strong>Catalogs</strong> are the highest level of data organization in Databricks Unity Catalog. They represent logical units of data isolation and help you organize data by environment (production, development) or by organizational units. Each catalog can have its own managed storage location, providing physical data isolation.
+                  </Typography>
+                  <Typography variant="body2" paragraph sx={{ mb: 2 }}>
+                    <strong>Schemas</strong> (also called databases) are the second level of organization. They live inside catalogs and contain your actual data objects: tables, views, volumes, models, and functions. Schemas typically represent a single use case, project, or team sandbox, helping you organize data more granularly than catalogs.
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    Together, they form a <strong>three-level namespace</strong>: <code>catalog.schema.table</code>
+                  </Typography>
+                  <Typography variant="body2" paragraph sx={{ fontStyle: 'italic', fontSize: '0.9rem' }}>
+                    Example: <code>kafka_catalog.kafka_schema.streaming_messages</code> means the table "streaming_messages" lives in the schema "kafka_schema", which lives in the catalog "kafka_catalog".
+                  </Typography>
+                </Box>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    Now let's create your catalog and schema:
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>
+                    Part A: Create a Catalog
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    1. Click on <strong>"Catalog"</strong> in the left sidebar
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    2. Click on <strong>"Create Catalog"</strong> button
+                  </Typography>
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mb: 2,
+                    p: 2,
+                    bgcolor: '#f5f5f5',
+                    borderRadius: 1
+                  }}>
+                    <img
+                      src={`${process.env.PUBLIC_URL}/create_catalog.png`}
+                      alt="Create Catalog Dialog"
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                        maxHeight: '400px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }}
+                    />
+                  </Box>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    3. Name your catalog: <strong>kafka_catalog</strong>
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 3 }}>
+                    4. Click <strong>Create</strong>
+                  </Typography>
+
+                  <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold', mt: 3 }}>
+                    Part B: Create a Schema
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    5. After creating the catalog, you'll see the catalog view:
+                  </Typography>
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mb: 2,
+                    p: 2,
+                    bgcolor: '#f5f5f5',
+                    borderRadius: 1
+                  }}>
+                    <img
+                      src={`${process.env.PUBLIC_URL}/catalog_view.png`}
+                      alt="Catalog View"
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                        maxHeight: '400px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }}
+                    />
+                  </Box>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    6. Click on <strong>"Create Schema"</strong> button
+                  </Typography>
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mb: 2,
+                    p: 2,
+                    bgcolor: '#f5f5f5',
+                    borderRadius: 1
+                  }}>
+                    <img
+                      src={`${process.env.PUBLIC_URL}/create_schema.png`}
+                      alt="Create Schema Dialog"
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                        maxHeight: '400px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }}
+                    />
+                  </Box>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    7. Name your schema: <strong>kafka_schema</strong>
+                  </Typography>
+                  <Typography variant="body2">
+                    8. Click <strong>Create</strong>
+                  </Typography>
+                </Box>
+              </Alert>
+
+              <Alert severity="success" sx={{ bgcolor: '#e8f5e9', border: '1px solid #4CAF50' }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  ✅ You're Ready!
+                </Typography>
+                <Typography variant="body2">
+                  Perfect! You've completed the environment setup: account created ✓, workspace accessed ✓, notebook created ✓, catalog and schema set up ✓. Now let's learn what Databricks is and how it processes streaming data!
+                </Typography>
+              </Alert>
+            </Paper>
+
+            {/* ==================== WHAT IS DATABRICKS ==================== */}
             <Paper id="databricks-intro" sx={{ p: 4, mb: 4, bgcolor: '#ffffff' }}>
               <Box
                 sx={{
@@ -1959,27 +2294,264 @@ admin.close()`} />
                 <Timeline sx={{ fontSize: 48, mr: 2 }} />
                 <Box>
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-                    Structured Streaming
+                    Structured Streaming in Databricks
                   </Typography>
                   <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', mt: 1 }}>
-                    Real-time stream processing on Databricks
+                    Process streaming data from Kafka in real-time
                   </Typography>
                 </Box>
               </Box>
 
-              <Typography variant="body1" paragraph sx={{ textAlign: 'justify' }}>
-                <strong>Structured Streaming</strong> is Spark's stream processing engine built on the Spark SQL API. It treats streaming data as an unbounded table that continuously grows—queries against this table run continuously, producing results to an output sink. This abstraction makes streaming code nearly identical to batch code.
+              <Typography variant="body1" paragraph sx={{ mb: 3 }}>
+                Now that you have data flowing through Kafka, you need to <strong>process it in real-time</strong>. This is where Databricks Structured Streaming comes in - it reads data from Kafka, transforms it, and stores the results.
               </Typography>
 
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                The Problem It Solves
+              </Typography>
+
+              <Typography variant="body1" paragraph>
+                Imagine you're monitoring thousands of IoT sensors sending temperature readings to Kafka every second. You need to:
+              </Typography>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 3 }}>
+                <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
+                  <li>Calculate average temperature per sensor every minute</li>
+                  <li>Detect anomalies (temperatures above threshold)</li>
+                  <li>Store processed results for dashboards and reports</li>
+                  <li>Handle late-arriving data (sensors with network delays)</li>
+                  <li>Ensure no data is lost if processing fails</li>
+                </ul>
+              </Box>
+
+              <Typography variant="body1" paragraph>
+                <strong>Without Structured Streaming:</strong> You'd need to write complex code to handle streaming state, failures, and late data.<br/>
+                <strong>With Structured Streaming:</strong> Write simple Python-like code (PySpark) or SQL - Databricks handles all the complexity automatically.
+              </Typography>
+
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 4, mb: 2 }}>
+                Real-World Example: Netflix
+              </Typography>
+
+              <Typography variant="body1" paragraph>
+                <strong>Netflix processes billions of events per day using Structured Streaming.</strong> When you watch a show:
+              </Typography>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mb: 3, borderLeft: '4px solid #2196F3' }}>
+                <Typography variant="body1" paragraph sx={{ mb: 2 }}>
+                  📺 You press play on a video → Structured Streaming processes:
+                </Typography>
+                <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
+                  <li>Viewing events from Kafka (play, pause, seek, stop)</li>
+                  <li>Calculate watch time per user in real-time for billing</li>
+                  <li>Update recommendation models with your viewing patterns</li>
+                  <li>Detect streaming quality issues and switch video quality</li>
+                  <li>Track popular content for trending algorithms</li>
+                  <li>Monitor playback errors across millions of devices</li>
+                </ul>
+              </Box>
+
+              <Typography variant="body1" paragraph sx={{ mb: 4 }}>
+                All of this happens in <strong>real-time</strong> while you're watching - that's the power of Structured Streaming!
+              </Typography>
+
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 4, mb: 2 }}>
+                How Structured Streaming Works
+              </Typography>
+
+              <Typography variant="body1" paragraph>
+                Think of streaming data as a <strong>table that never stops growing</strong>. Every second, new rows arrive from Kafka. Structured Streaming continuously queries this "infinite table" and outputs results:
+              </Typography>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body2" paragraph sx={{ fontWeight: 'bold', mb: 1 }}>
+                  🤔 What is "spark"?
+                </Typography>
+                <Typography variant="body2" paragraph sx={{ mb: 1 }}>
+                  When you open a Databricks notebook, there's a special variable called <code>spark</code> that's automatically created for you. This is your <strong>connection to Apache Spark</strong> - the engine that processes your data.
+                </Typography>
+                <Typography variant="body2" paragraph sx={{ mb: 1 }}>
+                  Think of <code>spark</code> as your control panel. You use it to:
+                </Typography>
+                <Box component="ul" sx={{ mt: 0, mb: 1, pl: 3 }}>
+                  <li><code>spark.read()</code> - Read data that's already stored (batch)</li>
+                  <li><code>spark.readStream()</code> - Read data as it arrives (streaming)</li>
+                  <li><code>spark.sql()</code> - Run SQL queries</li>
+                </Box>
+                <Typography variant="body2" sx={{ fontStyle: 'italic', fontSize: '0.85rem' }}>
+                  💡 You don't need to create <code>spark</code> yourself - Databricks does it automatically when your notebook starts!
+                </Typography>
+              </Alert>
+
+              <Box sx={{ bgcolor: '#e3f2fd', p: 3, borderRadius: 2, mb: 4, border: '2px solid #2196F3' }}>
+                <Typography variant="body1" paragraph sx={{ fontWeight: 'bold', mb: 2 }}>
+                  💡 The Magic: Batch Code = Streaming Code
+                </Typography>
+                <Typography variant="body2" paragraph sx={{ mb: 2 }}>
+                  Let's clarify two important concepts:
+                </Typography>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
+                  <Typography variant="body2" paragraph sx={{ mb: 1 }}>
+                    <strong>📦 Batch Processing:</strong> Processing data that's already stored (historical data). Like analyzing all sales from last month - the data is complete and sitting in a file or database.
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontStyle: 'italic', fontSize: '0.85rem' }}>
+                    Example: Read a CSV file with 1 million rows → Calculate totals → Save results
+                  </Typography>
+                </Box>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
+                  <Typography variant="body2" paragraph sx={{ mb: 1 }}>
+                    <strong>⚡ Streaming Processing:</strong> Processing data as it arrives in real-time. Like analyzing sales as they happen right now - the data keeps coming and never ends.
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontStyle: 'italic', fontSize: '0.85rem' }}>
+                    Example: Read from Kafka continuously → Calculate totals every 10 seconds → Save results
+                  </Typography>
+                </Box>
+                <Typography variant="body2" paragraph sx={{ mt: 2 }}>
+                  In traditional systems, you'd write completely different code for batch vs. streaming. With Structured Streaming, <strong>the same code works for both</strong>! Just change <code>spark.read()</code> to <code>spark.readStream()</code> and <code>df.write()</code> to <code>df.writeStream()</code>. Everything in between (filters, joins, aggregations) stays exactly the same!
+                </Typography>
+              </Box>
+
+              <Alert severity="info" sx={{ mb: 3, mt: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Star sx={{ fontSize: 32, color: '#FFD700', mr: 1 }} />
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    🎮 Challenge #2: Create Your First Databricks Notebook
+                  </Typography>
+                </Box>
+                <Typography variant="body1" paragraph>
+                  Now that you have a Databricks account, let's create a notebook and learn Structured Streaming step by step. A notebook is like a digital lab notebook - you write code in cells, run them, and see results immediately.
+                </Typography>
+                <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+                  💡 Follow the steps below to set up your Databricks environment!
+                </Typography>
+              </Alert>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 1: Access Your Databricks Workspace
+                </Typography>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    1. If you just signed up, you should already be in your workspace
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    2. If you need to log back in, go to: <a href="https://community.cloud.databricks.com" target="_blank" rel="noopener noreferrer" style={{ color: '#2196F3' }}>community.cloud.databricks.com</a>
+                  </Typography>
+                  <Typography variant="body2">
+                    3. You should see the Databricks workspace homepage with a sidebar on the left
+                  </Typography>
+                </Box>
+              </Alert>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 2: Create a New Notebook
+                </Typography>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    1. Click <strong>"Create"</strong> → <strong>"Notebook"</strong> in the sidebar
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    2. Name it: <code>your-name-kafka-streaming</code> (e.g., "john-kafka-streaming")
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    3. Select <strong>Python</strong> as the default language
+                  </Typography>
+                  <Typography variant="body2">
+                    4. Select your cluster (or create one if needed)
+                  </Typography>
+                </Box>
+              </Alert>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 3: Test Your Setup
+                </Typography>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    Copy this code into the first cell and run it (Shift+Enter):
+                  </Typography>
+                  <code style={{ display: 'block', padding: '8px', backgroundColor: '#f5f5f5', borderRadius: '4px', marginBottom: '12px' }}>
+                    print("Hello from Databricks!")<br/>
+                    print(f"Spark version: {'{'}spark.version{'}'}")
+                  </code>
+                  <Typography variant="body2">
+                    ✅ If you see the output, your notebook is ready!
+                  </Typography>
+                </Box>
+              </Alert>
+
               <Typography variant="h6" sx={{ color: '#4a7ba7', mt: 4, mb: 2 }}>
-                Core Concepts
+                Step-by-Step: Read from Kafka
+              </Typography>
+
+              <Typography variant="body1" paragraph>
+                Now let's connect to your Kafka topic and read streaming data. Add a new cell to your notebook:
+              </Typography>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 4: Configure Kafka Connection
+                </Typography>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    Add this to a new cell (replace with your credentials):
+                  </Typography>
+                  <code style={{ display: 'block', padding: '8px', backgroundColor: '#f5f5f5', borderRadius: '4px', marginBottom: '12px', fontSize: '0.85rem', whiteSpace: 'pre-wrap' }}>
+{`# Your Kafka credentials
+kafka_bootstrap_servers = "your-server:9092"
+kafka_api_key = "your-api-key"
+kafka_api_secret = "your-api-secret"
+topic_name = "your-topic-name"
+
+print(f"✅ Configured to read from topic: {topic_name}")`}
+                  </code>
+                </Box>
+              </Alert>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 5: Read Stream from Kafka
+                </Typography>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    Add this to read streaming data:
+                  </Typography>
+                  <code style={{ display: 'block', padding: '8px', backgroundColor: '#f5f5f5', borderRadius: '4px', marginBottom: '12px', fontSize: '0.85rem', whiteSpace: 'pre-wrap' }}>
+{`# Read streaming data from Kafka
+df = (spark.readStream
+    .format("kafka")
+    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
+    .option("kafka.security.protocol", "SASL_SSL")
+    .option("kafka.sasl.mechanism", "PLAIN")
+    .option("kafka.sasl.jaas.config",
+        f'org.apache.kafka.common.security.plain.PlainLoginModule required username="{kafka_api_key}" password="{kafka_api_secret}";')
+    .option("subscribe", topic_name)
+    .option("startingOffsets", "earliest")
+    .load())
+
+print("✅ Streaming DataFrame created!")
+df.printSchema()`}
+                  </code>
+                  <Typography variant="body2">
+                    You should see the schema with Kafka fields: key, value, topic, partition, offset, timestamp
+                  </Typography>
+                </Box>
+              </Alert>
+
+              <Typography variant="h6" sx={{ color: '#4a7ba7', mt: 4, mb: 2 }}>
+                Understanding the Core Concepts
+              </Typography>
+
+              <Typography variant="body1" paragraph sx={{ mb: 3 }}>
+                Now that you've seen it in action, let's understand the building blocks:
               </Typography>
 
               <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, my: 2 }}>
                 <Typography variant="body2" component="div">
                   <ul style={{ marginTop: 8, marginBottom: 8, paddingLeft: 20 }}>
                     <li><strong>Input Source:</strong> Where data originates - <code>spark.readStream.format("kafka")</code></li>
-                    <li><strong>Transformation:</strong> Standard DataFrame operations - <code>df.groupBy("user_id").count()</code></li>
+                    <li><strong>Transformation:</strong> Standard DataFrame operations - <code>df.select(), df.filter(), df.groupBy()</code></li>
                     <li><strong>Output Sink:</strong> Destination for processed data - <code>.writeStream.format("delta")</code></li>
                     <li><strong>Trigger:</strong> When to process micro-batches - <code>.trigger(processingTime="10 seconds")</code></li>
                     <li><strong>Checkpointing:</strong> Fault-tolerance via write-ahead log - <code>.option("checkpointLocation", "/path")</code></li>
