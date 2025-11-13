@@ -109,6 +109,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = 'bash' }) => {
 };
 
 const sections: Section[] = [
+  { id: 'env-setup', title: 'Environment Setup', icon: <Settings />, category: 'kafka' },
   { id: 'kafka-intro', title: 'What is Apache Kafka?', icon: <Storage />, category: 'kafka' },
   { id: 'topics', title: 'Topics & Partitions', icon: <ViewModule />, category: 'kafka' },
   { id: 'producers', title: 'Producers', icon: <CloudQueue />, category: 'kafka' },
@@ -118,7 +119,6 @@ const sections: Section[] = [
   { id: 'databricks-intro', title: 'What is Databricks?', icon: <PlayCircleOutline />, category: 'databricks' },
   { id: 'structured-streaming', title: 'Structured Streaming', icon: <Timeline />, category: 'databricks' },
   { id: 'delta-lake', title: 'Delta Lake', icon: <DataObject />, category: 'databricks' },
-  { id: 'env-setup', title: 'Environment Setup', icon: <Settings />, category: 'code' },
   { id: 'code-python', title: 'Python Consumer', icon: <Code />, category: 'code' },
   { id: 'code-databricks', title: 'Databricks Streaming', icon: <Speed />, category: 'code' },
 ];
@@ -638,6 +638,466 @@ export const Tutorial: React.FC = () => {
                 The Messaging System for Real-Time Data
               </Typography>
             </Box>
+
+            {/* ==================== ENVIRONMENT SETUP ==================== */}
+            <Paper id="env-setup" sx={{ p: 4, mb: 4 }}>
+              <Box
+                sx={{
+                  bgcolor: '#4CAF50',
+                  color: 'white',
+                  p: 3,
+                  borderRadius: 2,
+                  mb: 4,
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                <Settings sx={{ fontSize: 48, mr: 2 }} />
+                <Box>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
+                    Environment Setup
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', mt: 1 }}>
+                    Prepare your development environment for Kafka streaming
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Typography variant="body1" paragraph>
+                Follow these step-by-step instructions to set up your environment on Linux, macOS, or Windows. We'll install Python, create a virtual environment, and install all necessary dependencies.
+              </Typography>
+
+              {/* Prerequisites Section */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                📋 Prerequisites
+              </Typography>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <strong>Before you begin:</strong> Make sure you have administrator/sudo access on your machine and a stable internet connection.
+              </Alert>
+
+              <Grid container spacing={2} sx={{ mb: 4 }}>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #4CAF50' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        🐧 Linux (Ubuntu/Debian)
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #2196F3' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        🍎 macOS
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #FF6B35' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        🪟 Windows
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+
+              {/* Step 1: Python Installation */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 1: Install Python 3.13
+              </Typography>
+
+              <Typography variant="body1" paragraph>
+                Choose the instructions for your operating system:
+              </Typography>
+
+              <Box sx={{ mb: 3 }}>
+                {/* Linux */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
+                  🐧 Linux (Ubuntu/Debian)
+                </Typography>
+                <CodeBlock code={`# Update package list
+sudo apt update
+
+# Install Python 3 and pip
+sudo apt install python3 python3-pip python3-venv -y
+
+# Verify installation
+python3 --version
+pip3 --version`} />
+
+                {/* macOS */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🍎 macOS
+                </Typography>
+                <CodeBlock code={`# Install Homebrew (if not already installed)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install Python
+brew install python3
+
+# Verify installation
+python3 --version
+pip3 --version`} />
+
+                {/* Windows */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🪟 Windows
+                </Typography>
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                  <strong>Option 1 (Recommended):</strong> Download Python from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener noreferrer" style={{ color: '#FF6B35' }}>python.org</a> and check "Add Python to PATH" during installation.
+                  <br /><br />
+                  <strong>Option 2 (WSL2):</strong> Use Windows Subsystem for Linux and follow the Linux instructions above.
+                </Alert>
+                <CodeBlock code={`# After installation, verify in PowerShell or Command Prompt
+python --version
+pip --version`} />
+              </Box>
+
+              {/* Step 2: Clone Workshop Repository */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 2: Clone Workshop Repository
+              </Typography>
+
+              <Typography variant="body1" paragraph>
+                Clone the workshop repository to get all starter files, requirements, and example code:
+              </Typography>
+
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <strong>📦 Workshop Repository:</strong> Contains requirements.txt, .env template, starter code, and examples
+              </Alert>
+
+              <CodeBlock code={`# Clone the workshop repository
+git clone [GITHUB_REPO_URL_PLACEHOLDER]
+
+# Navigate into the project directory
+cd kafka-workshop
+
+# Verify you're in the right directory
+pwd  # Linux/Mac
+# or
+cd  # Windows`} />
+
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontStyle: 'italic' }}>
+                Note: The GitHub repository URL will be provided by your instructor or at the workshop.
+              </Typography>
+
+              {/* Step 3: Virtual Environment */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 3: Create Virtual Environment
+              </Typography>
+
+              <Typography variant="body1" paragraph>
+                Virtual environments isolate your project dependencies from system-wide Python packages.
+              </Typography>
+
+              <Box sx={{ mb: 3 }}>
+                {/* Linux/macOS */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
+                  🐧 🍎 Linux / macOS
+                </Typography>
+                <CodeBlock code={`# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate
+
+# You should see (venv) prefix in your terminal`} />
+
+                {/* Windows */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🪟 Windows (PowerShell)
+                </Typography>
+                <CodeBlock code={`# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+.\\venv\\Scripts\\Activate.ps1
+
+# If you get execution policy error, run:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# You should see (venv) prefix in your terminal`} />
+
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🪟 Windows (Command Prompt)
+                </Typography>
+                <CodeBlock code={`# Activate virtual environment
+venv\\Scripts\\activate.bat`} />
+              </Box>
+
+              {/* Step 4: Install Dependencies */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 4: Install Kafka Dependencies
+              </Typography>
+
+              <Typography variant="body1" paragraph>
+                The cloned repository includes a <code>requirements.txt</code> file with all necessary packages. Simply install them:
+              </Typography>
+
+              <CodeBlock code={`# Make sure virtual environment is activated (you should see (venv) prefix)
+
+# Upgrade pip first
+pip install --upgrade pip
+
+# Install all dependencies from requirements.txt
+pip install -r requirements.txt
+
+# Verify installation
+pip list | grep confluent  # Linux/Mac
+# or
+pip list | findstr confluent  # Windows`} />
+
+              <Alert severity="success" sx={{ mb: 3 }}>
+                <strong>✅ What gets installed:</strong> confluent-kafka, pandas, numpy, python-dotenv, and optional packages for Avro support and testing
+              </Alert>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 3, borderLeft: '4px solid #4CAF50' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  📄 requirements.txt (included in the repository)
+                </Typography>
+                <CodeBlock code={`# Kafka client library
+confluent-kafka==2.3.0
+
+# Data processing
+pandas==2.1.4
+numpy==1.26.2
+
+# Logging and utilities
+python-dotenv==1.0.0
+
+# Optional: For Avro/Schema Registry support
+fastavro==1.9.0
+
+# Optional: For testing
+pytest==7.4.3
+pytest-mock==3.12.0`} />
+              </Box>
+
+              {/* Step 5: Environment Variables */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 5: Configure Environment Variables
+              </Typography>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <strong>📋 Your instructor will provide you with a credentials file</strong> (e.g., <code>api-key-XXXXX-student-consumer.txt</code>) containing your Kafka API key and secret.
+              </Alert>
+
+              <Typography variant="body1" paragraph>
+                The repository includes a <code>.env.example</code> template. Copy it to create your own <code>.env</code> file:
+              </Typography>
+
+              <CodeBlock code={`# Copy the example file to create your .env file
+cp .env.example .env
+
+# On Windows (PowerShell)
+Copy-Item .env.example .env
+
+# On Windows (Command Prompt)
+copy .env.example .env`} />
+
+              <Typography variant="body1" paragraph sx={{ mt: 2, fontWeight: 'bold' }}>
+                Then edit the <code>.env</code> file and replace the placeholder values with your actual credentials from the file provided by your instructor:
+              </Typography>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 2, borderLeft: '4px solid #FF6B35' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  📄 .env
+                </Typography>
+                <CodeBlock code={`# Kafka Configuration
+KAFKA_BOOTSTRAP_SERVERS=pkc-619z3.us-east1.gcp.confluent.cloud:9092
+KAFKA_SECURITY_PROTOCOL=SASL_SSL
+KAFKA_SASL_MECHANISM=PLAIN
+KAFKA_API_KEY=YOUR_API_KEY_HERE
+KAFKA_API_SECRET=YOUR_API_SECRET_HERE
+
+# Consumer Configuration
+KAFKA_TOPIC=ecommerce-events
+KAFKA_GROUP_ID=workshop-consumer-group`} />
+              </Box>
+
+              <Alert severity="warning" sx={{ mb: 3 }}>
+                <strong>⚠️ Security Warning:</strong> Add <code>.env</code> to your <code>.gitignore</code> file to prevent committing sensitive credentials!
+              </Alert>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 3, borderLeft: '4px solid #9C27B0' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  📄 .gitignore
+                </Typography>
+                <CodeBlock code={`# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp`} />
+              </Box>
+
+              {/* Step 6: Verify Installation */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 6: Verify Your Setup
+              </Typography>
+
+              <Typography variant="body2" paragraph>
+                We've provided a test script to verify everything is working. You can find it in the <code>examples/test_setup.py</code> file:
+              </Typography>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 2, borderLeft: '4px solid #2196F3' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  📄 examples/test_setup.py
+                </Typography>
+                <CodeBlock code={`#!/usr/bin/env python3
+"""Test script to verify Kafka setup"""
+
+import sys
+from confluent_kafka import Consumer, KafkaError
+from dotenv import load_dotenv
+import os
+
+def test_setup():
+    print("🔍 Testing Kafka setup...\\n")
+
+    # Load environment variables
+    load_dotenv()
+
+    # Check required environment variables
+    required_vars = [
+        'KAFKA_BOOTSTRAP_SERVERS',
+        'KAFKA_API_KEY',
+        'KAFKA_API_SECRET',
+        'KAFKA_TOPIC'
+    ]
+
+    missing_vars = [var for var in required_vars if not os.getenv(var)]
+
+    if missing_vars:
+        print(f"❌ Missing environment variables: {', '.join(missing_vars)}")
+        print("Please check your .env file")
+        return False
+
+    print("✅ Environment variables loaded")
+
+    # Test Kafka connection
+    config = {
+        'bootstrap.servers': os.getenv('KAFKA_BOOTSTRAP_SERVERS'),
+        'security.protocol': 'SASL_SSL',
+        'sasl.mechanism': 'PLAIN',
+        'sasl.username': os.getenv('KAFKA_API_KEY'),
+        'sasl.password': os.getenv('KAFKA_API_SECRET'),
+        'group.id': 'test-group',
+    }
+
+    try:
+        consumer = Consumer(config)
+        print("✅ Kafka consumer created successfully")
+        consumer.close()
+        print("✅ Connection test passed")
+        print("\\n🎉 Your environment is ready!")
+        return True
+    except Exception as e:
+        print(f"❌ Connection failed: {e}")
+        return False
+
+if __name__ == "__main__":
+    success = test_setup()
+    sys.exit(0 if success else 1)`} />
+              </Box>
+
+              <Typography variant="body2" paragraph sx={{ mt: 2 }}>
+                Run the test script from your project directory:
+              </Typography>
+
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
+                  🐧 🍎 Linux / macOS
+                </Typography>
+                <CodeBlock code={`python3 examples/test_setup.py`} />
+
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🪟 Windows
+                </Typography>
+                <CodeBlock code={`python examples\\test_setup.py`} />
+              </Box>
+
+              <Alert severity="success" icon={<CheckCircle />} sx={{ mt: 3 }}>
+                <strong>✅ Setup Complete!</strong> If all tests passed, you're ready to start consuming Kafka messages. Proceed to the Python Consumer section below.
+              </Alert>
+
+              {/* Quick Reference */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                📚 Quick Reference
+              </Typography>
+
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#4CAF50">
+                        Activate Virtual Environment
+                      </Typography>
+                      <CodeBlock code={`# Linux/Mac
+source venv/bin/activate
+
+# Windows PowerShell
+.\\venv\\Scripts\\Activate.ps1
+
+# Windows CMD
+venv\\Scripts\\activate.bat`} />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#FF6B35">
+                        Deactivate Virtual Environment
+                      </Typography>
+                      <CodeBlock code={`# All platforms
+deactivate`} />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#2196F3">
+                        Install New Package
+                      </Typography>
+                      <CodeBlock code={`pip install package-name
+pip freeze > requirements.txt`} />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#9C27B0">
+                        Common Issues
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
+                        • Permission denied: Use <code>sudo</code> or run as admin
+                        <br />
+                        • Command not found: Add Python to PATH
+                        <br />
+                        • SSL errors: Update certificates or use <code>pip install --trusted-host</code>
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Paper>
 
             {/* ==================== WHAT IS KAFKA ==================== */}
             <Paper id="kafka-intro" sx={{ p: 4, mb: 4, bgcolor: '#ffffff' }}>
@@ -2411,114 +2871,164 @@ admin.close()`} />
                 </Typography>
               </Box>
 
-              <Alert severity="info" sx={{ mb: 3, mt: 4 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Star sx={{ fontSize: 32, color: '#FFD700', mr: 1 }} />
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    🎮 Challenge #2: Create Your First Databricks Notebook
-                  </Typography>
-                </Box>
-                <Typography variant="body1" paragraph>
-                  Now that you have a Databricks account, let's create a notebook and learn Structured Streaming step by step. A notebook is like a digital lab notebook - you write code in cells, run them, and see results immediately.
-                </Typography>
-                <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-                  💡 Follow the steps below to set up your Databricks environment!
-                </Typography>
-              </Alert>
-
-              <Alert severity="info" sx={{ mb: 3 }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 1: Access Your Databricks Workspace
-                </Typography>
-                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    1. If you just signed up, you should already be in your workspace
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    2. If you need to log back in, go to: <a href="https://community.cloud.databricks.com" target="_blank" rel="noopener noreferrer" style={{ color: '#2196F3' }}>community.cloud.databricks.com</a>
-                  </Typography>
-                  <Typography variant="body2">
-                    3. You should see the Databricks workspace homepage with a sidebar on the left
-                  </Typography>
-                </Box>
-              </Alert>
-
-              <Alert severity="info" sx={{ mb: 3 }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 2: Create a New Notebook
-                </Typography>
-                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    1. Click <strong>"Create"</strong> → <strong>"Notebook"</strong> in the sidebar
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    2. Name it: <code>your-name-kafka-streaming</code> (e.g., "john-kafka-streaming")
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    3. Select <strong>Python</strong> as the default language
-                  </Typography>
-                  <Typography variant="body2">
-                    4. Select your cluster (or create one if needed)
-                  </Typography>
-                </Box>
-              </Alert>
-
-              <Alert severity="info" sx={{ mb: 3 }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 3: Test Your Setup
-                </Typography>
-                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
-                  <Typography variant="body2" sx={{ mb: 2 }}>
-                    Copy this code into the first cell and run it (Shift+Enter):
-                  </Typography>
-                  <code style={{ display: 'block', padding: '8px', backgroundColor: '#f5f5f5', borderRadius: '4px', marginBottom: '12px' }}>
-                    print("Hello from Databricks!")<br/>
-                    print(f"Spark version: {'{'}spark.version{'}'}")
-                  </code>
-                  <Typography variant="body2">
-                    ✅ If you see the output, your notebook is ready!
-                  </Typography>
-                </Box>
-              </Alert>
-
-              <Typography variant="h6" sx={{ color: '#4a7ba7', mt: 4, mb: 2 }}>
-                Step-by-Step: Read from Kafka
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 4, mb: 2 }}>
+                Hands-On: Connect to Kafka from Databricks
               </Typography>
 
-              <Typography variant="body1" paragraph>
-                Now let's connect to your Kafka topic and read streaming data. Add a new cell to your notebook:
+              <Typography variant="body1" paragraph sx={{ mb: 3 }}>
+                Now that you've completed the environment setup, let's use PySpark in your <code>read_kafka_data</code> notebook to connect to your Kafka topic and read streaming data in real-time!
               </Typography>
 
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 4: Configure Kafka Connection
+                  📝 Step 1: Set Up Kafka Credentials and List Topics
                 </Typography>
-                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
-                  <Typography variant="body2" sx={{ mb: 2 }}>
-                    Add this to a new cell (replace with your credentials):
-                  </Typography>
-                  <code style={{ display: 'block', padding: '8px', backgroundColor: '#f5f5f5', borderRadius: '4px', marginBottom: '12px', fontSize: '0.85rem', whiteSpace: 'pre-wrap' }}>
-{`# Your Kafka credentials
-kafka_bootstrap_servers = "your-server:9092"
+                <Typography variant="body2" paragraph>
+                  In your Databricks notebook, create a new cell and add your Kafka connection details. We'll use Spark to list all available topics:
+                </Typography>
+              </Alert>
+
+              <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 3, mb: 1 }}>
+                Code Preview:
+              </Typography>
+
+              <CodeBlock code={`# Your Kafka credentials (replace with your values)
+kafka_bootstrap_servers = "pkc-619z3.us-east1.gcp.confluent.cloud:9092"
 kafka_api_key = "your-api-key"
 kafka_api_secret = "your-api-secret"
-topic_name = "your-topic-name"
 
-print(f"✅ Configured to read from topic: {topic_name}")`}
-                  </code>
+# Create JAAS configuration for authentication
+jaas_config = f'org.apache.kafka.common.security.plain.PlainLoginModule required username="{kafka_api_key}" password="{kafka_api_secret}";'
+
+# Read available topics using Spark's Kafka batch reader
+topics_df = (spark.read
+    .format("kafka")
+    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
+    .option("kafka.security.protocol", "SASL_SSL")
+    .option("kafka.sasl.mechanism", "PLAIN")
+    .option("kafka.sasl.jaas.config", jaas_config)
+    .option("subscribe", ".*")  # Subscribe to all topics to discover them
+    .option("startingOffsets", "latest")
+    .option("endingOffsets", "latest")
+    .load()
+    .select("topic")
+    .distinct()
+)
+
+# Display all available topics
+print("📋 Available topics in your Kafka cluster:")
+print("=" * 50)
+topics = [row.topic for row in topics_df.collect()]
+for topic in sorted(topics):
+    print(f"  • {topic}")
+
+print(f"\\n✅ Found {len(topics)} topics. Choose one from the list above.")`} />
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
+                  📚 Understanding the Code:
+                </Typography>
+                <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
+                  <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>kafka_bootstrap_servers:</strong> The address of your Kafka cluster (broker). This tells Spark where to connect.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>kafka_api_key & kafka_api_secret:</strong> Authentication credentials to securely access your Kafka cluster.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>jaas_config:</strong> Java Authentication and Authorization Service configuration string for Kafka SASL authentication.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>spark.read.format("kafka"):</strong> Uses Spark's built-in Kafka connector (no external libraries needed!).
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.option("subscribe", ".*"):</strong> Pattern to discover all topics (Spark doesn't have a direct "list topics" API, so we use a pattern match).
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.select("topic").distinct():</strong> Extracts unique topic names from the Kafka metadata.
+                    </li>
+                    <li style={{ marginBottom: '0px' }}>
+                      <strong>.collect():</strong> Brings the topic names to the driver to display them.
+                    </li>
+                  </ul>
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#fff3cd', borderRadius: 1, borderLeft: '4px solid #ffc107', color: '#856404', lineHeight: 1.8 }}>
+                  ⚠️ <strong>Note:</strong> This approach uses Spark's batch reader to discover topics. Alternatively, you can install kafka-python with <code>%pip install kafka-python</code> and use KafkaAdminClient for a simpler approach.
+                </Typography>
+              </Box>
+
+              <Alert severity="success" sx={{ mb: 3 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  ✅ Expected Output
+                </Typography>
+                <Typography variant="body2" paragraph>
+                  After running the code above, you should see all topics:
+                </Typography>
+                <Box sx={{ bgcolor: 'rgba(0,0,0,0.05)', p: 2, borderRadius: 1, fontFamily: 'monospace', fontSize: '0.85rem', whiteSpace: 'pre-line' }}>
+                  {`📋 Available topics in your Kafka cluster:
+==================================================
+  • _confluent-command
+  • _confluent-metrics
+  • jane-topic
+  • john-topic
+  • test-topic
+
+✅ Found 5 topics. Choose one from the list above.`}
                 </Box>
+                <Typography variant="body2" sx={{ mt: 2 }}>
+                  Topics starting with <code>_</code> are system topics. Look for your topic from Part 1!
+                </Typography>
               </Alert>
 
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 5: Read Stream from Kafka
+                  📝 Step 1b: Select Your Topic
                 </Typography>
-                <Box sx={{ bgcolor: 'rgba(255,255,255,0.7)', p: 2, borderRadius: 1, mb: 2 }}>
-                  <Typography variant="body2" sx={{ mb: 2 }}>
-                    Add this to read streaming data:
-                  </Typography>
-                  <code style={{ display: 'block', padding: '8px', backgroundColor: '#f5f5f5', borderRadius: '4px', marginBottom: '12px', fontSize: '0.85rem', whiteSpace: 'pre-wrap' }}>
-{`# Read streaming data from Kafka
+                <Typography variant="body2" paragraph>
+                  Now that you've seen all available topics, set the <code>topic_name</code> variable:
+                </Typography>
+              </Alert>
+
+              <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 3, mb: 1 }}>
+                Code Preview:
+              </Typography>
+
+              <CodeBlock code={`# Choose your topic from the list above
+topic_name = "john-topic"  # Replace with YOUR topic name
+
+print(f"🎯 Selected topic: {topic_name}")`} />
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
+                  📚 Understanding the Code:
+                </Typography>
+                <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
+                  <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
+                    <li style={{ marginBottom: '0px' }}>
+                      <strong>topic_name:</strong> The specific Kafka topic you want to read data from. Must match one of the topics from the list above.
+                    </li>
+                  </ul>
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
+                  💡 <strong>Tip:</strong> Make sure you use the exact topic name (case-sensitive) from the list!
+                </Typography>
+              </Box>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 2: Read Streaming Data from Kafka
+                </Typography>
+                <Typography variant="body2" paragraph>
+                  Now let's create a streaming DataFrame that continuously reads from your Kafka topic:
+                </Typography>
+              </Alert>
+
+              <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 3, mb: 1 }}>
+                Code Preview:
+              </Typography>
+
+              <CodeBlock code={`# Read streaming data from Kafka
 df = (spark.readStream
     .format("kafka")
     .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
@@ -2527,16 +3037,198 @@ df = (spark.readStream
     .option("kafka.sasl.jaas.config",
         f'org.apache.kafka.common.security.plain.PlainLoginModule required username="{kafka_api_key}" password="{kafka_api_secret}";')
     .option("subscribe", topic_name)
-    .option("startingOffsets", "earliest")
+    .option("startingOffsets", "earliest")  # Read from beginning
     .load())
 
+# Display the schema
 print("✅ Streaming DataFrame created!")
-df.printSchema()`}
-                  </code>
-                  <Typography variant="body2">
-                    You should see the schema with Kafka fields: key, value, topic, partition, offset, timestamp
-                  </Typography>
-                </Box>
+df.printSchema()`} />
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
+                  📚 Understanding the Code:
+                </Typography>
+                <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
+                  <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>spark.readStream:</strong> Creates a streaming DataFrame (unlike <code>spark.read</code> for batch). This continuously reads new data as it arrives in Kafka.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.format("kafka"):</strong> Tells Spark to use the Kafka connector to read data from a Kafka topic.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.option("kafka.bootstrap.servers", ...):</strong> Specifies the Kafka broker address to connect to.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.option("kafka.security.protocol", "SASL_SSL"):</strong> Enables secure SSL/TLS encrypted connection with SASL authentication.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.option("kafka.sasl.mechanism", "PLAIN"):</strong> Uses PLAIN authentication mechanism (username/password).
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.option("kafka.sasl.jaas.config", ...):</strong> Provides the authentication credentials in JAAS format. This is how Spark securely logs into Kafka.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.option("subscribe", topic_name):</strong> Subscribes to the specific Kafka topic to read messages from.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.option("startingOffsets", "earliest"):</strong> Starts reading from the beginning of the topic. Use <code>"latest"</code> to only read new messages.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.load():</strong> Executes the configuration and returns a streaming DataFrame.
+                    </li>
+                    <li style={{ marginBottom: '0px' }}>
+                      <strong>df.printSchema():</strong> Displays the structure of the DataFrame showing Kafka's default columns.
+                    </li>
+                  </ul>
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
+                  💡 <strong>Expected output:</strong> You should see the Kafka schema with fields: <code>key</code>, <code>value</code> (binary), <code>topic</code>, <code>partition</code>, <code>offset</code>, <code>timestamp</code>
+                </Typography>
+              </Box>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 3: Parse the Message Value
+                </Typography>
+                <Typography variant="body2" paragraph>
+                  Kafka stores messages as binary data. Let's convert the <code>value</code> field to a readable string:
+                </Typography>
+              </Alert>
+
+              <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 3, mb: 1 }}>
+                Code Preview:
+              </Typography>
+
+              <CodeBlock code={`from pyspark.sql.functions import col, from_json
+from pyspark.sql.types import StructType, StructField, StringType
+
+# Define the schema of your Kafka messages
+message_schema = StructType([
+    StructField("text", StringType(), True),
+    StructField("timestamp", StringType(), True),
+    StructField("message_id", StringType(), True)
+])
+
+# Parse the value column from binary to JSON
+parsed_df = (df
+    .select(
+        col("key").cast("string"),
+        from_json(col("value").cast("string"), message_schema).alias("data"),
+        col("topic"),
+        col("partition"),
+        col("offset"),
+        col("timestamp")
+    )
+    .select("data.*", "topic", "partition", "offset", "timestamp")
+)
+
+# Display the parsed data
+print("✅ Data parsed successfully!")
+parsed_df.printSchema()`} />
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
+                  📚 Understanding the Code:
+                </Typography>
+                <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
+                  <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>from_json:</strong> A PySpark function that parses JSON strings into structured data (columns).
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>StructType & StructField:</strong> Define the schema (structure) of your JSON data. Think of it as defining what columns and data types your messages have.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>message_schema:</strong> Describes your Kafka message structure. Here we expect three fields: <code>text</code>, <code>timestamp</code>, and <code>message_id</code> (all strings). Adjust this to match YOUR actual message format!
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>col("value").cast("string"):</strong> Converts Kafka's binary <code>value</code> field to a readable string.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>from_json(...).alias("data"):</strong> Parses the JSON string using our schema and creates a nested column called <code>data</code>.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.select("data.*", ...):</strong> Flattens the nested <code>data</code> column, bringing <code>text</code>, <code>timestamp</code>, and <code>message_id</code> to the top level. Also keeps Kafka metadata columns.
+                    </li>
+                    <li style={{ marginBottom: '0px' }}>
+                      <strong>parsed_df:</strong> The final DataFrame with clean, structured data ready for analysis or storage.
+                    </li>
+                  </ul>
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
+                  💡 <strong>Important:</strong> Make sure your <code>message_schema</code> matches the actual JSON structure of messages you sent to Kafka in Part 1!
+                </Typography>
+              </Box>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 4: Write Stream to Delta Lake
+                </Typography>
+                <Typography variant="body2" paragraph>
+                  Finally, let's save the streaming data to a Delta table in your catalog:
+                </Typography>
+              </Alert>
+
+              <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 3, mb: 1 }}>
+                Code Preview:
+              </Typography>
+
+              <CodeBlock code={`# Write the streaming data to Delta Lake
+query = (parsed_df.writeStream
+    .format("delta")
+    .outputMode("append")  # Append new records
+    .option("checkpointLocation", "/tmp/kafka_checkpoint")  # For fault tolerance
+    .option("path", f"kafka_catalog.kafka_schema.{topic_name}_data")  # Your table path
+    .start())
+
+print(f"✅ Streaming to Delta table: kafka_catalog.kafka_schema.{topic_name}_data")
+print("Stream is running... Data will be continuously written!")
+
+# To stop the stream later, run:
+# query.stop()`} />
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
+                  📚 Understanding the Code:
+                </Typography>
+                <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
+                  <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>parsed_df.writeStream:</strong> Initiates writing a streaming DataFrame (similar to <code>df.write</code> for batch processing).
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.format("delta"):</strong> Writes data to Delta Lake format, which provides ACID transactions, time travel, and schema enforcement.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.outputMode("append"):</strong> Specifies how to write data. <code>"append"</code> adds new records without modifying existing ones. Other modes: <code>"complete"</code> (rewrites entire table) and <code>"update"</code> (updates changed rows).
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.option("checkpointLocation", ...):</strong> Critical for fault tolerance! The checkpoint directory stores progress information, so if your stream crashes, it can resume exactly where it left off without losing or duplicating data.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.option("path", ...):</strong> Specifies the Delta table location using the three-level namespace: <code>catalog.schema.table_name</code>. This is where your data will be permanently stored.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.start():</strong> Begins the streaming query. This runs continuously in the background, processing new data as it arrives.
+                    </li>
+                    <li style={{ marginBottom: '0px' }}>
+                      <strong>query:</strong> A handle to the running stream. Use <code>query.stop()</code> to halt the streaming process.
+                    </li>
+                  </ul>
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
+                  💡 <strong>The stream is now running continuously!</strong> Every message sent to your Kafka topic will be automatically read, parsed, and saved to your Delta table.
+                </Typography>
+              </Box>
+
+              <Alert severity="success" sx={{ mt: 2, mb: 3 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  🎉 Congratulations! Your End-to-End Streaming Pipeline is Live!
+                </Typography>
+                <Typography variant="body2">
+                  Data is now flowing from Kafka → PySpark Structured Streaming → Delta Lake in real-time. You've built a production-grade streaming data pipeline!
+                </Typography>
               </Alert>
 
               <Typography variant="h6" sx={{ color: '#4a7ba7', mt: 4, mb: 2 }}>
@@ -2729,456 +3421,6 @@ df.printSchema()`}
               <Alert severity="success" icon={<CheckCircle />} sx={{ mt: 3 }}>
                 <strong>💡 Delta Lake best practices:</strong> (1) Partition by low-cardinality columns (date, region); (2) Run OPTIMIZE weekly for streaming tables; (3) Use MERGE for CDC instead of overwrite; (4) Enable auto-compaction with <code>delta.autoOptimize.optimizeWrite=true</code>.
               </Alert>
-            </Paper>
-
-            {/* ==================== ENVIRONMENT SETUP ==================== */}
-            <Paper id="env-setup" sx={{ p: 4, mb: 4 }}>
-              <Box
-                sx={{
-                  bgcolor: '#4CAF50',
-                  color: 'white',
-                  p: 3,
-                  borderRadius: 2,
-                  mb: 4,
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                <Settings sx={{ fontSize: 48, mr: 2 }} />
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-                    Environment Setup
-                  </Typography>
-                  <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', mt: 1 }}>
-                    Prepare your development environment for Kafka streaming
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Typography variant="body1" paragraph>
-                Follow these step-by-step instructions to set up your environment on Linux, macOS, or Windows. We'll install Python, create a virtual environment, and install all necessary dependencies.
-              </Typography>
-
-              {/* Prerequisites Section */}
-              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
-                📋 Prerequisites
-              </Typography>
-
-              <Alert severity="info" sx={{ mb: 3 }}>
-                <strong>Before you begin:</strong> Make sure you have administrator/sudo access on your machine and a stable internet connection.
-              </Alert>
-
-              <Grid container spacing={2} sx={{ mb: 4 }}>
-                <Grid item xs={12} md={4}>
-                  <Card variant="outlined" sx={{ borderLeft: '4px solid #4CAF50' }}>
-                    <CardContent>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                        🐧 Linux (Ubuntu/Debian)
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Card variant="outlined" sx={{ borderLeft: '4px solid #2196F3' }}>
-                    <CardContent>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                        🍎 macOS
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Card variant="outlined" sx={{ borderLeft: '4px solid #FF6B35' }}>
-                    <CardContent>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                        🪟 Windows
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Grid>
-
-              {/* Step 1: Python Installation */}
-              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
-                Step 1: Install Python 3.13
-              </Typography>
-
-              <Typography variant="body1" paragraph>
-                Choose the instructions for your operating system:
-              </Typography>
-
-              <Box sx={{ mb: 3 }}>
-                {/* Linux */}
-                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
-                  🐧 Linux (Ubuntu/Debian)
-                </Typography>
-                <CodeBlock code={`# Update package list
-sudo apt update
-
-# Install Python 3 and pip
-sudo apt install python3 python3-pip python3-venv -y
-
-# Verify installation
-python3 --version
-pip3 --version`} />
-
-                {/* macOS */}
-                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
-                  🍎 macOS
-                </Typography>
-                <CodeBlock code={`# Install Homebrew (if not already installed)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Install Python
-brew install python3
-
-# Verify installation
-python3 --version
-pip3 --version`} />
-
-                {/* Windows */}
-                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
-                  🪟 Windows
-                </Typography>
-                <Alert severity="warning" sx={{ mb: 2 }}>
-                  <strong>Option 1 (Recommended):</strong> Download Python from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener noreferrer" style={{ color: '#FF6B35' }}>python.org</a> and check "Add Python to PATH" during installation.
-                  <br /><br />
-                  <strong>Option 2 (WSL2):</strong> Use Windows Subsystem for Linux and follow the Linux instructions above.
-                </Alert>
-                <CodeBlock code={`# After installation, verify in PowerShell or Command Prompt
-python --version
-pip --version`} />
-              </Box>
-
-              {/* Step 2: Clone Workshop Repository */}
-              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
-                Step 2: Clone Workshop Repository
-              </Typography>
-
-              <Typography variant="body1" paragraph>
-                Clone the workshop repository to get all starter files, requirements, and example code:
-              </Typography>
-
-              <Alert severity="info" sx={{ mb: 2 }}>
-                <strong>📦 Workshop Repository:</strong> Contains requirements.txt, .env template, starter code, and examples
-              </Alert>
-
-              <CodeBlock code={`# Clone the workshop repository
-git clone [GITHUB_REPO_URL_PLACEHOLDER]
-
-# Navigate into the project directory
-cd kafka-workshop
-
-# Verify you're in the right directory
-pwd  # Linux/Mac
-# or
-cd  # Windows`} />
-
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontStyle: 'italic' }}>
-                Note: The GitHub repository URL will be provided by your instructor or at the workshop.
-              </Typography>
-
-              {/* Step 3: Virtual Environment */}
-              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
-                Step 3: Create Virtual Environment
-              </Typography>
-
-              <Typography variant="body1" paragraph>
-                Virtual environments isolate your project dependencies from system-wide Python packages.
-              </Typography>
-
-              <Box sx={{ mb: 3 }}>
-                {/* Linux/macOS */}
-                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
-                  🐧 🍎 Linux / macOS
-                </Typography>
-                <CodeBlock code={`# Create virtual environment
-python3 -m venv venv
-
-# Activate virtual environment
-source venv/bin/activate
-
-# You should see (venv) prefix in your terminal`} />
-
-                {/* Windows */}
-                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
-                  🪟 Windows (PowerShell)
-                </Typography>
-                <CodeBlock code={`# Create virtual environment
-python -m venv venv
-
-# Activate virtual environment
-.\\venv\\Scripts\\Activate.ps1
-
-# If you get execution policy error, run:
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-
-# You should see (venv) prefix in your terminal`} />
-
-                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
-                  🪟 Windows (Command Prompt)
-                </Typography>
-                <CodeBlock code={`# Activate virtual environment
-venv\\Scripts\\activate.bat`} />
-              </Box>
-
-              {/* Step 4: Install Dependencies */}
-              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
-                Step 4: Install Kafka Dependencies
-              </Typography>
-
-              <Typography variant="body1" paragraph>
-                The cloned repository includes a <code>requirements.txt</code> file with all necessary packages. Simply install them:
-              </Typography>
-
-              <CodeBlock code={`# Make sure virtual environment is activated (you should see (venv) prefix)
-
-# Upgrade pip first
-pip install --upgrade pip
-
-# Install all dependencies from requirements.txt
-pip install -r requirements.txt
-
-# Verify installation
-pip list | grep confluent  # Linux/Mac
-# or
-pip list | findstr confluent  # Windows`} />
-
-              <Alert severity="success" sx={{ mb: 3 }}>
-                <strong>✅ What gets installed:</strong> confluent-kafka, pandas, numpy, python-dotenv, and optional packages for Avro support and testing
-              </Alert>
-
-              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 3, borderLeft: '4px solid #4CAF50' }}>
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                  📄 requirements.txt (included in the repository)
-                </Typography>
-                <CodeBlock code={`# Kafka client library
-confluent-kafka==2.3.0
-
-# Data processing
-pandas==2.1.4
-numpy==1.26.2
-
-# Logging and utilities
-python-dotenv==1.0.0
-
-# Optional: For Avro/Schema Registry support
-fastavro==1.9.0
-
-# Optional: For testing
-pytest==7.4.3
-pytest-mock==3.12.0`} />
-              </Box>
-
-              {/* Step 5: Environment Variables */}
-              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
-                Step 5: Configure Environment Variables
-              </Typography>
-
-              <Alert severity="info" sx={{ mb: 3 }}>
-                <strong>📋 Your instructor will provide you with a credentials file</strong> (e.g., <code>api-key-XXXXX-student-consumer.txt</code>) containing your Kafka API key and secret.
-              </Alert>
-
-              <Typography variant="body1" paragraph>
-                The repository includes a <code>.env.example</code> template. Copy it to create your own <code>.env</code> file:
-              </Typography>
-
-              <CodeBlock code={`# Copy the example file to create your .env file
-cp .env.example .env
-
-# On Windows (PowerShell)
-Copy-Item .env.example .env
-
-# On Windows (Command Prompt)
-copy .env.example .env`} />
-
-              <Typography variant="body1" paragraph sx={{ mt: 2, fontWeight: 'bold' }}>
-                Then edit the <code>.env</code> file and replace the placeholder values with your actual credentials from the file provided by your instructor:
-              </Typography>
-
-              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 2, borderLeft: '4px solid #FF6B35' }}>
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                  📄 .env
-                </Typography>
-                <CodeBlock code={`# Kafka Configuration
-KAFKA_BOOTSTRAP_SERVERS=pkc-619z3.us-east1.gcp.confluent.cloud:9092
-KAFKA_SECURITY_PROTOCOL=SASL_SSL
-KAFKA_SASL_MECHANISM=PLAIN
-KAFKA_API_KEY=YOUR_API_KEY_HERE
-KAFKA_API_SECRET=YOUR_API_SECRET_HERE
-
-# Consumer Configuration
-KAFKA_TOPIC=ecommerce-events
-KAFKA_GROUP_ID=workshop-consumer-group`} />
-              </Box>
-
-              <Alert severity="warning" sx={{ mb: 3 }}>
-                <strong>⚠️ Security Warning:</strong> Add <code>.env</code> to your <code>.gitignore</code> file to prevent committing sensitive credentials!
-              </Alert>
-
-              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 3, borderLeft: '4px solid #9C27B0' }}>
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                  📄 .gitignore
-                </Typography>
-                <CodeBlock code={`# Python
-venv/
-__pycache__/
-*.pyc
-*.pyo
-*.egg-info/
-
-# Environment variables
-.env
-.env.local
-
-# IDE
-.vscode/
-.idea/
-*.swp`} />
-              </Box>
-
-              {/* Step 6: Verify Installation */}
-              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
-                Step 6: Verify Your Setup
-              </Typography>
-
-              <Typography variant="body2" paragraph>
-                Create a simple test script to verify everything is working:
-              </Typography>
-
-              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 2, borderLeft: '4px solid #2196F3' }}>
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                  📄 test_setup.py
-                </Typography>
-                <CodeBlock code={`#!/usr/bin/env python3
-"""Test script to verify Kafka setup"""
-
-import sys
-from confluent_kafka import Consumer, KafkaError
-from dotenv import load_dotenv
-import os
-
-def test_setup():
-    print("🔍 Testing Kafka setup...\\n")
-
-    # Load environment variables
-    load_dotenv()
-
-    # Check required environment variables
-    required_vars = [
-        'KAFKA_BOOTSTRAP_SERVERS',
-        'KAFKA_API_KEY',
-        'KAFKA_API_SECRET',
-        'KAFKA_TOPIC'
-    ]
-
-    missing_vars = [var for var in required_vars if not os.getenv(var)]
-
-    if missing_vars:
-        print(f"❌ Missing environment variables: {', '.join(missing_vars)}")
-        print("Please check your .env file")
-        return False
-
-    print("✅ Environment variables loaded")
-
-    # Test Kafka connection
-    config = {
-        'bootstrap.servers': os.getenv('KAFKA_BOOTSTRAP_SERVERS'),
-        'security.protocol': 'SASL_SSL',
-        'sasl.mechanism': 'PLAIN',
-        'sasl.username': os.getenv('KAFKA_API_KEY'),
-        'sasl.password': os.getenv('KAFKA_API_SECRET'),
-        'group.id': 'test-group',
-    }
-
-    try:
-        consumer = Consumer(config)
-        print("✅ Kafka consumer created successfully")
-        consumer.close()
-        print("✅ Connection test passed")
-        print("\\n🎉 Your environment is ready!")
-        return True
-    except Exception as e:
-        print(f"❌ Connection failed: {e}")
-        return False
-
-if __name__ == "__main__":
-    success = test_setup()
-    sys.exit(0 if success else 1)`} />
-              </Box>
-
-              <Typography variant="body2" paragraph sx={{ mt: 2 }}>
-                Run the test script:
-              </Typography>
-
-              <CodeBlock code={`python test_setup.py`} />
-
-              <Alert severity="success" icon={<CheckCircle />} sx={{ mt: 3 }}>
-                <strong>✅ Setup Complete!</strong> If all tests passed, you're ready to start consuming Kafka messages. Proceed to the Python Consumer section below.
-              </Alert>
-
-              {/* Quick Reference */}
-              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
-                📚 Quick Reference
-              </Typography>
-
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#4CAF50">
-                        Activate Virtual Environment
-                      </Typography>
-                      <CodeBlock code={`# Linux/Mac
-source venv/bin/activate
-
-# Windows PowerShell
-.\\venv\\Scripts\\Activate.ps1
-
-# Windows CMD
-venv\\Scripts\\activate.bat`} />
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#FF6B35">
-                        Deactivate Virtual Environment
-                      </Typography>
-                      <CodeBlock code={`# All platforms
-deactivate`} />
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#2196F3">
-                        Install New Package
-                      </Typography>
-                      <CodeBlock code={`pip install package-name
-pip freeze > requirements.txt`} />
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#9C27B0">
-                        Common Issues
-                      </Typography>
-                      <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
-                        • Permission denied: Use <code>sudo</code> or run as admin
-                        <br />
-                        • Command not found: Add Python to PATH
-                        <br />
-                        • Module not found: Activate venv first
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Grid>
             </Paper>
 
             {/* ==================== PYTHON CONSUMER CODE ==================== */}
