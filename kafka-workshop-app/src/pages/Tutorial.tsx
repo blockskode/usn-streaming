@@ -951,12 +951,12 @@ __pycache__/
               </Typography>
 
               <Typography variant="body2" paragraph>
-                We've provided a test script to verify everything is working. You can find it in the <code>examples/test_setup.py</code> file:
+                We've provided a test script to verify everything is working. You can find it in the <code>examples/00_test_connection.py</code> file:
               </Typography>
 
               <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 2, borderLeft: '4px solid #2196F3' }}>
                 <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                  📄 examples/test_setup.py
+                  📄 examples/00_test_connection.py
                 </Typography>
                 <CodeBlock code={`#!/usr/bin/env python3
 """Test script to verify Kafka setup"""
@@ -1023,12 +1023,12 @@ if __name__ == "__main__":
                 <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
                   🐧 🍎 Linux / macOS
                 </Typography>
-                <CodeBlock code={`python3 examples/test_setup.py`} />
+                <CodeBlock code={`python3 examples/00_test_connection.py`} />
 
                 <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
                   🪟 Windows
                 </Typography>
-                <CodeBlock code={`python examples\\test_setup.py`} />
+                <CodeBlock code={`python examples\\00_test_connection.py`} />
               </Box>
 
               <Alert severity="success" icon={<CheckCircle />} sx={{ mt: 3 }}>
