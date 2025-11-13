@@ -1,0 +1,38 @@
+# Kafka Client Library (Python 3.13 compatible fork)
+kafka-python-ng==2.2.2
+
+# Environment Configuration
+python-dotenv==1.0.0
+
+# Logging and Utilities
+python-json-logger==2.0.7
+
+# Optional: For JSON handling
+simplejson==3.19.3
+
+# ============================================
+# OPTIONAL: Install only if needed
+# ============================================
+
+# Data Processing (uncomment if you need pandas/numpy)
+# pandas>=2.2.0
+# numpy>=1.26.0
+
+# Avro support (uncomment if needed)
+# fastavro==1.9.7
+
+# Testing (uncomment if needed)
+# pytest==8.0.0
+# pytest-mock==3.14.0
+
+# Async Kafka consumers (uncomment if needed)
+# aiokafka==0.11.0
+
+# ============================================
+# NOTE: To install confluent-kafka (C library required):
+# 1. Install librdkafka first:
+#    macOS:   brew install librdkafka
+#    Ubuntu:  sudo apt-get install librdkafka-dev
+#    Windows: Download from https://github.com/confluentinc/librdkafka/releases
+# 2. Then install: pip install confluent-kafka==2.5.0
+# ============================================

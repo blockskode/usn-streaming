@@ -144,6 +144,12 @@ ENV/
 env.bak/
 venv.bak/
 
+# Kafka API Keys and Credentials
+api-key-*.txt
+*-credentials.txt
+*.pem
+*.key
+
 # Spyder project settings
 .spyderproject
 .spyproject

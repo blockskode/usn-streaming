@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete GNS Tutorial: 1D Heat Equation</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            line-height: 1.7;
+            color: #24292e;
+            background-color: #f6f8fa;
+        }
+
+        /* Sticky Navigation Sidebar */
+        .nav-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: #ffffff;
+            border-right: 1px solid #e1e4e8;
+            overflow-y: auto;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .nav-sidebar h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #24292e;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e1e4e8;
+        }
+
+        .nav-sidebar ul {
+            list-style: none;
+        }
+
+        .nav-sidebar li {
+            margin: 0;
+        }
+
+        .nav-sidebar a {
+            display: block;
+            padding: 6px 12px;
+            color: #586069;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+
+        .nav-sidebar a:hover {
+            background-color: #f6f8fa;
+            color: #0366d6;
+        }
+
+        .nav-sidebar a.active {
+            background-color: #0366d6;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 300px;
+            padding: 40px 60px;
+            max-width: 1000px;
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 6px;
+            margin-bottom: 40px;
+        }
+
+        .header-banner h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header-banner p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .header-banner a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #24292e;
+            margin-top: 48px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e1e4e8;
+        }
+
+        h3 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #24292e;
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #24292e;
+            margin-top: 24px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 16px;
+        }
+
+        .info-box {
+            background: #f6f8fa;
+            border-left: 4px solid #0366d6;
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 3px;
+        }
+
+        .warning-box {
+            background: #fff5f5;
+            border-left: 4px solid #d73a49;
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 3px;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 3px;
+        }
+
+        .note-box {
+            background: #fffbdd;
+            border-left: 4px solid #ffd33d;
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 3px;
+        }
+
+        .math-block {
+            background: #f6f8fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+
+        code {
+            background: #f6f8fa;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f6f8fa;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #e1e4e8;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f6f8fa;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f6f8fa;
+        }
+
+        ul, ol {
+            margin: 16px 0;
+            padding-left: 32px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .flow-diagram {
+            text-align: center;
+            padding: 24px;
+            background: #f6f8fa;
+            border-radius: 6px;
+            margin: 24px 0;
+        }
+
+        .step {
+            background: #0366d6;
+            color: white;
+            padding: 12px 20px;
+            margin: 12px;
+            border-radius: 6px;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .arrow {
+            font-size: 24px;
+            color: #0366d6;
+            margin: 8px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .nav-sidebar {
+                width: 240px;
+            }
+            .main-content {
+                margin-left: 260px;
+                padding: 30px 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Navigation Sidebar -->
+    <nav class="nav-sidebar">
+        <h2>Table of Contents</h2>
+        <ul>
+            <li><a href="#part1">Part 1: Understanding the Problem</a></li>
+            <li><a href="#part2">Part 2: Traditional Numerical Methods</a></li>
+            <li><a href="#part3">Part 3: Graph Neural Networks</a></li>
+            <li><a href="#part3-5">Part 3.5: GNS Inputs and Outputs</a></li>
+            <li><a href="#part4">Part 4: GNS Architecture</a></li>
+            <li><a href="#part5">Part 5: Implementation Details</a></li>
+            <li><a href="#part6">Part 6: Training the GNS</a></li>
+            <li><a href="#part7">Part 7: Evaluation</a></li>
+            <li><a href="#part8">Part 8: Why GNS Works</a></li>
+            <li><a href="#part9">Part 9: Practical Tips</a></li>
+            <li><a href="#part10">Part 10: Complete Workflow</a></li>
+            <li><a href="#part11">Part 11: Key Takeaways</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header-banner">
+            <h1>Part 2: Implementation & Training</h1>
+            <p>Complete GNS tutorial for 1D Heat Equation</p>
+            <p><a href="index.html">← Back to Index</a> | <a href="1D_Heat_Equation_GNS_Part1_Setup.html">Read Part 1 First</a></p>
+        </div>
+
+        <div class="info-box">
+            <p><strong>Start Here or Part 1?</strong></p>
+            <p>If you're new to the heat equation or particle-based physics, we recommend starting with <a href="1D_Heat_Equation_GNS_Part1_Setup.html">Part 1: Problem Setup</a> first. It covers:</p>
+            <ul>
+                <li>The physical heat equation in detail</li>
+                <li>Boundary and initial conditions</li>
+                <li>Particle-based representation</li>
+                <li>Why the heat equation is perfect for testing GNS</li>
+            </ul>
+            <p>This Part 2 focuses on <strong>implementation, training, and evaluation</strong>.</p>
+        </div>
+
+        <h2 id="part1">Part 1: Understanding the Problem</h2>
+
+        <h3>1.1 What is the Heat Equation?</h3>
+
+        <p>Imagine you have a metal rod. You heat one end. The heat naturally spreads (diffuses) along the rod over time. The <strong>heat equation</strong> describes this process mathematically.</p>
+
+        <div class="math-block">
+            <strong>The 1D Heat Equation:</strong>
+            $$\frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2}$$
+        </div>
+
+        <p><strong>Breaking it down:</strong></p>
+        <ul>
+            <li>\(u(x,t)\) = temperature at position \(x\) and time \(t\)</li>
+            <li>\(\frac{\partial u}{\partial t}\) = how fast temperature changes over time</li>
+            <li>\(\frac{\partial^2 u}{\partial x^2}\) = how curved the temperature profile is in space</li>
+            <li>\(\alpha\) = thermal diffusivity (how fast heat spreads)</li>
+        </ul>
+
+        <div class="note-box">
+            <p><strong>Intuition:</strong> If the temperature curve is very "pointy" at some location (high curvature), heat will flow away from that point quickly to smooth it out. The heat equation says: <em>"Temperature changes faster where the curve is more curved."</em></p>
+        </div>
+
+        <h3>1.2 Our Specific Problem</h3>
+
+        <p>We're solving the heat equation on a rod from \(x=0\) to \(x=1\) with:</p>
+
+        <div class="math-block">
+            <strong>Initial Condition (t=0):</strong>
+            $$u(x, 0) = 100 \sin\left(\frac{\pi x}{L}\right)$$
+
+            <strong>Boundary Conditions (all times):</strong>
+            $$u(0, t) = 0, \quad u(L, t) = 0$$
+        </div>
+
+        <div class="info-box">
+            <p><strong>Why this is useful:</strong> This specific problem has an analytical (exact) solution, so we can check if our numerical methods and GNS are working correctly!</p>
+
+            <div class="math-block">
+                <strong>Analytical Solution:</strong>
+                $$u(x,t) = 100 \sin\left(\frac{\pi x}{L}\right) \exp\left(-\frac{\alpha \pi^2 t}{L^2}\right)$$
+            </div>
+        </div>
+
+        <h2 id="part2">Part 2: Traditional Numerical Methods</h2>
+
+        <div class="warning-box">
+            <p><strong>Why This Section is Critical:</strong></p>
+            <p><strong>Traditional numerical methods generate the training data for GNS!</strong></p>
+            <ul>
+                <li>We can't always get real experimental data</li>
+                <li>We use traditional solvers (Crank-Nicolson) to create "ground truth" simulations</li>
+                <li>GNS learns from this data to predict physics</li>
+                <li>The better your traditional solver, the better your training data!</li>
+            </ul>
+            <p><strong>Workflow:</strong> Traditional Solver → Generate Data → Train GNS → GNS learns physics from data</p>
+        </div>
+
+        <p><em>For detailed coverage of Explicit Euler and Crank-Nicolson methods, see the complete original tutorial. Here we focus on the GNS-specific content.</em></p>
+
+        <h2 id="part3">Part 3: Enter Graph Neural Networks (GNNs)</h2>
+
+        <h3>3.1 What Are Graphs?</h3>
+
+        <p>A <strong>graph</strong> is a collection of <strong>nodes</strong> (particles) connected by <strong>edges</strong>.</p>
+
+        <div class="info-box">
+            <p><strong>For our 1D heat equation:</strong></p>
+            <ul>
+                <li><strong>Nodes (particles):</strong> Fixed spatial points at positions \(x_1, x_2, ..., x_N\) along the rod</li>
+                <li><strong>Node features:</strong> [position (fixed), temperature (changing), velocity (rate of temperature change)]</li>
+                <li><strong>Edges:</strong> Connect nearby particles (within connectivity radius)</li>
+                <li><strong>Edge features:</strong> [displacement, distance] between particle locations</li>
+            </ul>
+        </div>
+
+        <h3>3.2 Why Use Graphs for Physics?</h3>
+
+        <div class="note-box">
+            <p><strong>Key Insight:</strong> Many physics phenomena are <strong>local</strong> - a particle is mainly affected by its nearby neighbors, not particles far away.</p>
+
+            <p>Graphs naturally represent this local structure:</p>
+            <ul>
+                <li>Each particle is a node</li>
+                <li>Edges connect particles that interact</li>
+                <li>Information flows along edges (like heat diffusing between neighbors)</li>
+            </ul>
+        </div>
+
+        <h3>3.3 What is Message Passing?</h3>
+
+        <p><strong>Message passing</strong> is how Graph Neural Networks process information:</p>
+
+        <ol>
+            <li>Each particle collects information from its neighbors</li>
+            <li>This information is "messages" sent along edges</li>
+            <li>The particle updates its state based on received messages</li>
+            <li>Repeat for multiple steps to let information propagate</li>
+        </ol>
+
+        <h2 id="part3-5">Part 3.5: GNS Inputs and Outputs</h2>
+
+        <div class="success-box">
+            <p><strong>CRITICAL CONCEPT: What Goes Into GNS and What Comes Out?</strong></p>
+            <p>Understanding inputs and outputs is essential for implementing and debugging GNS.</p>
+        </div>
+
+        <h3>Input to GNS: Current State</h3>
+
+        <p>For each of the N particles (e.g., 1000 particles), GNS receives <strong>3 features</strong>:</p>
+
+        <div class="math-block">
+            <strong>Input feature vector for particle i:</strong>
+            $$\mathbf{x}_i = [x_i, u_i, v_i]$$
+
+            <p>Where:</p>
+            <ul style="list-style: none; padding-left: 0;">
+                <li>\(x_i\) = position of particle i (e.g., 0.500 m)</li>
+                <li>\(u_i\) = temperature at particle i (e.g., 50.0°C)</li>
+                <li>\(v_i = \frac{\partial u}{\partial t}\) = velocity (rate of temperature change, e.g., -2.1°C/s)</li>
+            </ul>
+
+            <p><strong>Total input shape:</strong> [N, 3] = [1000, 3]</p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Symbol</th>
+                    <th>Example Value</th>
+                    <th>Physical Meaning</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Position</td>
+                    <td>\(x_i\)</td>
+                    <td>0.5 m</td>
+                    <td>Where on the rod (fixed, never changes)</td>
+                </tr>
+                <tr>
+                    <td>Temperature</td>
+                    <td>\(u_i\)</td>
+                    <td>50.0°C</td>
+                    <td>Current temperature (what we're solving for)</td>
+                </tr>
+                <tr>
+                    <td>Velocity</td>
+                    <td>\(v_i = \frac{\partial u}{\partial t}\)</td>
+                    <td>-2.1°C/s</td>
+                    <td>Rate of temperature change (cooling/heating)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Output from GNS: Predicted Acceleration</h3>
+
+        <p>For each of the N particles, GNS predicts <strong>1 value</strong>:</p>
+
+        <div class="math-block">
+            <strong>Output for particle i:</strong>
+            $$a_i = \frac{\partial^2 u}{\partial t^2}$$
+
+            <p>Example: \(a_i = -0.052\) °C/s²</p>
+
+            <p><strong>Total output shape:</strong> [N, 1] = [1000, 1]</p>
+        </div>
+
+        <div class="info-box">
+            <p><strong>Why acceleration (not temperature or velocity)?</strong></p>
+            <ul>
+                <li><strong>Learns physics, not trajectories:</strong> Acceleration encodes the dynamics (the "rules")</li>
+                <li><strong>Better generalization:</strong> Learning \(a = f(x, u, v)\) generalizes to new conditions</li>
+                <li><strong>Matches PDE structure:</strong> For second-order PDEs, acceleration is the natural output</li>
+            </ul>
+        </div>
+
+        <h3>Why These Specific Inputs?</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Input</th>
+                    <th>Why Needed?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Position \(x_i\)</strong></td>
+                    <td>
+                        • Boundary awareness (particles near edges behave differently)<br>
+                        • Spatial structure information<br>
+                        • Enables learning position-dependent physics
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Temperature \(u_i\)</strong></td>
+                    <td>
+                        • The solution variable (what we're solving for)<br>
+                        • Current state of the system<br>
+                        • Needed to compute spatial derivatives
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Velocity \(v_i\)</strong></td>
+                    <td>
+                        • Markov property: provides temporal context<br>
+                        • For second-order PDEs, need both \(u\) and \(\frac{\partial u}{\partial t}\)<br>
+                        • Tells GNS "how fast things are changing"
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>From Prediction to Next State</h3>
+
+        <p>After GNS predicts acceleration, we use <strong>integration</strong> (outside GNS) to get the next state:</p>
+
+        <div class="math-block">
+            <strong>Semi-implicit Euler integration:</strong>
+            $$v_i^{t+1} = v_i^t + \Delta t \cdot a_i^t$$
+            $$u_i^{t+1} = u_i^t + \Delta t \cdot v_i^{t+1}$$
+        </div>
+
+        <div class="flow-diagram">
+            <strong>Complete Data Flow:</strong><br><br>
+            <div class="step">Input: [x, u, v]</div>
+            <div class="arrow">↓</div>
+            <div class="step">GNS Prediction</div>
+            <div class="arrow">↓</div>
+            <div class="step">Output: a</div>
+            <div class="arrow">↓</div>
+            <div class="step">Integration</div>
+            <div class="arrow">↓</div>
+            <div class="step">Next State: [x, u', v']</div>
+        </div>
+
+        <h3>Concrete Example</h3>
+
+        <pre><code>Particle 500 at time t = 0.5s:
+
+INPUT to GNS:
+┌────────────────────────────┐
+│ x = 0.500 m                │  ← Position (where)
+│ u = 50.0°C                 │  ← Temperature (current state)
+│ v = -2.1°C/s               │  ← Velocity (how fast changing)
+└────────────────────────────┘
+           ↓
+    [ GNS Neural Net ]
+           ↓
+OUTPUT from GNS:
+┌────────────────────────────┐
+│ a = -0.052°C/s²            │  ← Acceleration (the physics!)
+└────────────────────────────┘
+           ↓
+    [ Integration ]
+           ↓
+NEXT STATE at t = 0.5005s:
+┌────────────────────────────┐
+│ v' = -2.1 + 0.0005×(-0.052) = -2.100°C/s
+│ u' = 50.0 + 0.0005×(-2.100)  = 49.999°C
+└────────────────────────────┘</code></pre>
+
+        <h3>Why NOT Include Acceleration as Input?</h3>
+
+        <div class="warning-box">
+            <p><strong>Acceleration is the OUTPUT, not an input!</strong></p>
+            <ul>
+                <li>Acceleration is what we're <strong>learning</strong></li>
+                <li>If we knew acceleration already, we wouldn't need GNS</li>
+                <li>GNS learns the function: \(a = f(x, u, v, \text{neighbors})\)</li>
+            </ul>
+        </div>
+
+        <h3>Why NO Time as Input?</h3>
+
+        <div class="note-box">
+            <p><strong>Time is NOT an input because the system is Markovian:</strong></p>
+            <ul>
+                <li>The current state [u, v] fully determines the future</li>
+                <li>Time is implicit through state evolution</li>
+                <li>Physics doesn't change with time (time-invariant system)</li>
+            </ul>
+        </div>
+
+        <h2 id="part4">Part 4: Graph Network-based Simulator (GNS)</h2>
+
+        <h3>4.1 The Big Picture</h3>
+
+        <p>GNS is a framework for learning physics simulations using Graph Neural Networks. Instead of hand-coding physics equations, we <strong>learn them from data</strong>.</p>
+
+        <div class="warning-box">
+            <p><strong>Goal:</strong> Given the current state of particles, predict their <strong>accelerations</strong> (how they'll change next).</p>
+        </div>
+
+        <h3>4.2 The GNS Architecture</h3>
+
+        <p>GNS has three main components:</p>
+
+        <div class="info-box">
+            <p><strong>1. ENCODER:</strong> Converts raw physics state → latent graph</p>
+            <ul>
+                <li>Input: Particle features (position, temperature, velocity)</li>
+                <li>Output: High-dimensional latent embeddings for nodes and edges</li>
+                <li>Think: "Compress raw data into learned representations"</li>
+            </ul>
+
+            <p><strong>2. PROCESSOR:</strong> Performs M steps of message passing</p>
+            <ul>
+                <li>Input: Latent graph from encoder</li>
+                <li>Process: Particles communicate with neighbors M times</li>
+                <li>Output: Updated latent graph with learned interactions</li>
+                <li>Think: "Let particles talk to each other and learn interactions"</li>
+            </ul>
+
+            <p><strong>3. DECODER:</strong> Extracts predictions from latent graph</p>
+            <ul>
+                <li>Input: Final latent graph from processor</li>
+                <li>Output: Predicted accelerations for each particle</li>
+                <li>Think: "Extract the dynamics information we care about"</li>
+            </ul>
+        </div>
+
+        <div class="flow-diagram">
+            <strong>Complete GNS Pipeline:</strong><br><br>
+            <div class="step">Raw State (x, u, v)</div>
+            <div class="arrow">↓</div>
+            <div class="step">ENCODER</div>
+            <div class="arrow">↓</div>
+            <div class="step">Latent Graph G⁰</div>
+            <div class="arrow">↓</div>
+            <div class="step">PROCESSOR (M steps)</div>
+            <div class="arrow">↓</div>
+            <div class="step">Latent Graph G^M</div>
+            <div class="arrow">↓</div>
+            <div class="step">DECODER</div>
+            <div class="arrow">↓</div>
+            <div class="step">Accelerations (a)</div>
+        </div>
+
+        <h3>4.3 Mathematical Details</h3>
+
+        <h4>Encoder</h4>
+        <div class="math-block">
+            <strong>Node embedding:</strong> $$\mathbf{v}_i^0 = \phi^v(\mathbf{x}_i)$$
+            where \(\mathbf{x}_i = [x_i, u_i, v_i]\) is the particle state
+
+            <strong>Edge embedding:</strong> $$\mathbf{e}_{ij}^0 = \phi^e(\mathbf{r}_{ij})$$
+            where \(\mathbf{r}_{ij} = [x_j - x_i, |x_j - x_i|]\) are relative features
+        </div>
+
+        <p>\(\phi^v\) and \(\phi^e\) are Multi-Layer Perceptrons (MLPs) - small neural networks.</p>
+
+        <h4>Processor (One Message Passing Step)</h4>
+        <div class="math-block">
+            <strong>Edge update:</strong>
+            $$\mathbf{e}_{ij}^{k+1} = \psi^e\left(\mathbf{e}_{ij}^k, \mathbf{v}_i^k, \mathbf{v}_j^k\right) + \mathbf{e}_{ij}^k$$
+            (residual connection helps training)
+
+            <strong>Aggregate messages:</strong>
+            $$\bar{\mathbf{e}}_i = \sum_{j \in \mathcal{N}(i)} \mathbf{e}_{ij}^{k+1}$$
+            (sum messages from all neighbors)
+
+            <strong>Node update:</strong>
+            $$\mathbf{v}_i^{k+1} = \psi^v\left(\mathbf{v}_i^k, \bar{\mathbf{e}}_i\right) + \mathbf{v}_i^k$$
+            (update with aggregated messages + residual)
+        </div>
+
+        <p>We repeat this M times (typically M = 10) to let information propagate.</p>
+
+        <h4>Decoder</h4>
+        <div class="math-block">
+            <strong>Extract acceleration:</strong>
+            $$a_i = \delta^v\left(\mathbf{v}_i^M\right)$$
+            where \(\delta^v\) is another MLP
+        </div>
+
+        <h2 id="part5">Part 5: Implementation Details</h2>
+
+        <p><em>For complete implementation details including MLP architecture, graph network layers, and hyperparameters, refer to the full tutorial.</em></p>
+
+        <h2 id="part6">Part 6: Training the GNS</h2>
+
+        <h3>6.1 Training Data Preparation</h3>
+
+        <p>We generate training data using the traditional Crank-Nicolson solver:</p>
+
+        <ol>
+            <li><strong>Run simulation:</strong> Solve heat equation for T timesteps</li>
+            <li><strong>Compute velocities:</strong> \(v_i^t = \frac{u_i^{t+1} - u_i^t}{\Delta t}\)</li>
+            <li><strong>Compute accelerations:</strong> \(a_i^t = \alpha \frac{u_{i+1}^t - 2u_i^t + u_{i-1}^t}{\Delta x^2}\)</li>
+            <li><strong>Save:</strong> Positions, temperatures, velocities, accelerations</li>
+        </ol>
+
+        <h3>6.2 Normalization (Critical for Training!)</h3>
+
+        <div class="warning-box">
+            <p><strong>Problem:</strong> Without normalization, accelerations can be very large, causing huge loss values and training failure.</p>
+        </div>
+
+        <div class="success-box">
+            <p><strong>Solution: Normalize accelerations</strong></p>
+
+            <div class="math-block">
+                <strong>During training:</strong>
+                $$a_{\text{normalized}} = \frac{a - \mu_a}{\sigma_a}$$
+
+                <strong>During inference:</strong>
+                $$a = a_{\text{normalized}} \times \sigma_a + \mu_a$$
+            </div>
+
+            <p>where \(\mu_a\) is the mean and \(\sigma_a\) is the standard deviation of accelerations in training data.</p>
+        </div>
+
+        <h2 id="part7">Part 7: Evaluation and Generalization</h2>
+
+        <div class="warning-box">
+            <p><strong>What Happens When You Run evaluate_gns.py?</strong></p>
+            <p>After training completes, the evaluation script tests your GNS model through autoregressive rollout.</p>
+        </div>
+
+        <h3>7.1 Rollout Prediction</h3>
+
+        <p>After training, we test if GNS can simulate physics over long timescales. This is called <strong>autoregressive rollout</strong>: GNS predicts the next state, then uses that prediction to predict the next state, and so on for thousands of timesteps.</p>
+
+        <h3>7.2 Expected Results</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Initial RMSE</th>
+                    <th>Final RMSE (t=10s)</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Analytical</strong></td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>Exact solution (reference)</td>
+                </tr>
+                <tr>
+                    <td><strong>Crank-Nicolson</strong></td>
+                    <td>~1e-6</td>
+                    <td>~1e-6</td>
+                    <td>Very accurate numerical method</td>
+                </tr>
+                <tr>
+                    <td><strong>GNS</strong></td>
+                    <td>~1e-6</td>
+                    <td>~1e-4 to 1e-6</td>
+                    <td>Slight error accumulation over time</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="part8">Part 8: Why GNS Works</h2>
+
+        <h3>8.1 Inductive Biases</h3>
+
+        <p>GNS works well because it has the right <strong>inductive biases</strong> for physics:</p>
+
+        <ol>
+            <li><strong>Locality:</strong> Edges connect only nearby particles → learns local interactions</li>
+            <li><strong>Permutation invariance:</strong> Order of particles doesn't matter</li>
+            <li><strong>Translation invariance:</strong> Uses relative positions, not absolute</li>
+        </ol>
+
+        <h2 id="part9">Part 9: Practical Tips and Tricks</h2>
+
+        <h3>9.1 Common Training Issues</h3>
+
+        <h4>Problem: Loss is NaN or Inf</h4>
+        <div class="warning-box">
+            <p><strong>Causes:</strong></p>
+            <ul>
+                <li>Targets contain NaN (check your data generation!)</li>
+                <li>Learning rate too high</li>
+                <li>Missing normalization</li>
+            </ul>
+            <p><strong>Solutions:</strong></p>
+            <ul>
+                <li>Verify data has no NaNs: <code>np.any(np.isnan(data))</code></li>
+                <li>Reduce learning rate to 1e-5</li>
+                <li>Add gradient clipping</li>
+            </ul>
+        </div>
+
+        <h2 id="part10">Part 10: Complete Workflow</h2>
+
+        <div class="flow-diagram">
+            <strong>Step-by-Step Process:</strong><br><br>
+
+            <div class="step">1. Edit config.yaml</div>
+            <div style="color: #586069; font-size: 14px;">Configure physics, discretization, GNS parameters</div>
+            <br>
+            <div class="arrow">↓</div>
+
+            <div class="step">2. Run heat_equation_traditional.py</div>
+            <div style="color: #586069; font-size: 14px;">Generate training data with Crank-Nicolson solver</div>
+            <br>
+            <div class="arrow">↓</div>
+
+            <div class="step">3. Run train_gns.py</div>
+            <div style="color: #586069; font-size: 14px;">Train GNS model on generated data</div>
+            <br>
+            <div class="arrow">↓</div>
+
+            <div class="step">4. Run evaluate_gns.py</div>
+            <div style="color: #586069; font-size: 14px;">Test generalization on long trajectories</div>
+        </div>
+
+        <h2 id="part11">Part 11: Key Takeaways</h2>
+
+        <div class="success-box">
+            <p><strong>What You've Learned:</strong></p>
+
+            <ol>
+                <li><strong>Heat Equation:</strong> Describes diffusion, has analytical solution for validation</li>
+
+                <li><strong>Traditional Methods:</strong>
+                    <ul>
+                        <li>Explicit Euler: Simple but unstable</li>
+                        <li>Crank-Nicolson: Stable and accurate</li>
+                    </ul>
+                </li>
+
+                <li><strong>Graph Neural Networks:</strong>
+                    <ul>
+                        <li>Represent physics as graphs (particles = nodes, interactions = edges)</li>
+                        <li>Message passing lets particles communicate</li>
+                        <li>Natural for local physics interactions</li>
+                    </ul>
+                </li>
+
+                <li><strong>GNS Architecture:</strong>
+                    <ul>
+                        <li>Encoder: Raw state → Latent graph</li>
+                        <li>Processor: M steps of message passing</li>
+                        <li>Decoder: Latent graph → Accelerations</li>
+                    </ul>
+                </li>
+
+                <li><strong>Inputs and Outputs:</strong>
+                    <ul>
+                        <li>Input: [position, temperature, velocity]</li>
+                        <li>Output: acceleration</li>
+                        <li>Integration happens outside GNS</li>
+                    </ul>
+                </li>
+
+                <li><strong>Training:</strong>
+                    <ul>
+                        <li>Learn from simulation data</li>
+                        <li>Normalize targets (critical!)</li>
+                        <li>Train on short sequences, test on long ones</li>
+                    </ul>
+                </li>
+
+                <li><strong>Generalization:</strong>
+                    <ul>
+                        <li>GNS can predict 100× longer than training data</li>
+                        <li>Slight error accumulation is normal</li>
+                        <li>Should match analytical solution closely</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid #e1e4e8;">
+
+        <div class="success-box" style="text-align: center;">
+            <p style="font-size: 20px; font-weight: 600;">Congratulations!</p>
+            <p>You've successfully implemented a Graph Network-based Simulator from scratch and applied it to learn physics from data!</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Highlight active section in navigation
+        const sections = document.querySelectorAll('h2[id]');
+        const navLinks = document.querySelectorAll('.nav-sidebar a');
+
+        function highlightNav() {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const scrollPos = window.pageYOffset + 100;
+                if (scrollPos >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', highlightNav);
+        window.addEventListener('load', highlightNav);
+    </script>
+</body>
+</html>

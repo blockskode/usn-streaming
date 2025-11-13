@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Part 2: GNS Implementation and Training</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style type="text/css">
+body {
+    font-family: 'Palatino', 'Georgia', serif;
+    line-height: 1.8;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    background-color: #fafafa;
+    display: flex;
+}
+.sidebar {
+    width: 280px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    background-color: #2c5aa0;
+    color: white;
+    padding: 30px 20px;
+    overflow-y: auto;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    font-size: 0.95em;
+}
+.sidebar .part-title {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #ffeb99;
+}
+.sidebar h2 {
+    color: white;
+    font-size: 1.3em;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+    padding-bottom: 10px;
+}
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sidebar li {
+    margin: 0;
+}
+.sidebar a {
+    color: #e6f7ff;
+    text-decoration: none;
+    display: block;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    font-size: 0.95em;
+}
+.sidebar a:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+}
+.sidebar ul ul {
+    padding-left: 20px;
+    margin-top: 5px;
+}
+.sidebar ul ul a {
+    font-size: 0.85em;
+    color: #c8e6ff;
+}
+.sidebar a.active {
+    background-color: rgba(255,255,255,0.2);
+    color: white;
+    font-weight: 600;
+    border-left: 4px solid #ffeb99;
+    padding-left: 8px;
+}
+.main-content {
+    margin-left: 280px;
+    padding: 40px 60px;
+    max-width: 900px;
+    width: 100%;
+}
+h1 {
+    color: #1a365d;
+    border-bottom: 4px solid #2c5aa0;
+    padding-bottom: 15px;
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+h2 {
+    color: #2c5aa0;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #cbd5e0;
+    padding-bottom: 8px;
+    font-size: 1.8em;
+}
+h3 {
+    color: #4a7ba7;
+    margin-top: 25px;
+    font-size: 1.4em;
+}
+p {
+    margin: 15px 0;
+    text-align: justify;
+}
+code {
+    background-color: #f0f4f8;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Courier New', monospace;
+    color: #c7254e;
+    font-size: 0.9em;
+}
+pre {
+    background-color: #f0f4f8;
+    padding: 20px;
+    border-radius: 6px;
+    border-left: 5px solid #2c5aa0;
+    overflow-x: auto;
+    line-height: 1.5;
+}
+pre code {
+    background: none;
+    padding: 0;
+    color: #333;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 30px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+th {
+    background-color: #2c5aa0;
+    color: white;
+    padding: 15px;
+    font-weight: 600;
+    text-align: left;
+}
+td {
+    border: 1px solid #e2e8f0;
+    padding: 12px 15px;
+}
+tr:nth-child(even) {
+    background-color: #f7fafc;
+}
+tr:hover {
+    background-color: #edf2f7;
+}
+hr {
+    border: none;
+    border-top: 1px solid #cbd5e0;
+    margin: 30px 0;
+}
+strong {
+    color: #1a365d;
+    font-weight: 600;
+}
+ul, ol {
+    margin: 15px 0;
+    padding-left: 30px;
+}
+li {
+    margin: 8px 0;
+}
+.MathJax {
+    font-size: 1.1em !important;
+}
+mjx-container {
+    margin: 15px 0 !important;
+}
+.note-box {
+    background-color: #fff9e6;
+    border-left: 5px solid #f39c12;
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 4px;
+}
+.important-box {
+    background-color: #ffe6e6;
+    border-left: 5px solid #e74c3c;
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 4px;
+}
+.success-box {
+    background-color: #e6f7e6;
+    border-left: 5px solid #27ae60;
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 4px;
+}
+@media print {
+    .sidebar {
+        display: none;
+    }
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+    body {
+        background-color: white;
+    }
+    h1, h2 {
+        page-break-after: avoid;
+    }
+}
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+}
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="part-title">Part 2: GNS Tutorial</div>
+  <p style="font-size: 0.85em; color: #c8e6ff; margin-top: 5px; margin-bottom: 25px;">Implementation & Training</p>
+
+  <h2>Navigation</h2>
+  <ul>
+    <li><a href="index.html">← Back to Index</a></li>
+    <li><a href="1D_Heat_Equation_GNS_Part1_Setup.html">Read Part 1 First</a></li>
+  </ul>
+
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#introduction">Introduction</a>
+      <ul>
+        <li><a href="#what-is-gns">What is GNS?</a></li>
+        <li><a href="#why-gns-for-heat-equation">Why Use GNS?</a></li>
+        <li><a href="#the-gns-workflow">The Workflow</a></li>
+      </ul>
+    </li>
+    <li><a href="#gns-inputs-outputs">1. GNS Inputs & Outputs</a></li>
+    <li><a href="#gns-architecture">2. GNS Architecture</a>
+      <ul>
+        <li><a href="#encoder">2.1 Encoder</a></li>
+        <li><a href="#processor">2.2 Processor</a></li>
+        <li><a href="#decoder">2.3 Decoder</a></li>
+        <li><a href="#why-physics-learning">2.4 Why GNS Learns Physics</a></li>
+      </ul>
+    </li>
+    <li><a href="#training-data">3. Training Data</a>
+      <ul>
+        <li><a href="#data-generation-steps">Data Generation</a></li>
+        <li><a href="#verify-data-quality">Verify Data Quality</a></li>
+      </ul>
+    </li>
+    <li><a href="#training">4. Training the Model</a></li>
+    <li><a href="#evaluation">5. Evaluation & Rollout</a></li>
+    <li><a href="#workflow">6. Complete Workflow</a></li>
+  </ul>
+</div>
+
+<div class="main-content">
+
+<h1 id="part-2-gns-implementation">Part 2: GNS Implementation and Training</h1>
+
+<p style="text-align: center; font-size: 1.1em; color: #666; margin-bottom: 30px;">
+Complete guide to implementing Graph Network-based Simulators for physics learning<br>
+<a href="index.html">← Back to Index</a> | <a href="1D_Heat_Equation_GNS_Part1_Setup.html">Read Part 1 First</a>
+</p>
+
+<div class="note-box">
+<p><strong>Prerequisites:</strong> Before reading this part, make sure you've completed <a href="1D_Heat_Equation_GNS_Part1_Setup.html">Part 1: Problem Setup</a> which covers the heat equation, boundary conditions, and why GNS is suitable for learning physics.</p>
+</div>
+
+<hr>
+
+<h2 id="introduction">Introduction: From Problem to Solution</h2>
+
+<p>In <strong>Part 1</strong>, we set up our problem: the 1D heat equation describing temperature diffusion in a rod. We learned:</p>
+
+<ul>
+<li>The heat equation PDE: \(\frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2}\)</li>
+<li>How to represent it as particles (1000 points on the rod)</li>
+<li>Traditional numerical methods (Crank-Nicolson) to solve it</li>
+<li>Why this is perfect for testing GNS</li>
+</ul>
+
+<p><strong>Now in Part 2</strong>, we'll learn how to build a neural network that can <strong>learn the physics</strong> from data and predict temperature evolution without knowing the PDE equations!</p>
+
+<h3 id="what-is-gns">What is GNS?</h3>
+
+<p><strong>Graph Network-based Simulator (GNS)</strong> is a neural network architecture designed to learn physical dynamics from particle-based simulations.</p>
+
+<div class="success-box">
+<p><strong>The Big Idea</strong></p>
+<p>Instead of hardcoding physics equations (like traditional solvers), GNS <strong>learns</strong> the physics rules by observing examples:</p>
+<ul>
+<li><strong>Traditional approach:</strong> "Here's the heat equation ∂u/∂t = α∂²u/∂x², solve it step by step"</li>
+<li><strong>GNS approach:</strong> "Here are 200 examples of how temperature evolved. Figure out the pattern!"</li>
+</ul>
+<p>Once trained, GNS can predict <strong>500× longer</strong> than its training data by learning the underlying physics, not just memorizing trajectories.</p>
+</div>
+
+<h3 id="why-gns-for-heat-equation">Why Use GNS for Heat Equation?</h3>
+
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Advantages</th>
+<th>Limitations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Traditional PDE Solvers</strong></td>
+<td>Exact (if PDE is known)<br>Fast for simple cases</td>
+<td>Need exact equations<br>Hard for complex physics<br>Slow for many particles</td>
+</tr>
+<tr>
+<td><strong>GNS (Neural Network)</strong></td>
+<td>Learns from data<br>Handles complex physics<br>Fast at inference time<br>Works without knowing PDE</td>
+<td>Needs training data<br>Approximate solution<br>Requires good data quality</td>
+</tr>
+</tbody>
+</table>
+
+<p>For our heat equation, we already <strong>have</strong> the PDE, so why use GNS? Because:</p>
+
+<ol>
+<li><strong>Educational:</strong> Learn how GNS works on a problem we can verify</li>
+<li><strong>Real-world preparation:</strong> Many real systems don't have clean PDEs (e.g., complex materials, multi-physics)</li>
+<li><strong>Speed:</strong> After training, GNS can be faster than iterative PDE solvers</li>
+<li><strong>Generalization test:</strong> Can it learn physics that works 500× beyond training?</li>
+</ol>
+
+<h3 id="the-gns-workflow">The GNS Workflow (What We'll Build)</h3>
+
+<pre><code>
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 1: Generate Training Data (Part 1)                        │
+│  • Solve heat equation with traditional method (Crank-Nicolson)│
+│  • Get ground truth: positions, temperatures, velocities        │
+│  • Save as .npz file                                            │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 2: Build GNS Architecture (Part 2 - Section 2)            │
+│  • Encoder: Transform [x, u, v] → meaningful representations    │
+│  • Processor: Exchange info between particles (10 rounds)       │
+│  • Decoder: Extract predicted acceleration                      │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 3: Train GNS (Part 2 - Section 4)                         │
+│  • Feed [x, u, v] → GNS predicts acceleration                   │
+│  • Compare with true acceleration from data                     │
+│  • Update network weights to minimize error                     │
+│  • Train on 200 timesteps (0.1 seconds)                         │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 4: Evaluate GNS (Part 2 - Section 5)                      │
+│  • Test on 100,000 timesteps (50 seconds) - 500× extrapolation!│
+│  • Compare with analytical solution                             │
+│  • Verify GNS learned physics, not just memorization            │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<h3 id="what-youll-learn">What You'll Learn in Part 2</h3>
+
+<p>By the end of this tutorial, you'll understand:</p>
+
+<ol>
+<li><strong>What GNS predicts</strong> - Not future states, but accelerations (dynamics)</li>
+<li><strong>Why three components?</strong> - Encoder, Processor, Decoder and their roles</li>
+<li><strong>How message passing learns physics</strong> - Approximating spatial derivatives</li>
+<li><strong>Why GNS generalizes</strong> - Learning time-invariant physics rules</li>
+<li><strong>How to train and evaluate</strong> - Complete practical workflow</li>
+</ol>
+
+<div class="important-box">
+<p><strong>The Most Important Concept</strong></p>
+<p>GNS learns a <strong>single-step dynamics function</strong>: Given current state [u, v], predict acceleration.</p>
+<p>For multi-step prediction, we use <strong>autoregressive rollout</strong>: predict → integrate → use as next input → repeat.</p>
+<p>This is explained in detail in Section 1 below!</p>
+</div>
+
+<hr>
+
+<h2 id="gns-inputs-outputs">1. GNS Inputs and Outputs</h2>
+
+<div class="important-box">
+<p><strong>MOST IMPORTANT CONCEPT IN THIS TUTORIAL</strong></p>
+<p>Understanding what goes INTO GNS and what comes OUT is absolutely critical for implementing, debugging, and understanding how GNS learns physics. This section is the foundation for everything else.</p>
+</div>
+
+<h3 id="what-does-gns-predict">What Does GNS Predict?</h3>
+
+<p>GNS is a neural network that learns to predict <strong>how a physical system will evolve</strong>. Specifically:</p>
+
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Role</th>
+<th>Shape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>INPUT</strong></td>
+<td>Current state of all particles</td>
+<td>[N, 3] where N = number of particles</td>
+</tr>
+<tr>
+<td><strong>OUTPUT</strong></td>
+<td>Predicted accelerations</td>
+<td>[N, 1]</td>
+</tr>
+<tr>
+<td><strong>Integration</strong></td>
+<td>Convert acceleration → next state</td>
+<td>(happens outside GNS)</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="input-detailed">Input to GNS: The Current State</h3>
+
+<p>For each particle \(i\) (of N=1000 particles total), GNS receives <strong>exactly 3 features</strong>:</p>
+
+<p>$$\text{Input}_i = [x_i, u_i, v_i]$$</p>
+
+<p>where:</p>
+
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Symbol</th>
+<th>Physical Meaning</th>
+<th>Example Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Position</strong></td>
+<td>\(x_i\)</td>
+<td>Spatial location on the rod</td>
+<td>0.500 m</td>
+</tr>
+<tr>
+<td><strong>Temperature</strong></td>
+<td>\(u_i\)</td>
+<td>Current temperature at particle i</td>
+<td>50.0°C</td>
+</tr>
+<tr>
+<td><strong>Velocity</strong></td>
+<td>\(v_i = \frac{\partial u}{\partial t}\)</td>
+<td>Rate of temperature change</td>
+<td>-2.1°C/s</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Important notes:</strong></p>
+
+<ul>
+<li><strong>Position \(x_i\)</strong> is <em>fixed</em> for each particle (particles don't move in 1D heat equation)</li>
+<li><strong>Temperature \(u_i\)</strong> changes over time (this is what we're solving for)</li>
+<li><strong>Velocity \(v_i\)</strong> is the <em>time derivative</em> of temperature, \(\frac{\partial u}{\partial t}\)</li>
+</ul>
+
+<h3 id="why-these-inputs">Why These Specific Inputs?</h3>
+
+<div class="success-box">
+<p><strong>These 3 inputs form a "Markovian state" - meaning they contain all information needed to predict the future.</strong></p>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Why It's Needed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Position \(x_i\)</strong></td>
+<td>• Boundary awareness (particles at edges behave differently)<br>• Spatial structure for computing spatial derivatives<br>• Essential for physics that depends on location</td>
+</tr>
+<tr>
+<td><strong>Temperature \(u_i\)</strong></td>
+<td>• The solution variable (what we're solving for)<br>• Current state of the system<br>• Needed to compute spatial gradients with neighbors</td>
+</tr>
+<tr>
+<td><strong>Velocity \(v_i\)</strong></td>
+<td>• Provides temporal context ("how fast is it changing?")<br>• <strong>Markov property</strong>: for 2nd-order PDEs, need both \(u\) and \(\frac{\partial u}{\partial t}\) to predict future<br>• Without velocity, GNS can't distinguish heating vs cooling</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="output-detailed">Output from GNS: Predicted Acceleration</h3>
+
+<p>For each particle \(i\), GNS predicts <strong>one value</strong>:</p>
+
+<p>$$\text{Output}_i = a_i = \frac{\partial^2 u}{\partial t^2}$$</p>
+
+<p><strong>Example:</strong> \(a_i = -0.052\)°C/s²</p>
+
+<div class="note-box">
+<p><strong>Why acceleration, not temperature or velocity?</strong></p>
+<ol>
+<li><strong>Learns physics, not trajectories</strong>: Acceleration encodes the <em>dynamics</em> (the "rules" of physics), not just specific solutions</li>
+<li><strong>Better generalization</strong>: Learning \(a = f(x, u, v, \text{neighbors})\) generalizes to new initial conditions</li>
+<li><strong>Matches PDE structure</strong>: For second-order PDEs like the heat equation, the second time derivative is the natural quantity</li>
+</ol>
+</div>
+
+<h3 id="from-prediction-to-next-state">From Prediction to Next State</h3>
+
+<p>After GNS predicts acceleration, we use <strong>numerical integration</strong> (outside GNS) to compute the next state:</p>
+
+<p><strong>Semi-implicit Euler integration:</strong></p>
+
+<p>$$v_i^{t+\Delta t} = v_i^t + \Delta t \cdot a_i^t$$</p>
+
+<p>$$u_i^{t+\Delta t} = u_i^t + \Delta t \cdot v_i^{t+\Delta t}$$</p>
+
+<p>This updates both velocity and temperature to move the simulation forward by one timestep \(\Delta t\).</p>
+
+<h3 id="complete-data-flow">Complete Data Flow</h3>
+
+<pre><code>STEP 1: Current State
+┌────────────────────────────────┐
+│ Input for particle i:          │
+│ x_i = 0.500 m   (position)     │
+│ u_i = 50.0°C    (temperature)  │
+│ v_i = -2.1°C/s  (velocity)     │
+└────────────────────────────────┘
+           ↓
+      [ GNS Neural Network ]
+      (Encoder → Processor → Decoder)
+           ↓
+STEP 2: Predicted Acceleration
+┌────────────────────────────────┐
+│ Output:                        │
+│ a_i = -0.052°C/s²              │
+└────────────────────────────────┘
+           ↓
+      [ Integration ]
+      v' = v + dt×a
+      u' = u + dt×v'
+           ↓
+STEP 3: Next State
+┌────────────────────────────────┐
+│ x_i = 0.500 m   (unchanged)    │
+│ u_i = 49.999°C  (updated)      │
+│ v_i = -2.100°C/s (updated)     │
+└────────────────────────────────┘
+</code></pre>
+
+<h3 id="common-misconceptions">Common Misconceptions</h3>
+
+<div class="important-box">
+<p><strong>Acceleration is the OUTPUT, NOT an input!</strong></p>
+<ul>
+<li>If we knew acceleration, we wouldn't need GNS</li>
+<li>GNS <em>learns</em> to predict acceleration from the current state</li>
+<li>The entire point is to learn the function: \(a = f(x, u, v, \text{neighbors})\)</li>
+</ul>
+</div>
+
+<div class="note-box">
+<p><strong>Time is NOT an input!</strong></p>
+<ul>
+<li>The system is <strong>Markovian</strong>: current state [u, v] fully determines the future</li>
+<li>Time is implicit through state evolution</li>
+<li>Physics doesn't change with time (time-invariant system)</li>
+</ul>
+</div>
+
+<h3 id="concrete-example">Concrete Example with Real Numbers</h3>
+
+<p>Consider particle #500 (middle of the rod) at time t = 0.5 seconds:</p>
+
+<pre><code>INPUT to GNS:
+  x = 0.500 m     ← Position (where on the rod)
+  u = 50.0°C      ← Temperature (current state)
+  v = -2.1°C/s    ← Velocity (rate of change)
+
+GNS PROCESSES:
+  • Encoder: [x,u,v] → 128-dim latent features
+  • Processor: 10 rounds of message passing with neighbors
+  • Decoder: latent features → acceleration
+
+OUTPUT from GNS:
+  a = -0.052°C/s² ← THE PHYSICS!
+
+INTEGRATION (outside GNS):
+  v(t+dt) = -2.1 + 0.0005×(-0.052) = -2.100°C/s
+  u(t+dt) = 50.0 + 0.0005×(-2.100)  = 49.999°C
+
+RESULT at t = 0.5005s:
+  x = 0.500 m     (position never changes)
+  u = 49.999°C    (temperature decreased slightly)
+  v = -2.100°C/s  (still cooling, rate almost unchanged)
+</code></pre>
+
+<hr>
+
+<h2 id="gns-architecture">2. GNS Architecture: Why Three Components?</h2>
+
+<p>GNS has a three-stage architecture. Each stage serves a critical purpose that we can't skip:</p>
+
+<pre><code>Raw Physics State → ENCODER → Latent Graph → PROCESSOR → Updated Latent → DECODER → Acceleration
+   [x, u, v]                    (128-dim)                  (128-dim)                    (1 value)
+</code></pre>
+
+<div class="note-box">
+<p><strong>Why not just: [x, u, v] → Neural Network → acceleration?</strong></p>
+<p>A simple feedforward network would fail because:</p>
+<ol>
+<li>Physics is <strong>local</strong> - each particle mainly interacts with nearby neighbors</li>
+<li>We need to learn <strong>relational patterns</strong> (how neighbors influence each other)</li>
+<li>The number of particles can vary - need <strong>permutation invariance</strong></li>
+</ol>
+<p>GNS's three-stage design solves all of these!</p>
+</div>
+
+<h3 id="encoder">Stage 1: Encoder - Why Do We Need It?</h3>
+
+<p><strong>What it does:</strong> Transforms raw 3D features [x, u, v] into rich 128D learned representations</p>
+
+<p><strong>Why we need it:</strong></p>
+
+<div class="success-box">
+<p><strong>The Representation Learning Problem</strong></p>
+<p>Raw features [x=0.5m, u=50°C, v=-2.1°C/s] are just numbers. They don't capture:</p>
+<ul>
+<li><strong>Spatial relationships:</strong> "Am I near the boundary?"</li>
+<li><strong>Temporal patterns:</strong> "Is this heating or cooling rapidly?"</li>
+<li><strong>Feature interactions:</strong> "How does position relate to temperature gradient?"</li>
+</ul>
+<p>The encoder learns to create <em>meaningful representations</em> that capture these patterns in a 128-dimensional space where the network can easily reason about physics.</p>
+</div>
+
+<p><strong>Concrete analogy:</strong> Think of it like language translation. Raw words (English) → encode to meaning space → decode to target language (French). Here: Raw physics → encode to "physics concepts" space → decode to acceleration.</p>
+
+<p><strong>Mathematical form:</strong></p>
+
+<p><strong>Node embedding:</strong> Convert each particle's state into a rich representation</p>
+<p>$$\mathbf{v}_i^0 = \phi^v([x_i, u_i, v_i])$$</p>
+<p>where \(\phi^v\) is a Multi-Layer Perceptron (small neural network) that maps:</p>
+<ul>
+<li>Input: 3 features [position, temperature, velocity]</li>
+<li>Output: 128 features (learned representations)</li>
+</ul>
+
+<p><strong>Edge embedding:</strong> Encode the relationship between connected particles</p>
+<p>$$\mathbf{e}_{ij}^0 = \phi^e([x_j - x_i, |x_j - x_i|])$$</p>
+<p>where \(\phi^e\) maps:</p>
+<ul>
+<li>Input: 2 features [displacement, distance] between particles i and j</li>
+<li>Output: 128 features (learned interaction representation)</li>
+</ul>
+
+<p><strong>Why 128 dimensions?</strong> It's a balance:</p>
+<ul>
+<li>Too few (e.g., 10): Can't capture complex physics patterns</li>
+<li>Too many (e.g., 1000): Expensive to compute, risk overfitting</li>
+<li>128 is standard and works well for most physics problems</li>
+</ul>
+
+<h3 id="processor">Stage 2: Processor - Why Do We Need It?</h3>
+
+<p><strong>What it does:</strong> Lets particles exchange information with neighbors through M=10 rounds of "message passing"</p>
+
+<p><strong>Why we need it:</strong></p>
+
+<div class="success-box">
+<p><strong>The Non-Local Information Problem</strong></p>
+<p>Consider particle at position x=0.5m. To predict its acceleration, it needs to know:</p>
+<ul>
+<li><strong>Direct neighbors:</strong> Particles at x=0.49m and x=0.51m (for spatial gradient)</li>
+<li><strong>Indirect neighbors:</strong> What's happening 2-3 particles away affects gradients</li>
+<li><strong>Boundary effects:</strong> Information from boundaries needs to propagate inward</li>
+</ul>
+<p>After encoding, each particle only knows about itself. The Processor lets particles <strong>communicate</strong> so each particle can "see" a neighborhood around it.</p>
+</div>
+
+<p><strong>Why 10 rounds of message passing?</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Rounds</th>
+<th>Information Range</th>
+<th>What GNS "Sees"</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Immediate neighbors only</td>
+<td>Only particles within connectivity radius</td>
+</tr>
+<tr>
+<td>5</td>
+<td>5-hop neighborhood</td>
+<td>Information propagates 5 particles away</td>
+</tr>
+<tr>
+<td>10</td>
+<td>10-hop neighborhood</td>
+<td>Information from ~10 particles away reaches center</td>
+</tr>
+</tbody>
+</table>
+
+<p>With connectivity radius 0.05m and 1000 particles on 1m rod, each particle has ~50 neighbors. After 10 rounds, information from ~500 particles can influence a single particle's prediction!</p>
+
+<p><strong>How message passing works (intuitive explanation):</strong></p>
+
+<pre><code>ROUND 1:
+  Particle i: "I'm at 50°C and cooling"
+  Neighbor j: "I'm at 55°C and cooling too"
+  → Particle i learns: "My neighbor is hotter, heat flows toward me"
+
+ROUND 2:
+  Particle i: "I just learned my right neighbor is hot"
+  Neighbor k (left): "I just learned MY neighbor is cold"
+  → Particle i learns: "Temperature gradient across me!"
+
+... after 10 rounds ...
+  Particle i has information about temperature patterns
+  spanning many particles, enabling accurate acceleration prediction
+</code></pre>
+
+<p><strong>Mathematical form (one message passing step):</strong></p>
+
+<p><strong>Step 1: Update edges</strong> (learn what information to send)</p>
+<p>$$\mathbf{e}_{ij}^{k+1} = \psi^e(\mathbf{e}_{ij}^k, \mathbf{v}_i^k, \mathbf{v}_j^k) + \mathbf{e}_{ij}^k$$</p>
+<p>Edge learns: "Given current states of particles i and j, what should I communicate?"</p>
+
+<p><strong>Step 2: Aggregate messages</strong> (collect information from all neighbors)</p>
+<p>$$\bar{\mathbf{e}}_i = \sum_{j \in \mathcal{N}(i)} \mathbf{e}_{ij}^{k+1}$$</p>
+<p>Particle i receives and combines messages from all neighbors</p>
+
+<p><strong>Step 3: Update nodes</strong> (update particle's representation)</p>
+<p>$$\mathbf{v}_i^{k+1} = \psi^v(\mathbf{v}_i^k, \bar{\mathbf{e}}_i) + \mathbf{v}_i^k$$</p>
+<p>Particle i updates its representation based on its previous state and received messages</p>
+
+<p><strong>Why residual connections (+ terms)?</strong></p>
+<ul>
+<li>Helps training - gradient flows more easily through many layers</li>
+<li>Lets network learn <em>changes</em> rather than completely new representations each step</li>
+<li>Standard practice in deep learning (ResNets, Transformers use this)</li>
+</ul>
+
+<div class="note-box">
+<p><strong>Key Insight: The Processor is where physics is learned!</strong></p>
+<p>The 10 rounds of message passing learn to approximate spatial derivatives:</p>
+<ul>
+<li>\(\frac{\partial u}{\partial x}\) (first spatial derivative)</li>
+<li>\(\frac{\partial^2 u}{\partial x^2}\) (second spatial derivative - the Laplacian!)</li>
+</ul>
+<p>This is exactly what the heat equation needs: \(\frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2}\)</p>
+</div>
+
+<h3 id="decoder">Stage 3: Decoder - Why Do We Need It?</h3>
+
+<p><strong>What it does:</strong> Extracts a single acceleration value from the final 128D representation</p>
+
+<p><strong>Why we need it:</strong></p>
+
+<div class="success-box">
+<p><strong>The Dimensionality Reduction Problem</strong></p>
+<p>After the Processor, we have a 128-dimensional vector \(\mathbf{v}_i^{10}\) for each particle. This vector contains:</p>
+<ul>
+<li>Information about the particle's own state</li>
+<li>Information about its neighborhood</li>
+<li>Learned spatial gradients</li>
+<li>Complex relational patterns</li>
+</ul>
+<p>But we need just <strong>ONE number</strong>: the acceleration. The Decoder learns to extract this specific information from the rich 128D representation.</p>
+</div>
+
+<p><strong>Concrete analogy:</strong> After reading a long book (128 pages), you need to answer one question: "What's the main character's age?" The Decoder learns to find that specific piece of information in all the content.</p>
+
+<p><strong>Mathematical form:</strong></p>
+
+<p>$$a_i = \delta^v(\mathbf{v}_i^{10})$$</p>
+
+<p>where \(\delta^v\) is an MLP that maps:</p>
+<ul>
+<li>Input: 128-dimensional learned representation (contains spatial derivatives, gradients, patterns)</li>
+<li>Output: 1 value (acceleration in °C/s²)</li>
+</ul>
+
+<p><strong>Why not just predict acceleration directly in the Processor?</strong></p>
+<ul>
+<li>Separation of concerns: Processor learns <em>representations</em>, Decoder learns <em>predictions</em></li>
+<li>Flexibility: Same Processor could be reused with different Decoders for different predictions</li>
+<li>Better training: Easier to optimize when roles are clearly separated</li>
+</ul>
+
+<h3 id="putting-it-together">Putting It All Together: The Complete Flow</h3>
+
+<pre><code>INPUT: Particle i at x=0.5m, u=50°C, v=-2.1°C/s
+
+ENCODER:
+  → Converts [0.5, 50, -2.1] to 128-dim vector
+  → Now particle has rich representation capturing:
+     "I'm in the middle, moderately warm, cooling slowly"
+
+PROCESSOR (10 rounds of message passing):
+  Round 1: Learns about immediate neighbors
+    → "Left neighbor: 51°C, Right neighbor: 49°C"
+  Round 2: Learns about 2nd-degree neighbors
+    → "Neighbors' neighbors are 52°C and 48°C"
+  ...
+  Round 10: Has information spanning ~10 particles
+    → Learned approximation of ∂²u/∂x² ≈ -0.052
+
+DECODER:
+  → Takes 128-dim representation (contains learned ∂²u/∂x²)
+  → Extracts: a = -0.052°C/s²
+
+OUTPUT: Acceleration = -0.052°C/s²
+</code></pre>
+
+<div class="important-box">
+<p><strong>Why can't we skip any stage?</strong></p>
+<ul>
+<li><strong>Skip Encoder:</strong> Raw features too simple, can't capture complex patterns</li>
+<li><strong>Skip Processor:</strong> No spatial information exchange, can't learn spatial derivatives</li>
+<li><strong>Skip Decoder:</strong> 128D output instead of 1D, can't use for physics integration</li>
+</ul>
+<p>All three stages work together as an integrated system for learning physics from graph-structured data.</p>
+</div>
+
+<hr>
+
+<h2 id="why-physics-learning">2.4 Why GNS Learns Physics (Not Just Memorization)</h2>
+
+<div class="success-box">
+<p><strong>The Critical Question:</strong></p>
+<p>How can GNS trained on <strong>0.1 seconds</strong> (200 timesteps) predict correctly for <strong>50 seconds</strong> (100,000 timesteps)?</p>
+<p>That's <strong>500× extrapolation</strong> beyond training data!</p>
+<p><strong>Answer:</strong> GNS learns the <strong>physics dynamics</strong> (the rules), not trajectories (the specific path).</p>
+</div>
+
+<h3 id="what-gns-learns">What GNS Actually Learns</h3>
+
+<p>GNS does NOT learn: "At t=5.2s and x=0.47m, temperature will be 23.8°C"</p>
+
+<p>Instead, GNS learns: <strong>"Given ANY current state [u, v], what is the acceleration RIGHT NOW?"</strong></p>
+
+<div class="note-box">
+<p><strong>Physics Learning vs. Memorization</strong></p>
+<table>
+<thead>
+<tr>
+<th>Learning Type</th>
+<th>What It Learns</th>
+<th>Generalization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Memorization</strong></td>
+<td>"At t=1s, x=0.5m → u=45°C"</td>
+<td>❌ Fails on new times/conditions</td>
+</tr>
+<tr>
+<td><strong>Physics (GNS)</strong></td>
+<td>"If ∂²u/∂x²=10 → a=0.1"</td>
+<td>✅ Works for ANY state!</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3 id="message-passing-learns-derivatives">How Message Passing Learns Spatial Derivatives</h3>
+
+<p>The <strong>Processor's 10 rounds of message passing</strong> is where GNS learns to approximate the spatial derivative ∂²u/∂x².</p>
+
+<h4>Round-by-Round Information Propagation</h4>
+
+<table>
+<thead>
+<tr>
+<th>Round</th>
+<th>Information Range</th>
+<th>What Particle i "Sees"</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0</strong></td>
+<td>Only itself</td>
+<td>Own features: [x<sub>i</sub>, u<sub>i</sub>, v<sub>i</sub>]</td>
+</tr>
+<tr>
+<td><strong>1</strong></td>
+<td>1 neighbor away</td>
+<td>Direct neighbors: u<sub>i-1</sub>, u<sub>i+1</sub></td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td>2 neighbors away</td>
+<td>u<sub>i-2</sub>, u<sub>i-1</sub>, u<sub>i</sub>, u<sub>i+1</sub>, u<sub>i+2</sub></td>
+</tr>
+<tr>
+<td><strong>10</strong></td>
+<td>10 neighbors away</td>
+<td>Entire local neighborhood (spatial context)</td>
+</tr>
+</tbody>
+</table>
+
+<h4>Approximating the Spatial Derivative</h4>
+
+<p>The finite difference formula for acceleration is:</p>
+
+<p style="text-align: center; font-size: 1.1em; margin: 1em 0;">
+\( a_i = \alpha \frac{u_{i+1} - 2u_i + u_{i-1}}{\Delta x^2} \)
+</p>
+
+<p><strong>What GNS learns through message passing:</strong></p>
+
+<ol>
+<li><strong>Round 1:</strong> Particle i receives messages from neighbors i-1 and i+1
+   <ul>
+   <li>Edge messages contain: (u<sub>i+1</sub> - u<sub>i</sub>) and (u<sub>i-1</sub> - u<sub>i</sub>)</li>
+   <li>This captures the <strong>first derivative pattern</strong></li>
+   </ul>
+</li>
+<li><strong>Round 2-10:</strong> Neural network learns to combine these messages
+   <ul>
+   <li>Aggregation function learns: "combine neighbor info to estimate ∂²u/∂x²"</li>
+   <li>MLPs learn the correct weights and scaling</li>
+   <li>Final representation implicitly computes the spatial derivative</li>
+   </ul>
+</li>
+</ol>
+
+<div class="success-box">
+<p><strong>Key Insight:</strong></p>
+<p>Message passing with 10 rounds → Learns to compute ∂²u/∂x² from neighbor information</p>
+<p>This is NOT hardcoded! The neural network discovers this through training.</p>
+<p>GNS learns: <strong>"To predict acceleration, look at how temperature varies spatially"</strong></p>
+</div>
+
+<h3 id="why-generalizes-time">Why GNS Generalizes Over Time (500× Extrapolation)</h3>
+
+<h4>The Physics Dynamics Principle</h4>
+
+<p>The heat equation physics is <strong>time-invariant</strong>:</p>
+
+<p style="text-align: center; font-size: 1.1em; margin: 1em 0;">
+\( \frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2} \)
+</p>
+
+<p>This equation is <strong>the same at t=0.01s and t=49.99s</strong>!</p>
+
+<p>The physics rule "acceleration depends on curvature" doesn't change over time.</p>
+
+<div class="note-box">
+<p><strong>Why Autoregressive Rollout Works</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Timestep</th>
+<th>What GNS Does</th>
+<th>Why It Works</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>t=1</strong></td>
+<td>Predict a<sub>1</sub> from [u<sub>0</sub>, v<sub>0</sub>]</td>
+<td>GNS trained on this type of state</td>
+</tr>
+<tr>
+<td><strong>t=2</strong></td>
+<td>Predict a<sub>2</sub> from [u<sub>1</sub>, v<sub>1</sub>]</td>
+<td>Same physics rule applies!</td>
+</tr>
+<tr>
+<td><strong>t=1000</strong></td>
+<td>Predict a<sub>1000</sub> from [u<sub>999</sub>, v<sub>999</sub>]</td>
+<td>Still using same learned dynamics</td>
+</tr>
+<tr>
+<td><strong>t=100,000</strong></td>
+<td>Predict a<sub>100k</sub> from [u<sub>99,999</sub>, v<sub>99,999</sub>]</td>
+<td>Physics hasn't changed!</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h4>Markovian Property: Why Only Current State Matters</h4>
+
+<p>GNS doesn't need to know the history! Only the <strong>current state [u, v]</strong> is sufficient:</p>
+
+<ul>
+<li><strong>u (temperature):</strong> Spatial distribution right now</li>
+<li><strong>v (velocity):</strong> How fast temperature is changing right now</li>
+<li><strong>Physics rule:</strong> a = f(u, v) — acceleration determined entirely by current state</li>
+</ul>
+
+<p>This is why GNS can keep predicting indefinitely:</p>
+
+<pre><code>t=0:    [u₀, v₀] → GNS → a₀ → integrate → [u₁, v₁]
+t=1:    [u₁, v₁] → GNS → a₁ → integrate → [u₂, v₂]
+t=2:    [u₂, v₂] → GNS → a₂ → integrate → [u₃, v₃]
+...
+t=1000: [u₁₀₀₀, v₁₀₀₀] → GNS → a₁₀₀₀ → integrate → [u₁₀₀₁, v₁₀₀₁]
+</code></pre>
+
+<p>Each step uses the <strong>same learned function</strong>: a = GNS(u, v)</p>
+
+<h3 id="connection-pde">Connection to PDEs: What GNS Really Learns</h3>
+
+<p>The heat equation in PDE form:</p>
+
+<p style="text-align: center; font-size: 1.1em; margin: 1em 0;">
+\( \frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2} \)
+</p>
+
+<p><strong>What each part means for GNS:</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>PDE Component</th>
+<th>Physical Meaning</th>
+<th>How GNS Handles It</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\( \frac{\partial u}{\partial t} \)</td>
+<td>Time evolution (how u changes)</td>
+<td>Integration: u<sub>new</sub> = u + dt × v</td>
+</tr>
+<tr>
+<td>\( \frac{\partial^2 u}{\partial x^2} \)</td>
+<td>Spatial curvature</td>
+<td><strong>Learned by message passing!</strong></td>
+</tr>
+<tr>
+<td>\( \alpha \)</td>
+<td>Thermal diffusivity (constant)</td>
+<td>Learned as scaling in neural network</td>
+</tr>
+</tbody>
+</table>
+
+<div class="success-box">
+<p><strong>The Complete Picture</strong></p>
+<ol>
+<li><strong>Encoder:</strong> Transforms raw state [x, u, v] → meaningful representation</li>
+<li><strong>Processor (10 rounds):</strong> Learns ∂²u/∂x² through message passing aggregation</li>
+<li><strong>Decoder:</strong> Extracts acceleration: a = α × ∂²u/∂x²</li>
+<li><strong>Integration:</strong> Updates state using semi-implicit Euler</li>
+<li><strong>Repeat:</strong> Same learned dynamics for every timestep</li>
+</ol>
+<p><strong>Result:</strong> GNS learns the physics operator, not trajectories!</p>
+</div>
+
+<h3 id="why-not-fail">Why Doesn't It Fail After Many Steps?</h3>
+
+<p><strong>Common concern:</strong> "Won't tiny errors accumulate and explode?"</p>
+
+<p><strong>Why GNS is robust:</strong></p>
+
+<ol>
+<li><strong>Learns correct dynamics:</strong> Each single-step prediction is accurate (small error)
+   <ul>
+   <li>Training minimizes: Loss = ||a<sub>predicted</sub> - a<sub>true</sub>||²</li>
+   <li>If single-step error is 0.01%, then 1000 steps ≈ 10% error (manageable)</li>
+   </ul>
+</li>
+<li><strong>Physics provides stability:</strong> Heat equation is dissipative (smooths out errors)
+   <ul>
+   <li>Unlike chaotic systems, small errors don't exponentially grow</li>
+   <li>Diffusion naturally damps perturbations</li>
+   </ul>
+</li>
+<li><strong>State-dependent prediction:</strong> Each step corrects based on current state
+   <ul>
+   <li>Not blindly extrapolating a trend</li>
+   <li>Re-evaluating physics at every timestep</li>
+   </ul>
+</li>
+</ol>
+
+<div class="important-box">
+<p><strong>Training Strategy for Generalization</strong></p>
+<p>To ensure GNS learns physics (not memorization):</p>
+<ul>
+<li><strong>Train on SHORT sequences:</strong> 200 timesteps (0.1s)</li>
+<li><strong>Evaluate on LONG sequences:</strong> 100,000 timesteps (50s)</li>
+<li><strong>Use noise during training:</strong> Prevents overfitting to exact trajectories</li>
+<li><strong>Test extrapolation:</strong> 500× beyond training = ultimate generalization test</li>
+</ul>
+<p>If GNS memorized, it would fail immediately. If it learned physics, it succeeds for 100,000+ steps!</p>
+</div>
+
+<hr>
+
+<h2 id="training-data">3. Preparing Training Data</h2>
+
+<p>We generate training data using traditional numerical methods (Crank-Nicolson):</p>
+
+<h3 id="data-generation-steps">Data Generation Steps</h3>
+
+<ol>
+<li><strong>Run traditional solver:</strong> Solve heat equation for T timesteps</li>
+<li><strong>Compute velocities:</strong> \(v_i^t = \frac{u_i^{t+1} - u_i^t}{\Delta t}\) (time derivative)</li>
+<li><strong>Compute accelerations:</strong> \(a_i^t = \alpha \frac{u_{i+1}^t - 2u_i^t + u_{i-1}^t}{\Delta x^2}\) (from PDE)</li>
+<li><strong>Save to .npz file:</strong> positions, temperatures, velocities, accelerations</li>
+</ol>
+
+<h3 id="verify-data-quality">How to Verify Data Quality</h3>
+
+<div class="important-box">
+<p><strong>ALWAYS verify data quality before training!</strong></p>
+<p>Bad training data = Failed training, no matter how good your model is.</p>
+</div>
+
+<p><strong>Quick verification command:</strong></p>
+
+<pre><code>python3 -c "
+import numpy as np
+data = np.load('output/heat_equation_data.npz', allow_pickle=True)
+a = data['a']
+a_std = np.std(a)
+print(f'Acceleration std: {a_std:.2f}')
+if a_std > 10000:
+    print('✗ BAD: Std too large (broken acceleration!)')
+elif a_std < 1e-10:
+    print('✗ BAD: Std too small (all zeros!)')
+else:
+    print('✓ GOOD: Data looks reasonable')
+"
+</code></pre>
+
+<p><strong>What to look for in GOOD training data:</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Good Range</th>
+<th>Bad Sign</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Acceleration std</strong></td>
+<td>0.01 to 100</td>
+<td>&gt;10,000 (broken!) or &lt;1e-10 (all zeros)</td>
+</tr>
+<tr>
+<td><strong>NaN/Inf count</strong></td>
+<td>0</td>
+<td>Any NaN or Inf means unstable solver</td>
+</tr>
+<tr>
+<td><strong>Velocity</strong></td>
+<td>Should equal \(\frac{u^{t+1} - u^t}{\Delta t}\)</td>
+<td>If not, velocity formula is wrong</td>
+</tr>
+<tr>
+<td><strong>Acceleration</strong></td>
+<td>Should equal \(\alpha \frac{u_{i+1} - 2u_i + u_{i-1}}{\Delta x^2}\)</td>
+<td>If not, acceleration formula is wrong</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>Common data quality issues:</strong></p>
+
+<div class="note-box">
+<p><strong>Issue 1: Acceleration std &gt; 10,000</strong></p>
+<ul>
+<li><strong>Cause:</strong> Velocity or acceleration computed with wrong formula (e.g., double finite differences)</li>
+<li><strong>Fix:</strong> Check lines ~211 and ~216 in heat_equation_traditional.py</li>
+<li><strong>Solution:</strong> Regenerate data after fixing the code</li>
+</ul>
+</div>
+
+<div class="note-box">
+<p><strong>Issue 2: Training loss stays flat (e.g., stuck at 0.3)</strong></p>
+<ul>
+<li><strong>Cause:</strong> Bad training data OR insufficient training epochs</li>
+<li><strong>Fix:</strong> Verify data first, then increase num_epochs to 100+</li>
+</ul>
+</div>
+
+<div class="note-box">
+<p><strong>Issue 3: GNS predictions are all similar (no spatial variation)</strong></p>
+<ul>
+<li><strong>Cause:</strong> Model not learning spatial derivatives properly</li>
+<li><strong>Fix:</strong> Check connectivity_radius (should be ~0.05 for 1000 particles on 1m rod)</li>
+<li><strong>Fix:</strong> Increase num_message_passing_steps to 10</li>
+</ul>
+</div>
+
+<h3 id="normalization">Normalization (Critical!)</h3>
+
+<div class="important-box">
+<p><strong>Without normalization, training WILL FAIL.</strong></p>
+</div>
+
+<p>Accelerations must be normalized before training:</p>
+
+<p><strong>During training:</strong></p>
+
+<p>$$a_{\text{norm}} = \frac{a - \mu_a}{\sigma_a}$$</p>
+
+<p><strong>During inference:</strong></p>
+
+<p>$$a = a_{\text{norm}} \times \sigma_a + \mu_a$$</p>
+
+<p>where \(\mu_a\) and \(\sigma_a\) are computed from the training data.</p>
+
+<hr>
+
+<h2 id="training">4. Training the Model</h2>
+
+<h3 id="loss-function">Loss Function</h3>
+
+<p>Mean Squared Error between predicted and true accelerations:</p>
+
+<p>$$\mathcal{L} = \frac{1}{N}\sum_{i=1}^{N} (a_i^{\text{pred}} - a_i^{\text{true}})^2$$</p>
+
+<h3 id="training-hyperparameters">Training Hyperparameters</h3>
+
+<ul>
+<li>Learning rate: 1e-4</li>
+<li>Optimizer: Adam</li>
+<li>Batch size: 16 trajectories</li>
+<li>Sequence length: 6 timesteps</li>
+<li>Epochs: 100</li>
+</ul>
+
+<hr>
+
+<h2 id="evaluation">5. Evaluation and Rollout</h2>
+
+<h3 id="autoregressive-rollout">Autoregressive Rollout</h3>
+
+<p>Test if GNS can simulate physics over long timescales:</p>
+
+<ol>
+<li>Start with initial conditions: \(u_0, v_0\)</li>
+<li>Predict acceleration: \(a = \text{GNS}(x, u, v)\)</li>
+<li>Integrate: \(v' = v + \Delta t \cdot a\), \(u' = u + \Delta t \cdot v'\)</li>
+<li>Repeat for 20,000 timesteps (100× longer than training!)</li>
+</ol>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<h4 style="margin-top: 0;">Which Part of GNS Does the Prediction?</h4>
+
+<p>GNS has three components: <strong>Encoder → Processor → Decoder</strong>. So which one actually predicts the acceleration?</p>
+
+<p style="margin-bottom: 0;"><strong>Answer: The Decoder!</strong></p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<h4 style="margin-top: 0;">1. Encoder: "Understanding the Data"</h4>
+
+<p>Takes raw inputs [position, temperature, velocity] - just 3 numbers - and converts them into 128-dimensional representations.</p>
+
+<p><strong>Why 128 dimensions instead of just using the raw 3 numbers?</strong></p>
+
+<p>The raw data [0.5m, 95°C, -2.1°C/s] is very limited. It only tells us:</p>
+<ul>
+<li>Where the particle is</li>
+<li>How hot it is</li>
+<li>How fast temperature is changing</li>
+</ul>
+
+<p>But to learn physics, we need to capture much richer information:</p>
+<ul>
+<li>Is this particle near a boundary? (important for heat loss)</li>
+<li>Is the temperature high or low compared to typical values?</li>
+<li>Is the velocity fast or slow compared to other particles?</li>
+<li>What patterns or features exist in this state?</li>
+<li>Potential spatial gradients, curvatures, trends...</li>
+</ul>
+
+<p style="margin-bottom: 0;"><strong>The 128 dimensions give the model "room" to learn these abstract features.</strong> Think of it like converting 3 simple words into a 128-word detailed description that captures all the nuances and context. The Encoder learns to create representations that are useful for physics prediction.</p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<p><strong>2. Processor: "Learning the Physics"</strong></p>
+<p>Lets particles communicate through message passing (10 rounds). Each particle learns about its neighborhood. This is where <strong>physics relationships are learned</strong> (how temperature gradients cause heat flow).</p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<p><strong>3. Decoder: "Making the Prediction"</strong></p>
+<p>Takes the 128-dimensional representation (which now contains information about the particle AND its neighborhood) and extracts ONE number: the acceleration. <strong>This is where the prediction happens!</strong></p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<h4 style="margin-top: 0;">Why This Separation?</h4>
+
+<ul>
+<li><strong>Encoder:</strong> Prepares the data in a useful form</li>
+<li><strong>Processor:</strong> Learns the physics (relationships between particles)</li>
+<li><strong>Decoder:</strong> Converts learned physics into a specific prediction (acceleration)</li>
+</ul>
+
+<p style="margin-bottom: 0;"><strong>Key insight:</strong> All three parts work together, but the Decoder is the part that outputs the actual prediction. The Processor learns <em>what</em> the physics is, and the Decoder learns <em>how to extract predictions</em> from that physics understanding.</p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<h4 style="margin-top: 0;">Understanding the Autoregressive Loop</h4>
+
+<p><strong>What is the model input?</strong></p>
+<p>At each timestep, GNS receives the current state for all particles: position \(x_i\), temperature \(u_i\), and velocity \(v_i\). This is just ONE moment in time, not a sequence or history.</p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<p><strong>What does the model output?</strong></p>
+<p style="margin-bottom: 0;">GNS predicts the acceleration \(a_i\) for each particle. This tells us how the velocity is changing at this instant.</p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<p><strong>How do we predict multiple timesteps into the future?</strong></p>
+<p>We use autoregression: the output of one step becomes the input to the next step. Here's the process:</p>
+
+<ol>
+<li>Start: We know \(u(t=0)\) and \(v(t=0)\)</li>
+<li>Call GNS: Get predicted \(a(t=0)\)</li>
+<li>Integrate: Calculate \(u(t=\Delta t)\) and \(v(t=\Delta t)\) using the acceleration</li>
+<li>Loop back: Use \(u(t=\Delta t)\) and \(v(t=\Delta t)\) as the new input</li>
+<li>Call GNS again: Get predicted \(a(t=\Delta t)\)</li>
+<li>Continue for 1000 steps (fast evaluation) or 20,000 steps (full evaluation)</li>
+</ol>
+
+<p style="margin-bottom: 0;"><strong>Key insight:</strong> The model only predicts one timestep at a time, but we call it repeatedly in a loop. Each prediction feeds into the next prediction.</p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<h4 style="margin-top: 0;">The Integration Step Explained</h4>
+
+<p>Here's exactly what happens in each step:</p>
+
+<p><strong>Step 1: Predict acceleration from current state</strong></p>
+<p>Input: \(u(t=0)\), \(v(t=0)\) → GNS → Output: \(a(t=0)\)</p>
+
+<p><strong>Step 2: Integrate to get next state</strong></p>
+<p>First, update velocity using acceleration:</p>
+<p>\(v(t=\Delta t) = v(t=0) + \Delta t \times a(t=0)\)</p>
+
+<p>Then, update temperature using the NEW velocity:</p>
+<p>\(u(t=\Delta t) = u(t=0) + \Delta t \times v(t=\Delta t)\)</p>
+
+<p><strong>Step 3: Repeat!</strong></p>
+<p>Now use \(u(t=\Delta t)\) and \(v(t=\Delta t)\) as the new input and repeat from Step 1.</p>
+
+<p style="margin-bottom: 0;"><strong>Why this order matters:</strong> We use \(a(t=0)\) to get \(v(t=\Delta t)\), then use that NEW velocity to get \(u(t=\Delta t)\). This is called semi-implicit Euler integration and is more stable than updating both at the same time.</p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<h4 style="margin-top: 0;">Important: Can We Skip Steps?</h4>
+
+<p><strong>Question:</strong> What if we only want \(u\) at a specific timestep, say \(t=100\)? Can we jump directly there without calculating all the steps in between?</p>
+
+<p><strong>Answer: No! We still need to do autoregression through all intermediate steps.</strong></p>
+
+<p><strong>Why can't we skip steps?</strong></p>
+
+<p>The GNS model only learned to predict ONE timestep into the future from the current state. It cannot predict far into the future in a single step.</p>
+
+<p>Think of it like walking: If you want to get to step 100, you must walk through steps 1, 2, 3, ... 99 first. You can't teleport from step 0 to step 100.</p>
+
+<p><strong>Example:</strong></p>
+<ul>
+<li><strong>What we want:</strong> \(u(t=0.05s)\) which is timestep 100 (with \(\Delta t = 0.0005s\))</li>
+<li><strong>What we must do:</strong> Call GNS 100 times sequentially (steps 0→1→2→...→100)</li>
+<li><strong>What we cannot do:</strong> Call GNS once with a request for "\(u\) at step 100"</li>
+</ul>
+
+<p style="margin-bottom: 0;"><strong>Bottom line:</strong> GNS is a one-step predictor. To predict N steps ahead, you must call it N times through autoregression. There are no shortcuts!</p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<h4 style="margin-top: 0;">Why This Works: The Markov Property</h4>
+
+<p>The heat equation has a special property: if you know the current state (\(u\) and \(v\) right now), you can determine the next state. You don't need to know the history of how the system got to the current state.</p>
+
+<p>This is called the Markov property: "the future depends only on the present, not the past."</p>
+
+<p style="margin-bottom: 0;">This is why GNS can work with single-timestep inputs instead of requiring sequences of past states.</p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<h4 style="margin-top: 0;">Training vs Evaluation: An Important Difference</h4>
+
+<p><strong>During training:</strong> We use ground truth data at each step. If the model makes a mistake at step 10, we don't use that wrong prediction for step 11. Instead, we use the real data from the training set. This is called "teacher forcing."</p>
+
+<p style="margin-bottom: 0;"><strong>During evaluation:</strong> We use autoregression. If the model makes a mistake at step 10, that mistake gets fed into step 11, and can compound over time. This is why errors tend to grow during long rollouts.</p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<h4 style="margin-top: 0;">Error Accumulation</h4>
+
+<p>Because evaluation uses autoregression, small prediction errors can accumulate:</p>
+<ul>
+<li>At step 1, the model might be 99.9% accurate</li>
+<li>At step 100, accumulated errors in the input make the model 99.5% accurate</li>
+<li>At step 1000, errors may have grown to several degrees</li>
+</ul>
+
+<p style="margin-bottom: 0;">This error accumulation is a fundamental challenge in autoregressive prediction. Solutions include training on longer sequences, using hybrid approaches (like combining GNS with analytical solutions near boundaries), or periodically correcting predictions with real measurements.</p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<h4 style="margin-top: 0;">Question 1: What's the Value of GNS vs Traditional Numerical Methods?</h4>
+
+<p><strong>Both GNS and numerical methods (like Crank-Nicolson) require iteration, so why use GNS?</strong></p>
+
+<p><strong>Key advantages of GNS:</strong></p>
+
+<p><strong>1. Speed after training:</strong> Once trained, GNS can be much faster for complex systems. Traditional methods solve equations at every timestep (expensive!), while GNS does a simple neural network forward pass (cheap!).</p>
+
+<p><strong>2. Handles complex physics:</strong> Traditional methods need you to write down the exact equations. But what if the physics is unknown, partially known, or too complex to write mathematically? GNS learns the physics from data.</p>
+
+<p><strong>3. Adaptive resolution:</strong> Traditional methods use a fixed grid. GNS uses particles/nodes that can be placed adaptively (more particles where needed, fewer elsewhere).</p>
+
+<p><strong>4. Works with real-world messy data:</strong> If you have sensor measurements from a real system (not clean simulations), GNS can learn directly from that noisy, incomplete data.</p>
+
+<p><strong>When to use traditional methods:</strong></p>
+<ul>
+<li>Physics is well-known and simple (like our 1D heat equation)</li>
+<li>High accuracy is critical (numerical methods are often more accurate)</li>
+<li>Limited training data available</li>
+</ul>
+
+<p style="margin-bottom: 0;"><strong>When to use GNS:</strong> Complex systems (turbulent flows, material deformation, climate), unknown physics, need for speed after initial training, or learning from experimental data.</p>
+</div>
+
+<div style="background-color: #f0f4f8; padding: 20px; border-radius: 6px; border-left: 5px solid #2c5aa0; margin: 20px 0;">
+<h4 style="margin-top: 0;">Question 2: Do We Need to Understand Physics Before Using GNS?</h4>
+
+<p><strong>Short answer: It helps, but it's not strictly required!</strong></p>
+
+<p><strong>What you need to know:</strong></p>
+
+<p><strong>Minimal knowledge (required):</strong></p>
+<ul>
+<li>What variables describe your system (temperature, velocity, pressure, etc.)</li>
+<li>What you're trying to predict (acceleration, force, next state, etc.)</li>
+<li>Basic understanding of the system (particles interact with neighbors, boundaries matter, etc.)</li>
+</ul>
+
+<p><strong>Helpful but not required:</strong></p>
+<ul>
+<li>The exact mathematical equations (GNS learns these from data!)</li>
+<li>Detailed physics theory</li>
+<li>How to derive analytical solutions</li>
+</ul>
+
+<p><strong>Example:</strong> For our heat equation project, you need to know:</p>
+<ul>
+<li><strong>Required:</strong> "Temperature spreads from hot to cold regions, boundaries affect nearby particles"</li>
+<li><strong>Not required:</strong> "\(\frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2}\)" (the exact PDE)</li>
+</ul>
+
+<p><strong>The beauty of GNS:</strong> It can discover physics relationships from data even if you don't know the exact equations. This is powerful for systems where physics is unknown or too complex to write down.</p>
+
+<p style="margin-bottom: 0;"><strong>However:</strong> Understanding physics helps you make better design choices (which features to include, how to structure the graph, what boundary conditions to enforce). It's like cooking - you can follow a recipe without being a chef, but being a chef helps you improvise and fix problems!</p>
+</div>
+
+<h3 id="expected-results">Expected Results</h3>
+
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Final RMSE (t=10s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Analytical</strong></td>
+<td>0 (exact solution)</td>
+</tr>
+<tr>
+<td><strong>Crank-Nicolson</strong></td>
+<td>~1e-6°C</td>
+</tr>
+<tr>
+<td><strong>GNS</strong></td>
+<td>~1e-4 to 1e-6°C</td>
+</tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2 id="workflow">6. Complete Workflow</h2>
+
+<h3 id="step-by-step">Step-by-Step Process</h3>
+
+<p><strong>Step 1:</strong> Install dependencies</p>
+
+<pre><code>pip install matplotlib numpy scipy tqdm pyyaml pillow torch torch-geometric
+</code></pre>
+
+<p><strong>Step 2:</strong> Generate training data</p>
+
+<pre><code>python3 heat_equation_traditional.py
+</code></pre>
+
+<p>This creates <code>output/heat_equation_data.npz</code> containing [x, u, v, a] for all timesteps.</p>
+
+<p><strong>Step 3:</strong> Train GNS</p>
+
+<pre><code>python3 train_gns.py
+</code></pre>
+
+<p>This trains the model and saves <code>output/gns_model_best.pth</code>.</p>
+
+<p><strong>Step 4:</strong> Evaluate trained model</p>
+
+<pre><code>python3 evaluate_gns.py
+</code></pre>
+
+<p>This performs autoregressive rollout and creates comparison animations.</p>
+
+<hr>
+
+<h2 id="key-takeaways">Key Takeaways</h2>
+
+<div class="success-box">
+<p><strong>What You've Learned:</strong></p>
+
+<ol>
+<li><strong>Inputs:</strong> GNS takes [position, temperature, velocity] for each particle</li>
+<li><strong>Output:</strong> GNS predicts acceleration (the physics!)</li>
+<li><strong>Architecture:</strong> Encoder → Processor (message passing) → Decoder</li>
+<li><strong>Training:</strong> Learn from traditional solver data, normalize accelerations</li>
+<li><strong>Evaluation:</strong> Autoregressive rollout tests long-term prediction</li>
+<li><strong>Workflow:</strong> Generate data → Train model → Evaluate generalization</li>
+</ol>
+
+<p><strong>Critical Insight:</strong> GNS learns the <em>dynamics</em> (acceleration) from state, not specific trajectories. This enables excellent generalization to new conditions.</p>
+</div>
+
+<hr>
+
+<p style="text-align: center; margin-top: 50px; color: #666;">
+<a href="index.html">← Back to Index</a> | <a href="1D_Heat_Equation_GNS_Part1_Setup.html">Read Part 1</a>
+</p>
+
+</div> <!-- End main-content -->
+
+<script>
+// Highlight current section in sidebar as user scrolls
+document.addEventListener('DOMContentLoaded', function() {
+    const sections = document.querySelectorAll('h2[id], h3[id]');
+    const navLinks = document.querySelectorAll('.sidebar a[href^="#"]');
+
+    function highlightCurrentSection() {
+        let currentSection = '';
+        const scrollPosition = window.scrollY + 150; // Offset for better UX
+
+        // Find which section we're in
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+
+            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight + 200) {
+                currentSection = section.getAttribute('id');
+            }
+        });
+
+        // If we're at the very top, highlight first section
+        if (window.scrollY < 200) {
+            currentSection = sections[0]?.getAttribute('id') || '';
+        }
+
+        // Remove all active classes
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // Add active class to current section
+        if (currentSection) {
+            const activeLink = document.querySelector(`.sidebar a[href="#${currentSection}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+    }
+
+    // Run on scroll
+    window.addEventListener('scroll', highlightCurrentSection);
+
+    // Run once on load
+    highlightCurrentSection();
+
+    // Smooth scroll for sidebar links
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href.startsWith('#')) {
+                e.preventDefault();
+                const targetId = href.substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Update URL without jumping
+                    history.pushState(null, null, href);
+                }
+            }
+        });
+    });
+});
+</script>
+
+</body>
+</html>

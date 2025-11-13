@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Apache Kafka & Databricks Complete Tutorial</title>
+  <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+</style>
+  <style type="text/css">body {
+    font-family: 'Palatino', 'Georgia', serif;
+    line-height: 1.8;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    background-color: #fafafa;
+    display: flex;
+}
+.sidebar {
+    width: 280px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    background-color: #2c5aa0;
+    color: white;
+    padding: 30px 20px;
+    overflow-y: auto;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    font-size: 0.95em;
+}
+.sidebar .part-title {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #ffeb99;
+}
+.sidebar h2 {
+    color: white;
+    font-size: 1.3em;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+    padding-bottom: 10px;
+}
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sidebar li {
+    margin: 0;
+}
+.sidebar a {
+    color: #e6f7ff;
+    text-decoration: none;
+    display: block;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    font-size: 0.95em;
+}
+.sidebar a:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+}
+.sidebar ul ul {
+    padding-left: 20px;
+    margin-top: 5px;
+}
+.sidebar ul ul a {
+    font-size: 0.85em;
+    color: #c8e6ff;
+}
+.sidebar a.active {
+    background-color: rgba(255,255,255,0.2);
+    color: white;
+    font-weight: 600;
+    border-left: 4px solid #ffeb99;
+    padding-left: 8px;
+}
+.main-content {
+    margin-left: 280px;
+    padding: 40px 60px;
+    max-width: 900px;
+    width: 100%;
+}
+h1 {
+    color: #1a365d;
+    border-bottom: 4px solid #2c5aa0;
+    padding-bottom: 15px;
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+.main-content h2,
+h2 {
+    color: #2c5aa0;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #cbd5e0;
+    padding-bottom: 8px;
+    font-size: 1.8em;
+}
+h3 {
+    color: #4a7ba7;
+    margin-top: 25px;
+    font-size: 1.4em;
+}
+p {
+    margin: 15px 0;
+    text-align: justify;
+}
+code {
+    background-color: #f0f4f8;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Courier New', monospace;
+    color: #c7254e;
+    font-size: 0.9em;
+}
+pre {
+    background-color: #f0f4f8;
+    padding: 20px;
+    border-radius: 6px;
+    border-left: 5px solid #2c5aa0;
+    overflow-x: auto;
+    line-height: 1.5;
+}
+pre code {
+    background: none;
+    padding: 0;
+    color: #333;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 30px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+th {
+    background-color: #2c5aa0;
+    color: white;
+    padding: 15px;
+    font-weight: 600;
+    text-align: left;
+}
+td {
+    border: 1px solid #e2e8f0;
+    padding: 12px 15px;
+}
+tr:nth-child(even) {
+    background-color: #f7fafc;
+}
+tr:hover {
+    background-color: #edf2f7;
+}
+hr {
+    border: none;
+    border-top: 1px solid #cbd5e0;
+    margin: 30px 0;
+}
+strong {
+    color: #1a365d;
+    font-weight: 600;
+}
+ul, ol {
+    margin: 15px 0;
+    padding-left: 30px;
+}
+li {
+    margin: 8px 0;
+}
+.info-box {
+    background-color: #e6f7ff;
+    border-left: 5px solid #2c5aa0;
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 4px;
+}
+.warning-box {
+    background-color: #fff3cd;
+    border-left: 5px solid #ffc107;
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 4px;
+}
+.tip-box {
+    background-color: #d4edda;
+    border-left: 5px solid #28a745;
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 4px;
+}
+.example-box {
+    background-color: #f8f9fa;
+    border: 2px dashed #6c757d;
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 4px;
+}
+@media print {
+    .sidebar {
+        display: none;
+    }
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+}
+</style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="part-title">Kafka & Databricks</div>
+    <h2>Tutorial Navigation</h2>
+    <ul>
+        <li><a href="#kafka-introduction">1. What is Apache Kafka?</a>
+            <ul>
+                <li><a href="#kafka-core-abstraction">Core Abstraction</a></li>
+                <li><a href="#kafka-architecture">Architectural Pillars</a></li>
+                <li><a href="#kafka-performance">Performance</a></li>
+                <li><a href="#kafka-use-cases">Use Cases</a></li>
+                <li><a href="#kafka-kraft">KRaft Architecture</a></li>
+            </ul>
+        </li>
+        <li><a href="#topics-partitions">2. Topics & Partitions</a>
+            <ul>
+                <li><a href="#topics-overview">Topics Overview</a></li>
+                <li><a href="#partitions-overview">Partitions</a></li>
+                <li><a href="#partition-keys">Partition Keys</a></li>
+                <li><a href="#offsets">Offsets</a></li>
+                <li><a href="#partition-count">Choosing Partition Count</a></li>
+            </ul>
+        </li>
+        <li><a href="#producers">3. Producers</a>
+            <ul>
+                <li><a href="#producer-architecture">Architecture</a></li>
+                <li><a href="#producer-config">Configuration</a></li>
+                <li><a href="#producer-tuning">Performance Tuning</a></li>
+            </ul>
+        </li>
+        <li><a href="#consumers">4. Consumers & Groups</a>
+            <ul>
+                <li><a href="#consumer-groups">Consumer Groups</a></li>
+                <li><a href="#offset-management">Offset Management</a></li>
+                <li><a href="#rebalancing">Rebalancing</a></li>
+            </ul>
+        </li>
+        <li><a href="#brokers">5. Brokers & Clusters</a>
+            <ul>
+                <li><a href="#broker-overview">Broker Overview</a></li>
+                <li><a href="#replication">Replication</a></li>
+                <li><a href="#fault-tolerance">Fault Tolerance</a></li>
+            </ul>
+        </li>
+        <li><a href="#databricks-intro">6. Databricks Overview</a></li>
+        <li><a href="#structured-streaming">7. Structured Streaming</a></li>
+        <li><a href="#delta-lake">8. Delta Lake</a></li>
+        <li><a href="#code-examples">9. Code Examples</a></li>
+    </ul>
+</div>
+
+<div class="main-content">
+<h1>Apache Kafka & Databricks<br>Complete Tutorial</h1>
+<p style="text-align: center; color: #666; font-style: italic;">A comprehensive guide to distributed event streaming and real-time data processing</p>
+
+<hr>
+
+<h2 id="kafka-introduction">1. What is Apache Kafka?</h2>
+
+<p>
+Apache Kafka is a <strong>distributed event streaming platform</strong> designed for high-throughput, fault-tolerant data pipelines. Originally developed by LinkedIn in 2010 and open-sourced in 2011, Kafka processes trillions of events daily across thousands of companies worldwide, powering everything from real-time analytics to microservices architectures.
+</p>
+
+<div class="info-box">
+<strong>📊 Real-World Scale:</strong> Companies like LinkedIn, Netflix, Uber, and Airbnb use Kafka to process over 7 trillion messages per day, with peak throughputs exceeding 4.5 million messages per second on a single cluster.
+</div>
+
+<h3 id="kafka-core-abstraction">The Core Abstraction: The Distributed Commit Log</h3>
+
+<p>
+At its heart, Kafka implements a <strong>distributed, replicated commit log</strong>. Unlike traditional message queues that delete messages after consumption, Kafka stores all events as an immutable, ordered log that multiple applications can read independently. This fundamental difference enables:
+</p>
+
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Description</th>
+<th>Business Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Replay Capability</strong></td>
+<td>Consumers can "rewind" to any point in time and reprocess historical data</td>
+<td>Debugging, backfilling analytics, training ML models on production data</td>
+</tr>
+<tr>
+<td><strong>Independent Consumers</strong></td>
+<td>Multiple applications consume the same stream at different speeds without affecting each other</td>
+<td>Analytics can lag behind real-time processing without blocking production</td>
+</tr>
+<tr>
+<td><strong>Constant-Time Operations</strong></td>
+<td>Storage duration doesn't degrade performance (O(1) complexity)</td>
+<td>Retain data for 7 days or 7 years with same read/write performance</td>
+</tr>
+<tr>
+<td><strong>Event Sourcing</strong></td>
+<td>Every state change becomes an immutable event in the log</td>
+<td>Perfect audit trails, disaster recovery, system state rebuilding</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="kafka-architecture">Architectural Pillars</h3>
+
+<p>
+Kafka's design is built on four fundamental principles that distinguish it from traditional messaging systems:
+</p>
+
+<table>
+<thead>
+<tr>
+<th>Principle</th>
+<th>Implementation</th>
+<th>Benefit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Distributed</strong></td>
+<td>Data partitioned across broker cluster (typically 3-7 nodes)</td>
+<td>Horizontal scalability, fault tolerance through replication</td>
+</tr>
+<tr>
+<td><strong>Persistent</strong></td>
+<td>All messages written to disk with configurable retention (time/size)</td>
+<td>Durability, replay capability, audit compliance</td>
+</tr>
+<tr>
+<td><strong>Decoupled</strong></td>
+<td>Producers and consumers have zero knowledge of each other</td>
+<td>Independent scaling, service isolation, evolution</td>
+</tr>
+<tr>
+<td><strong>Immutable</strong></td>
+<td>Events cannot be modified after write (append-only log)</td>
+<td>Data integrity, simplified reasoning, cache efficiency</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="kafka-performance">Performance Characteristics</h3>
+
+<p>
+Kafka's exceptional performance stems from deliberate architectural choices that optimize for sequential I/O, batch processing, and zero-copy data transfers:
+</p>
+
+<ul>
+<li><strong>Sequential Disk I/O:</strong> Append-only logs leverage disk's sequential write performance (hundreds of MB/sec), avoiding random seeks</li>
+<li><strong>Zero-Copy Transfers:</strong> Data moves from disk → page cache → network socket without copying to application memory</li>
+<li><strong>Batch Processing:</strong> Producers accumulate messages before sending; brokers batch writes; consumers fetch in bulk</li>
+<li><strong>Compression:</strong> Batches compressed as single units (gzip, snappy, lz4, zstd) for network efficiency</li>
+<li><strong>Page Cache Utilization:</strong> OS page cache serves as distributed in-memory cache, avoiding Java heap pressure</li>
+</ul>
+
+<div class="info-box">
+<strong>⚡ Benchmark Results (commodity hardware: 6 cores, 32GB RAM, SSDs):</strong>
+<ul style="margin-top: 10px;">
+<li><strong>7+ million messages/second</strong> - Single-broker throughput</li>
+<li><strong>&lt;10ms latency (p99)</strong> - End-to-end with batching enabled</li>
+<li><strong>100% disk persistence</strong> - Yet rivals in-memory systems via page cache</li>
+<li><strong>O(1) performance</strong> - Constant time regardless of data size</li>
+</ul>
+</div>
+
+<h3 id="kafka-use-cases">Enterprise Use Cases</h3>
+
+<h4>🌐 Website Activity Tracking</h4>
+<p><strong>Examples:</strong> LinkedIn, Twitter, Pinterest</p>
+<p>
+Capture user interactions (page views, clicks, searches, video plays) in real-time at massive scale. Feed data into recommendation engines, A/B testing frameworks, and anomaly detection systems while maintaining complete event history for retrospective analysis and model training.
+</p>
+
+<h4>📊 Operational Monitoring & Metrics</h4>
+<p><strong>Examples:</strong> Netflix, Uber, Spotify</p>
+<p>
+Aggregate logs and metrics from thousands of microservices distributed globally. Stream to monitoring dashboards (Prometheus, Grafana), alerting pipelines, and time-series databases. Support real-time anomaly detection and capacity planning with historical queryability.
+</p>
+
+<h4>💳 Financial Transaction Processing</h4>
+<p><strong>Examples:</strong> PayPal, Square, Stripe</p>
+<p>
+Process payment events with exactly-once semantics using Kafka's transactional API. Maintain complete, immutable audit trails for regulatory compliance (PCI-DSS, SOX) while supporting real-time fraud detection, risk scoring, and settlement workflows.
+</p>
+
+<h4>🚗 IoT & Telemetry Data</h4>
+<p><strong>Examples:</strong> Tesla, John Deere, Philips</p>
+<p>
+Ingest sensor data from millions of connected devices (vehicles, machinery, medical devices) at scale. Support real-time monitoring dashboards, predictive maintenance ML models, and long-term trend analysis from the same unified event stream.
+</p>
+
+<h4>🏢 Event-Driven Microservices</h4>
+<p><strong>Examples:</strong> Airbnb, DoorDash, Shopify</p>
+<p>
+Enable asynchronous communication between hundreds of microservices. Implement event sourcing, CQRS patterns, and saga orchestration. Decouple services for independent deployment while maintaining strong data consistency guarantees.
+</p>
+
+<h3 id="kafka-kraft">KRaft: The Modern Kafka Architecture (v3.0+)</h3>
+
+<p>
+Kafka 4.0 completed the migration to <strong>KRaft</strong> (Kafka Raft), replacing Apache ZooKeeper with an internal consensus protocol based on the Raft algorithm. This represents the most significant architectural change in Kafka's history.
+</p>
+
+<h4>Why KRaft?</h4>
+
+<table>
+<thead>
+<tr>
+<th>Challenge with ZooKeeper</th>
+<th>KRaft Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Two separate systems to deploy, monitor, and troubleshoot</td>
+<td>Single unified system - Kafka manages its own metadata</td>
+</tr>
+<tr>
+<td>Controller failover took seconds</td>
+<td>Controller election in milliseconds</td>
+</tr>
+<tr>
+<td>Partition limit ~200K per cluster</td>
+<td>Millions of partitions supported</td>
+</tr>
+<tr>
+<td>Metadata synchronization complexity</td>
+<td>Event-sourced metadata log - single source of truth</td>
+</tr>
+<tr>
+<td>Slow cluster startup (minutes)</td>
+<td>Fast controller bootstrap (seconds)</td>
+</tr>
+</tbody>
+</table>
+
+<div class="warning-box">
+<strong>⚠️ Breaking Change in Kafka 4.0:</strong> ZooKeeper mode has been completely removed. All new deployments must use KRaft. Existing ZooKeeper-based clusters must migrate using the official migration tools before upgrading to 4.0.
+</div>
+
+<h4>KRaft Architecture Components</h4>
+
+<ul>
+<li><strong>Controllers:</strong> Dedicated brokers (or combined broker+controller) that manage cluster metadata via Raft consensus</li>
+<li><strong>Metadata Log:</strong> Internal <code>__cluster_metadata</code> topic stores all configuration as events (replicated Raft log)</li>
+<li><strong>Metadata Quorum:</strong> Majority (quorum) of controllers must agree on changes for commit</li>
+<li><strong>Event-Sourced State:</strong> All brokers replay metadata log to build in-memory state - guaranteed consistency</li>
+</ul>
+
+<pre><code># KRaft Essential Configuration
+node.id=1
+process.roles=controller,broker  # Combined mode (or separate)
+controller.quorum.voters=1@controller1:9093,2@controller2:9093,3@controller3:9093
+controller.quorum.bootstrap.servers=controller1:9093,controller2:9093,controller3:9093
+log.dirs=/var/kafka-logs
+</code></pre>
+
+<hr>
+
+<h2 id="topics-partitions">2. Topics & Partitions</h2>
+
+<p>
+Topics and partitions form the foundation of Kafka's data organization and parallelism model. Understanding their relationship is critical for designing scalable, high-performance streaming architectures.
+</p>
+
+<h3 id="topics-overview">Topics: Logical Categories for Events</h3>
+
+<p>
+A <strong>topic</strong> is a named, logical channel to which producers publish events and from which consumers subscribe. Topics are Kafka's primary abstraction for organizing event streams.
+</p>
+
+<h4>Topic Characteristics</h4>
+
+<table>
+<thead>
+<tr>
+<th>Characteristic</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Multi-producer</strong></td>
+<td>Many applications can write to the same topic simultaneously without coordination</td>
+</tr>
+<tr>
+<td><strong>Multi-subscriber</strong></td>
+<td>Many consumer groups can independently read from the topic at different speeds</td>
+</tr>
+<tr>
+<td><strong>Persistent</strong></td>
+<td>Events retained based on time (e.g., 7 days) or size (e.g., 100GB), not consumption status</td>
+</tr>
+<tr>
+<td><strong>Immutable</strong></td>
+<td>Once written, events cannot be modified - append-only semantics</td>
+</tr>
+<tr>
+<td><strong>Partitioned</strong></td>
+<td>Topic data divided across multiple ordered logs (partitions) for parallelism</td>
+</tr>
+</tbody>
+</table>
+
+<div class="tip-box">
+<strong>💡 Naming Best Practices:</strong>
+<ul style="margin-top: 10px;">
+<li>Use descriptive, business-meaningful names: <code>payment-completed</code>, <code>user-signup</code>, <code>inventory-updated</code></li>
+<li>Avoid generic technical names: <code>queue1</code>, <code>events</code>, <code>data</code></li>
+<li>Follow consistent conventions: <code>domain.entity.action</code> (e.g., <code>ecommerce.order.created</code>)</li>
+<li>Use kebab-case or snake_case, not camelCase</li>
+</ul>
+</div>
+
+<h3 id="partitions-overview">Partitions: The Unit of Parallelism</h3>
+
+<p>
+Each topic is subdivided into one or more <strong>partitions</strong>—ordered, immutable sequences of records stored as log files on disk. Partitions are Kafka's fundamental parallelism primitive.
+</p>
+
+<div class="info-box">
+<strong>🔒 Critical Guarantee:</strong> "Events with the same event key are written to the same partition, and Kafka guarantees that any consumer of a given topic-partition will always read that partition's events in <strong>exactly the same order</strong> as they were written."
+</div>
+
+<h4>Why Partitions Are Essential</h4>
+
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Mechanism</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parallelism</strong></td>
+<td>Multiple consumers in a group process different partitions concurrently</td>
+<td>Linear scalability: 10 partitions → up to 10x parallelism</td>
+</tr>
+<tr>
+<td><strong>Distribution</strong></td>
+<td>Partitions spread across brokers in the cluster</td>
+<td>Load balancing for storage, network I/O, and CPU</td>
+</tr>
+<tr>
+<td><strong>Ordering</strong></td>
+<td>FIFO (first-in-first-out) ordering maintained within each partition</td>
+<td>Guaranteed message sequence for related events (same key)</td>
+</tr>
+<tr>
+<td><strong>Throughput</strong></td>
+<td>More partitions enable more concurrent reads and writes</td>
+<td>Scale write/read throughput beyond single-broker capacity</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="partition-keys">Partition Keys and Routing</h3>
+
+<p>
+When producing a message, you specify an optional <strong>partition key</strong>. Kafka uses a hash of this key to deterministically route the message to a specific partition:
+</p>
+
+<pre><code>// Partitioning algorithm (murmur2 hash by default)
+target_partition = hash(key) % number_of_partitions
+
+// Example: 3 partitions, key "user_123"
+target_partition = hash("user_123") % 3  // → partition 1
+
+// All messages with key "user_123" always go to partition 1
+// This guarantees ordering for that specific user's events
+</code></pre>
+
+<h4>Keyed vs. Keyless Messages</h4>
+
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>With Key (Keyed Messages)</th>
+<th>Without Key (Keyless)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Routing</strong></td>
+<td>Hash-based assignment to same partition</td>
+<td>Round-robin or sticky partitioner (v2.4+)</td>
+</tr>
+<tr>
+<td><strong>Ordering</strong></td>
+<td>Guaranteed for all messages with same key</td>
+<td>No ordering guarantee across partitions</td>
+</tr>
+<tr>
+<td><strong>Use Case</strong></td>
+<td>User activity, device telemetry, account transactions</td>
+<td>Independent events, logs, load balancing</td>
+</tr>
+<tr>
+<td><strong>Example</strong></td>
+<td>All orders for <code>customer_456</code> stay in order</td>
+<td>Application logs from multiple servers</td>
+</tr>
+</tbody>
+</table>
+
+<div class="example-box">
+<strong>📝 Real-World Example: E-commerce Order Processing</strong>
+
+<pre><code>// Keyed message - order events for same customer stay ordered
+producer.send(new ProducerRecord<>(
+    "orders",              // topic
+    customerId,            // key (e.g., "cust_12345")
+    orderEvent             // value
+));
+
+// Result: All events for "cust_12345" → partition 2
+// Order created → Order updated → Payment processed → Order shipped
+// Sequential processing guaranteed!
+
+// Keyless message - load balanced across partitions
+producer.send(new ProducerRecord<>(
+    "application-logs",    // topic
+    null,                  // no key
+    logEntry               // value
+));
+
+// Result: Messages distributed evenly across all partitions
+// No ordering needed - each log entry is independent
+</code></pre>
+</div>
+
+<h3 id="offsets">Offsets: Tracking Position in the Log</h3>
+
+<p>
+Each message within a partition receives a unique, monotonically increasing <strong>offset</strong>—a 64-bit integer that serves as the message's immutable identifier within that partition. Offsets start at 0 and increment by 1 for each message.
+</p>
+
+<div class="example-box">
+<strong>📊 Offset Structure Example: Topic "customer-orders" (3 partitions)</strong>
+
+<pre><code><strong>Partition 0:</strong>
+[offset: 0] → {"orderId": "A001", "customer": "alice", "amount": 99.99, "timestamp": "2025-01-15T10:23:45Z"}
+[offset: 1] → {"orderId": "A004", "customer": "alice", "amount": 149.50, "timestamp": "2025-01-15T10:25:12Z"}
+[offset: 2] → {"orderId": "A007", "customer": "alice", "amount": 29.99, "timestamp": "2025-01-15T10:28:33Z"}
+...
+
+<strong>Partition 1:</strong>
+[offset: 0] → {"orderId": "B002", "customer": "bob", "amount": 199.00, "timestamp": "2025-01-15T10:24:01Z"}
+[offset: 1] → {"orderId": "B005", "customer": "bob", "amount": 79.99, "timestamp": "2025-01-15T10:26:47Z"}
+...
+
+<strong>Partition 2:</strong>
+[offset: 0] → {"orderId": "C003", "customer": "carol", "amount": 299.99, "timestamp": "2025-01-15T10:24:55Z"}
+[offset: 1] → {"orderId": "C006", "customer": "carol", "amount": 49.99, "timestamp": "2025-01-15T10:27:21Z"}
+...
+</code></pre>
+</div>
+
+<h4>Offset Management Enables</h4>
+
+<ul>
+<li><strong>Resume After Failure:</strong> Consumer crashes and restarts from last committed offset—no message loss or duplication (at-least-once or exactly-once)</li>
+<li><strong>Replay Historical Data:</strong> Seek to offset 0 (or any specific offset) to reprocess events for debugging, analytics backfilling, or A/B test validation</li>
+<li><strong>Independent Progress:</strong> Each consumer group maintains separate offset state in <code>__consumer_offsets</code> topic—real-time and batch jobs don't interfere</li>
+<li><strong>Monitoring & Alerting:</strong> Track consumer lag (log end offset - current offset) to identify processing bottlenecks and trigger auto-scaling</li>
+<li><strong>Time-Based Seeking:</strong> Find offset for specific timestamp to process events from "2 hours ago" or "last Tuesday"</li>
+</ul>
+
+<h3 id="partition-count">Choosing the Right Partition Count</h3>
+
+<div class="warning-box">
+<strong>⚠️ Critical Design Decision:</strong> You can <strong>increase</strong> partition count after topic creation, but you can <strong>never decrease</strong> it. Over-partitioning has costs, under-partitioning limits throughput. Choose carefully!
+</div>
+
+<h4>General Guidelines</h4>
+
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Recommended Partitions</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Low-volume topic (&lt;10 MB/sec)</td>
+<td>1-3 partitions</td>
+<td>Minimize overhead; single consumer often sufficient</td>
+</tr>
+<tr>
+<td>Medium-volume (10-100 MB/sec)</td>
+<td>6-12 partitions</td>
+<td>Enable parallel consumption; room for growth</td>
+</tr>
+<tr>
+<td>High-volume (&gt;100 MB/sec)</td>
+<td>20-50+ partitions</td>
+<td>Maximize parallelism across consumer group</td>
+</tr>
+<tr>
+<td>Strict total ordering required</td>
+<td>1 partition only</td>
+<td>Total FIFO order across all events (no parallelism)</td>
+</tr>
+<tr>
+<td>Per-key ordering (most common)</td>
+<td>Multiple partitions with keys</td>
+<td>Balance ordering and parallelism via keyed messages</td>
+</tr>
+</tbody>
+</table>
+
+<h4>Trade-offs to Consider</h4>
+
+<p><strong>More Partitions = Higher Parallelism BUT:</strong></p>
+<ul>
+<li>Increased broker metadata overhead (each partition has files, memory structures)</li>
+<li>Longer rebalancing time when consumers join/leave (O(partitions) complexity)</li>
+<li>Higher end-to-end latency (more partitions = more file handles, more fsync calls)</li>
+<li>More complex cluster management (replica reassignment, monitoring)</li>
+</ul>
+
+<p><strong>Fewer Partitions = Lower Overhead BUT:</strong></p>
+<ul>
+<li>Limited consumer parallelism (max consumers = partitions)</li>
+<li>Lower aggregate throughput (single partition bottleneck)</li>
+<li>Reduced fault tolerance granularity</li>
+</ul>
+
+<div class="tip-box">
+<strong>💡 Sizing Formula:</strong> Start with <code>max(6, expected_throughput_MB_per_sec / 10)</code> partitions. Example: 50 MB/sec → 6 partitions (minimum). 250 MB/sec → 25 partitions. Monitor consumer lag and scale up if bottlenecked.
+</div>
+
+<hr>
+
+<h2 id="producers">3. Producers</h2>
+
+<p>
+<strong>Producers</strong> are client applications that publish (write) events to Kafka topics. The producer API is asynchronous—after sending a message, the producer continues execution without blocking. Producers are completely decoupled from consumers: they don't wait for consumer acknowledgment and have no knowledge of which applications will eventually read their messages.
+</p>
+
+<h3 id="producer-architecture">Producer Architecture & Message Flow</h3>
+
+<p>
+Understanding the producer's internal architecture is critical for performance tuning and reliability engineering. Here's the complete message flow when you call <code>producer.send(record)</code>:
+</p>
+
+<div class="info-box">
+<strong>🔄 Producer Message Flow (7 Steps)</strong>
+
+<ol style="margin-top: 10px;">
+<li><strong>Serialization:</strong> Key and value are converted to byte arrays using configured serializers (JSON, Avro, Protobuf, String, etc.)</li>
+<li><strong>Partitioning:</strong> Partitioner determines target partition based on key hash (or round-robin if no key provided)</li>
+<li><strong>Batching:</strong> Message added to an in-memory batch buffer (RecordAccumulator) for the specific topic-partition</li>
+<li><strong>Compression:</strong> When batch is full or <code>linger.ms</code> expires, batch is compressed (if configured) before network transmission</li>
+<li><strong>Network Send:</strong> Background I/O thread (Sender) transmits batch to the partition leader broker via TCP</li>
+<li><strong>Broker Write:</strong> Leader appends to local log and replicates to followers (depending on <code>acks</code> setting)</li>
+<li><strong>Acknowledgment:</strong> Broker responds with success/error; producer callback fires; retries if transient failure</li>
+</ol>
+</div>
+
+<div class="tip-box">
+<strong>⚡ Asynchronous by Design:</strong> The <code>send()</code> method returns immediately with a <code>Future&lt;RecordMetadata&gt;</code>. The actual network I/O happens in a background thread pool, allowing your application to continue processing while Kafka handles batching and transmission. This is why Kafka achieves such high throughput—thousands of sends can be in-flight simultaneously.
+</div>
+
+<h3 id="producer-config">Critical Producer Configurations</h3>
+
+<h4>acks (Acknowledgment Level)</h4>
+
+<p>
+Controls the durability vs. latency trade-off by determining how many broker replicas must acknowledge a write before the producer considers it successful.
+</p>
+
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Behavior</th>
+<th>Durability</th>
+<th>Latency</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>acks=0</code></td>
+<td>Fire-and-forget. No acknowledgment waited.</td>
+<td>❌ Lowest</td>
+<td>✅ Fastest</td>
+<td>Metrics, logs where data loss acceptable</td>
+</tr>
+<tr>
+<td><code>acks=1</code></td>
+<td>Wait for leader acknowledgment only</td>
+<td>⚠️ Medium</td>
+<td>⚡ Balanced</td>
+<td>Most applications (default in Kafka 3.0+)</td>
+</tr>
+<tr>
+<td><code>acks=all</code></td>
+<td>Wait for all in-sync replicas (ISR)</td>
+<td>✅ Highest</td>
+<td>⏱️ Slowest</td>
+<td>Financial transactions, critical business events</td>
+</tr>
+</tbody>
+</table>
+
+<div class="warning-box">
+<strong>⚠️ acks=1 Risk:</strong> If the leader crashes immediately after acknowledging but before followers replicate, the message is lost. For critical data, always use <code>acks=all</code> with <code>min.insync.replicas=2</code>.
+</div>
+
+<h4>Batching & Linger</h4>
+
+<pre><code>// Batching configuration
+batch.size=16384              // 16 KB (default) - max bytes per batch
+linger.ms=5                   // 5ms (default in Kafka 4.0+, was 0ms previously)
+buffer.memory=33554432        // 32 MB (default) - total producer buffer memory
+</code></pre>
+
+<ul>
+<li><strong>batch.size:</strong> Maximum bytes per batch. Larger batches improve compression and throughput but add latency.</li>
+<li><strong>linger.ms:</strong> How long to wait for more messages before sending an incomplete batch. Higher values = more batching but higher latency.</li>
+<li><strong>Kafka 4.0 Change:</strong> Default <code>linger.ms</code> increased from 0ms to 5ms. Research showed larger batches have similar/lower latency due to reduced per-message overhead.</li>
+</ul>
+
+<div class="tip-box">
+<strong>💡 Tuning Tip:</strong> If throughput is low and CPU is idle, increase <code>batch.size</code> to 32KB+ and <code>linger.ms</code> to 10-20ms. If latency is critical, keep <code>linger.ms=0</code> (Kafka 3.x behavior).
+</div>
+
+<h4>Idempotent Producer (Exactly-Once Semantics)</h4>
+
+<pre><code>enable.idempotence=true  // Recommended for all production workloads (default in Kafka 3.0+)
+</code></pre>
+
+<p>
+When enabled, Kafka assigns each producer a unique <strong>Producer ID (PID)</strong> and attaches monotonically increasing <strong>sequence numbers</strong> to every message. The broker detects and discards duplicates (same PID + sequence number), preventing duplicate writes even if the producer retries due to network failures or timeouts.
+</p>
+
+<p><strong>Guarantees with Idempotence:</strong></p>
+<ul>
+<li>No duplicates within a single partition (exactly-once per partition)</li>
+<li>In-order delivery even with <code>max.in.flight.requests.per.connection=5</code></li>
+<li>Automatic producer retry without application-level deduplication logic</li>
+</ul>
+
+<div class="info-box">
+<strong>🔒 Exactly-Once Across Partitions:</strong> For exactly-once guarantees across <em>multiple partitions</em> or with consumer processing, use <strong>Kafka Transactions</strong> (see Advanced Topics).
+</div>
+
+<h4>Compression</h4>
+
+<pre><code>compression.type=snappy  // Options: none, gzip, snappy, lz4, zstd
+</code></pre>
+
+<p>
+Compression happens at the <strong>batch level</strong>. Larger batches compress better. Trade CPU for network bandwidth and disk space.
+</p>
+
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Compression Ratio</th>
+<th>CPU Cost</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gzip</code></td>
+<td>High (best)</td>
+<td>High</td>
+<td>Bandwidth-constrained networks, cold storage</td>
+</tr>
+<tr>
+<td><code>snappy</code></td>
+<td>Medium</td>
+<td>Low</td>
+<td>Good balance - popular choice</td>
+</tr>
+<tr>
+<td><code>lz4</code></td>
+<td>Medium</td>
+<td>Very Low</td>
+<td>Fastest decompression - great for read-heavy workloads</td>
+</tr>
+<tr>
+<td><code>zstd</code></td>
+<td>High</td>
+<td>Medium</td>
+<td>Best ratio with reasonable CPU (Kafka 2.1+)</td>
+</tr>
+</tbody>
+</table>
+
+<h4>Retries & Timeouts</h4>
+
+<pre><code>retries=2147483647              // Max int (default) - retry until timeout
+retry.backoff.ms=100            // Wait between retries (exponential backoff)
+delivery.timeout.ms=120000      // 2 minutes - max time for send() to complete
+request.timeout.ms=30000        // 30 seconds - max wait for broker response
+</code></pre>
+
+<ul>
+<li><strong>retries:</strong> Number of retry attempts for retriable errors (e.g., <code>NOT_ENOUGH_REPLICAS</code>, <code>LEADER_NOT_AVAILABLE</code>)</li>
+<li><strong>delivery.timeout.ms:</strong> Upper bound on time from <code>send()</code> call to final ack/error (includes retries, batching, linger time)</li>
+<li>Kafka uses intelligent exponential backoff to avoid overwhelming struggling brokers</li>
+</ul>
+
+<h3 id="producer-tuning">Performance Tuning Guidelines</h3>
+
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>Configuration Strategy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>High Throughput</strong></td>
+<td><code>batch.size=131072</code> (128KB), <code>linger.ms=20</code>, <code>compression.type=snappy</code>, <code>acks=1</code></td>
+</tr>
+<tr>
+<td><strong>Low Latency</strong></td>
+<td><code>linger.ms=0</code>, <code>compression.type=none</code>, <code>acks=1</code>, small batches</td>
+</tr>
+<tr>
+<td><strong>High Reliability</strong></td>
+<td><code>acks=all</code>, <code>enable.idempotence=true</code>, <code>retries=MAX</code>, <code>min.insync.replicas=2</code></td>
+</tr>
+<tr>
+<td><strong>Balanced</strong></td>
+<td>Use Kafka 4.0+ defaults - well-tuned for most workloads</td>
+</tr>
+</tbody>
+</table>
+
+<div class="example-box">
+<strong>📝 Production-Grade Producer Example (Java)</strong>
+
+<pre><code>import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.common.serialization.StringSerializer;
+import java.util.Properties;
+
+public class ProductionProducer {
+    public static void main(String[] args) {
+        Properties props = new Properties();
+
+        // Connection
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                  "pkc-619z3.us-east1.gcp.confluent.cloud:9092");
+        props.put(ProducerConfig.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+        props.put(ProducerConfig.SASL_MECHANISM_CONFIG, "PLAIN");
+        props.put(ProducerConfig.SASL_JAAS_CONFIG,
+                  "org.apache.kafka.common.security.plain.PlainLoginModule required " +
+                  "username='YOUR_API_KEY' password='YOUR_API_SECRET';");
+
+        // Serialization
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+
+        // Performance & Reliability
+        props.put(ProducerConfig.ACKS_CONFIG, "all");  // Maximum durability
+        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");  // Exactly-once
+        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+        props.put(ProducerConfig.BATCH_SIZE_CONFIG, 32768);  // 32 KB
+        props.put(ProducerConfig.LINGER_MS_CONFIG, 10);  // 10ms batching window
+        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
+
+        // Create producer
+        try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
+
+            // Send message with key (for ordering) and callback
+            String key = "customer_12345";
+            String value = "{\"orderId\":\"A001\",\"amount\":99.99}";
+
+            ProducerRecord<String, String> record =
+                new ProducerRecord<>("orders", key, value);
+
+            producer.send(record, (metadata, exception) -> {
+                if (exception != null) {
+                    System.err.println("Error producing message: " + exception);
+                } else {
+                    System.out.printf("Sent to partition %d, offset %d%n",
+                                      metadata.partition(), metadata.offset());
+                }
+            });
+
+            producer.flush();  // Block until all buffered messages sent
+        }
+    }
+}
+</code></pre>
+</div>
+
+<hr>
+
+<h2 id="consumers">4. Consumers & Consumer Groups</h2>
+
+<p>
+<strong>Consumers</strong> are applications that subscribe to topics and process the stream of records. Unlike traditional messaging systems, consuming a message doesn't delete it from Kafka—it remains available for other consumers. Each consumer tracks its own position (offset) in each partition.
+</p>
+
+<h3 id="consumer-groups">Consumer Groups: Scalable Processing</h3>
+
+<p>
+Consumers label themselves with a <strong>consumer group name</strong> (<code>group.id</code>). Kafka ensures that each partition is consumed by exactly one consumer within a group. This enables both parallelism and fault tolerance.
+</p>
+
+<div class="info-box">
+<strong>🎯 Key Principle:</strong> Partitions are the unit of parallelism. With <em>N</em> partitions and <em>M</em> consumers in a group:
+<ul style="margin-top: 10px;">
+<li>If <em>M</em> ≤ <em>N</em>: Each consumer gets ⌈N/M⌉ partitions (ideal)</li>
+<li>If <em>M</em> > <em>N</em>: Some consumers sit idle (wasted resources)</li>
+</ul>
+<strong>Example:</strong> 12 partitions, 4 consumers → each consumer processes 3 partitions
+</div>
+
+<h4>Consumer Group Benefits</h4>
+
+<table>
+<thead>
+<tr>
+<th>Benefit</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Load Balancing</strong></td>
+<td>Multiple consumers in same group share workload; partitions distributed automatically</td>
+</tr>
+<tr>
+<td><strong>Fault Tolerance</strong></td>
+<td>If consumer crashes, its partitions are reassigned to healthy consumers (rebalancing)</td>
+</tr>
+<tr>
+<td><strong>Horizontal Scaling</strong></td>
+<td>Add more consumers to group to process data faster (up to partition count)</td>
+</tr>
+<tr>
+<td><strong>Independent Processing</strong></td>
+<td>Different consumer groups process same data independently (separate offsets)</td>
+</tr>
+</tbody>
+</table>
+
+<div class="example-box">
+<strong>📊 Multi-Consumer Group Example</strong>
+
+<pre><code>Topic "user-events" (6 partitions)
+
+Consumer Group "real-time-analytics" (3 consumers)
+  Consumer A: partitions 0, 1
+  Consumer B: partitions 2, 3
+  Consumer C: partitions 4, 5
+  → Processes events immediately, updates live dashboards
+
+Consumer Group "batch-etl" (2 consumers)
+  Consumer X: partitions 0, 1, 2
+  Consumer Y: partitions 3, 4, 5
+  → Reads same events, loads into data warehouse nightly
+
+Consumer Group "ml-training" (1 consumer)
+  Consumer Z: partitions 0, 1, 2, 3, 4, 5
+  → Reads all historical data to train recommendation model
+
+All three groups read the SAME events independently!
+</code></pre>
+</div>
+
+<h3 id="offset-management">Offset Management</h3>
+
+<p>
+The <strong>offset</strong> is a consumer's position in a partition. Kafka stores consumer group offsets in an internal topic called <code>__consumer_offsets</code> (replicated, compacted topic).
+</p>
+
+<h4>Offset Commit Strategies</h4>
+
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Configuration</th>
+<th>Semantics</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Auto Commit</strong></td>
+<td><code>enable.auto.commit=true</code><br><code>auto.commit.interval.ms=5000</code></td>
+<td>At-least-once<br>(may duplicate on crash)</td>
+<td>Simple applications where duplicates tolerable</td>
+</tr>
+<tr>
+<td><strong>Manual Sync Commit</strong></td>
+<td><code>enable.auto.commit=false</code><br><code>consumer.commitSync()</code></td>
+<td>At-least-once<br>(blocks until committed)</td>
+<td>Reliable processing, can tolerate blocking</td>
+</tr>
+<tr>
+<td><strong>Manual Async Commit</strong></td>
+<td><code>enable.auto.commit=false</code><br><code>consumer.commitAsync()</code></td>
+<td>At-least-once<br>(fire-and-forget)</td>
+<td>High-throughput, can tolerate occasional duplicates</td>
+</tr>
+<tr>
+<td><strong>Transactions</strong></td>
+<td>Kafka Transactions API</td>
+<td>Exactly-once<br>(atomic commit)</td>
+<td>Stream processing, critical business logic</td>
+</tr>
+</tbody>
+</table>
+
+<div class="warning-box">
+<strong>⚠️ Offset Commit Gotcha:</strong> With <code>auto.commit=true</code>, offsets commit every 5 seconds by default. If your app crashes after processing a message but before the next auto-commit, that message will be reprocessed after restart. For critical systems, use manual commits AFTER successful processing.
+</div>
+
+<h4>Offset Reset Behavior</h4>
+
+<pre><code>auto.offset.reset=earliest  // Start from beginning if no committed offset exists
+auto.offset.reset=latest    // Start from newest messages (default)
+auto.offset.reset=none      // Throw exception if no offset found
+</code></pre>
+
+<p>
+This only applies when the consumer group has <strong>no committed offset</strong> for a partition (first time consuming, or offsets expired after <code>offsets.retention.minutes</code>—default 7 days).
+</p>
+
+<h3 id="rebalancing">Consumer Rebalancing</h3>
+
+<p>
+A <strong>rebalance</strong> is the process of reassigning partitions to consumers when the group membership changes (consumer joins, leaves, crashes, or partition count changes).
+</p>
+
+<h4>Rebalance Triggers</h4>
+
+<ul>
+<li>New consumer joins the group</li>
+<li>Existing consumer leaves gracefully (<code>consumer.close()</code>)</li>
+<li>Consumer crashes or stops sending heartbeats</li>
+<li>Topic partition count increases</li>
+<li>Consumer takes too long to process messages (<code>max.poll.interval.ms</code> exceeded)</li>
+</ul>
+
+<h4>Rebalance Protocol (Kafka 4.0+)</h4>
+
+<p>
+Kafka 4.0 introduced the <strong>Next Generation Consumer Rebalance Protocol</strong> (KIP-848), replacing the older eager rebalance with a more efficient incremental approach:
+</p>
+
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Old Protocol (Eager)</th>
+<th>New Protocol (Incremental)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Partition Revocation</strong></td>
+<td>All consumers stop, revoke all partitions</td>
+<td>Only reassigned partitions are revoked</td>
+</tr>
+<tr>
+<td><strong>Downtime</strong></td>
+<td>Entire group pauses during rebalance</td>
+<td>Most consumers keep processing</td>
+</tr>
+<tr>
+<td><strong>Duration</strong></td>
+<td>O(partitions × consumers)</td>
+<td>O(reassigned partitions)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>High latency spike, processing stall</td>
+<td>Minimal impact, localized pause</td>
+</tr>
+</tbody>
+</table>
+
+<div class="tip-box">
+<strong>💡 Minimizing Rebalance Impact:</strong>
+<ul style="margin-top: 10px;">
+<li>Keep <code>max.poll.interval.ms</code> higher than your longest processing time</li>
+<li>Process messages quickly; offload heavy work to thread pools</li>
+<li>Use <code>session.timeout.ms=45000</code> (45 seconds) to tolerate brief network blips</li>
+<li>Deploy new consumer versions gradually (rolling restart)</li>
+<li>Monitor consumer lag—rebalances cause temporary lag spikes</li>
+</ul>
+</div>
+
+<div class="example-box">
+<strong>📝 Production-Grade Consumer Example (Python)</strong>
+
+<pre><code>from confluent_kafka import Consumer, KafkaError, KafkaException
+import json
+
+# Consumer configuration
+conf = {
+    'bootstrap.servers': 'pkc-619z3.us-east1.gcp.confluent.cloud:9092',
+    'security.protocol': 'SASL_SSL',
+    'sasl.mechanisms': 'PLAIN',
+    'sasl.username': 'YOUR_API_KEY',
+    'sasl.password': 'YOUR_API_SECRET',
+
+    # Consumer group and offset management
+    'group.id': 'order-processor-v1',
+    'auto.offset.reset': 'earliest',  # Start from beginning for new group
+    'enable.auto.commit': False,       # Manual commit for reliability
+
+    # Performance tuning
+    'max.poll.interval.ms': 300000,    # 5 minutes - adjust based on processing time
+    'session.timeout.ms': 45000,       # 45 seconds
+    'fetch.min.bytes': 1048576,        # 1 MB - wait for more data before returning
+}
+
+consumer = Consumer(conf)
+consumer.subscribe(['orders'])
+
+try:
+    while True:
+        # Poll for messages (timeout 1 second)
+        msg = consumer.poll(timeout=1.0)
+
+        if msg is None:
+            continue
+        if msg.error():
+            if msg.error().code() == KafkaError._PARTITION_EOF:
+                continue  # Reached end of partition
+            else:
+                raise KafkaException(msg.error())
+
+        # Process message
+        order = json.loads(msg.value().decode('utf-8'))
+        print(f"Processing order {order['orderId']} for customer {order['customer']}")
+
+        # ... your business logic here ...
+        process_order(order)
+
+        # Commit offset only AFTER successful processing
+        consumer.commit(message=msg)
+
+except KeyboardInterrupt:
+    pass
+finally:
+    consumer.close()  # Graceful shutdown triggers rebalance
+</code></pre>
+</div>
+
+<hr>
+
+<h2 id="brokers">5. Brokers & Clusters</h2>
+
+<p>
+A <strong>broker</strong> is a Kafka server that stores data and serves client requests (producers and consumers). Each broker is identified by a unique integer ID. Brokers handle hundreds of thousands of reads and writes per second from thousands of clients.
+</p>
+
+<h3 id="broker-overview">Kafka Cluster Architecture</h3>
+
+<p>
+A <strong>cluster</strong> is a group of Kafka brokers working together. Production clusters typically run 3-7 brokers, but large enterprises operate clusters with hundreds of brokers processing petabytes of data.
+</p>
+
+<h4>Broker Responsibilities</h4>
+
+<table>
+<thead>
+<tr>
+<th>Responsibility</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Data Storage</strong></td>
+<td>Persist messages to disk in partition log files (<code>log.dirs</code>)</td>
+</tr>
+<tr>
+<td><strong>Client Serving</strong></td>
+<td>Handle produce requests (writes) and fetch requests (reads) from clients</td>
+</tr>
+<tr>
+<td><strong>Replication</strong></td>
+<td>Act as leader or follower for assigned partitions; sync data between replicas</td>
+</tr>
+<tr>
+<td><strong>Metadata Management</strong></td>
+<td>Participate in controller election (KRaft) and metadata propagation</td>
+</tr>
+<tr>
+<td><strong>Log Compaction</strong></td>
+<td>Compact log-compacted topics by removing old records with same key</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="replication">Replication & Data Durability</h3>
+
+<p>
+Each partition is replicated across multiple brokers. The <strong>replication factor</strong> determines how many copies exist. Production standard is <code>replication.factor=3</code>.
+</p>
+
+<h4>Leader & Followers</h4>
+
+<ul>
+<li><strong>Leader:</strong> One replica is elected as the leader for each partition. ALL reads and writes go through the leader.</li>
+<li><strong>Followers:</strong> Other replicas passively replicate data from the leader. They don't serve client requests directly.</li>
+<li><strong>In-Sync Replicas (ISR):</strong> Followers that are fully caught up with the leader (within <code>replica.lag.time.max.ms</code>—default 30 seconds).</li>
+</ul>
+
+<div class="info-box">
+<strong>🔒 ISR Guarantee:</strong> Only ISR members are eligible to become leader. When you configure <code>acks=all</code> and <code>min.insync.replicas=2</code>, at least 2 replicas (leader + 1 follower) must acknowledge before write succeeds. This prevents data loss even if leader fails immediately after write.
+</div>
+
+<h4>Replication Example</h4>
+
+<div class="example-box">
+<pre><code>Topic "payments" (1 partition, replication factor = 3)
+
+Broker 1 (Leader): [msg1][msg2][msg3][msg4]  ← All writes go here first
+Broker 2 (Follower - ISR): [msg1][msg2][msg3][msg4]  ← Fully caught up
+Broker 3 (Follower - ISR): [msg1][msg2][msg3]        ← Slightly behind but within lag threshold
+
+If Broker 1 crashes:
+→ Controller detects failure (KRaft consensus)
+→ Elects Broker 2 as new leader (from ISR)
+→ Clients automatically discover new leader (metadata refresh)
+→ No data loss! Broker 2 has all committed messages
+</code></pre>
+</div>
+
+<h3 id="fault-tolerance">Fault Tolerance & High Availability</h3>
+
+<table>
+<thead>
+<tr>
+<th>Failure Scenario</th>
+<th>Kafka Behavior</th>
+<th>Data Loss?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 broker fails (RF=3)</td>
+<td>Automatic leader election from ISR; clients redirect</td>
+<td>❌ No loss</td>
+</tr>
+<tr>
+<td>2 brokers fail simultaneously (RF=3)</td>
+<td>If 1 ISR remains, operations continue; else <code>min.insync.replicas</code> blocks writes</td>
+<td>❌ No loss</td>
+</tr>
+<tr>
+<td>Leader fails before followers replicate (acks=1)</td>
+<td>Uncommitted messages lost; followers elect new leader</td>
+<td>⚠️ Possible loss</td>
+</tr>
+<tr>
+<td>Leader fails after ISR replication (acks=all)</td>
+<td>All committed messages safe; seamless failover</td>
+<td>❌ No loss</td>
+</tr>
+<tr>
+<td>Entire cluster fails (power outage)</td>
+<td>Cluster restarts; all disk-persisted data recovered</td>
+<td>❌ No loss (unless disk failure)</td>
+</tr>
+</tbody>
+</table>
+
+<div class="warning-box">
+<strong>⚠️ Unclean Leader Election:</strong> If all ISR members fail and only a non-ISR follower remains, Kafka can optionally elect it as leader (<code>unclean.leader.election.enable=true</code>). This WILL cause data loss but maintains availability. Production default is <code>false</code>—prefer consistency over availability.
+</div>
+
+<h4>Designing for Fault Tolerance</h4>
+
+<p><strong>Recommended Configuration:</strong></p>
+<pre><code># Topic creation
+bin/kafka-topics.sh --create \
+  --topic critical-events \
+  --partitions 12 \
+  --replication-factor 3 \
+  --config min.insync.replicas=2 \
+  --config unclean.leader.election.enable=false
+
+# Producer
+acks=all
+enable.idempotence=true
+
+# Result: Can tolerate 1 broker failure with zero data loss
+</code></pre>
+
+<hr>
+
+<h2 id="databricks-intro">6. Databricks Overview</h2>
+
+<p>
+<strong>Databricks</strong> is a unified analytics platform built on Apache Spark, designed to simplify big data processing and machine learning at scale. Founded by the creators of Apache Spark, Databricks provides a cloud-based environment for collaborative data engineering, data science, and machine learning.
+</p>
+
+<h3>What is Databricks?</h3>
+
+<p>
+Databricks functions as the foundational platform for modern data lakehouses—unified architectures that combine the best features of data lakes (scalability, low cost, diverse data formats) and data warehouses (ACID transactions, schema enforcement, query performance).
+</p>
+
+<h4>Key Components</h4>
+
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Workspace</strong></td>
+<td>Collaborative notebooks environment (Python, Scala, SQL, R)</td>
+</tr>
+<tr>
+<td><strong>Compute Clusters</strong></td>
+<td>Managed Spark clusters with auto-scaling and optimized runtimes</td>
+</tr>
+<tr>
+<td><strong>Delta Lake</strong></td>
+<td>Storage layer providing ACID transactions on data lakes</td>
+</tr>
+<tr>
+<td><strong>Structured Streaming</strong></td>
+<td>Real-time stream processing engine built on Spark</td>
+</tr>
+<tr>
+<td><strong>Unity Catalog</strong></td>
+<td>Centralized governance for data, ML models, and credentials</td>
+</tr>
+<tr>
+<td><strong>MLflow</strong></td>
+<td>Open-source platform for ML lifecycle (tracking, models, deployment)</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Databricks + Kafka Integration</h3>
+
+<p>
+Databricks provides native, first-class integration with Apache Kafka for building real-time data pipelines. The platform can:
+</p>
+
+<ul>
+<li>Read streaming data from Kafka topics using Structured Streaming</li>
+<li>Write processed results back to Kafka for downstream consumers</li>
+<li>Manage Kafka offsets automatically with checkpointing</li>
+<li>Handle schema evolution and data quality validation</li>
+<li>Process micro-batches with exactly-once semantics (with Delta Lake)</li>
+</ul>
+
+<hr>
+
+<h2 id="structured-streaming">7. Structured Streaming with Kafka</h2>
+
+<p>
+<strong>Structured Streaming</strong> is Apache Spark's near-real-time processing engine that offers end-to-end fault tolerance with exactly-once processing guarantees using familiar Spark DataFrame and Dataset APIs.
+</p>
+
+<h3>Reading from Kafka</h3>
+
+<p>
+To consume streaming data from Kafka, use the <code>readStream</code> API with the Kafka format. You must specify the Kafka bootstrap servers and topic subscription.
+</p>
+
+<h4>Basic Kafka Read</h4>
+
+<pre><code>from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+
+spark = SparkSession.builder \\
+    .appName("KafkaStructuredStreaming") \\
+    .getOrCreate()
+
+# Read from Kafka topic
+kafka_df = spark.readStream \\
+    .format("kafka") \\
+    .option("kafka.bootstrap.servers", "pkc-619z3.us-east1.gcp.confluent.cloud:9092") \\
+    .option("kafka.security.protocol", "SASL_SSL") \\
+    .option("kafka.sasl.mechanism", "PLAIN") \\
+    .option("kafka.sasl.jaas.config",
+            "org.apache.kafka.common.security.plain.PlainLoginModule required " +
+            "username='YOUR_API_KEY' password='YOUR_API_SECRET';") \\
+    .option("subscribe", "ecommerce-events") \\  # Single topic
+    # .option("subscribePattern", "events-.*") \\  # Regex pattern (multiple topics)
+    .option("startingOffsets", "earliest") \\      # Or "latest" for new data only
+    .load()
+
+# Kafka message schema (all Kafka DataFrames have this structure)
+# +-----+-----+----------+---------+------+--------------------+-------------+
+# | key | value | topic | partition | offset | timestamp | timestampType |
+# +-----+-----+----------+---------+------+--------------------+-------------+
+</code></pre>
+
+<h4>Offset Management Options</h4>
+
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Values</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>startingOffsets</code></td>
+<td><code>earliest</code>, <code>latest</code>, JSON</td>
+<td>Where to start reading when query first starts (ignored on restart—uses checkpoint)</td>
+</tr>
+<tr>
+<td><code>endingOffsets</code></td>
+<td><code>latest</code>, JSON</td>
+<td>Batch only: where to stop reading (for bounded processing)</td>
+</tr>
+<tr>
+<td><code>failOnDataLoss</code></td>
+<td><code>true</code> (default), <code>false</code></td>
+<td>Whether to fail query if Kafka data deleted before consumption</td>
+</tr>
+</tbody>
+</table>
+
+<div class="warning-box">
+<strong>⚠️ Important:</strong> <code>startingOffsets</code> only applies when the query starts fresh (no checkpoint exists). If you stop and restart a streaming query, it ALWAYS resumes from the checkpoint—not from <code>startingOffsets</code>.
+</div>
+
+<h3>Processing Kafka Messages</h3>
+
+<p>
+Kafka messages arrive as binary data. You must parse the <code>value</code> column (byte array) into structured format (JSON, Avro, etc.).
+</p>
+
+<pre><code># Parse JSON messages
+from pyspark.sql.types import *
+
+# Define schema for JSON messages
+schema = StructType([
+    StructField("event_id", StringType()),
+    StructField("timestamp", StringType()),
+    StructField("user_id", StringType()),
+    StructField("action", StringType()),
+    StructField("product", StructType([
+        StructField("id", StringType()),
+        StructField("name", StringType()),
+        StructField("price", DoubleType())
+    ]))
+])
+
+# Parse Kafka value bytes as JSON
+parsed_df = kafka_df \\
+    .select(
+        col("key").cast("string").alias("message_key"),
+        from_json(col("value").cast("string"), schema).alias("data"),
+        col("timestamp").alias("kafka_timestamp"),
+        col("partition"),
+        col("offset")
+    ) \\
+    .select("message_key", "data.*", "kafka_timestamp", "partition", "offset")
+
+# Now you can query structured data
+purchase_events = parsed_df.filter(col("action") == "purchase")
+</code></pre>
+
+<h3>Writing to Kafka</h3>
+
+<p>
+To write streaming results back to Kafka, the DataFrame must have a <code>value</code> column (required) and optionally <code>key</code>, <code>topic</code>, <code>partition</code>, <code>headers</code>.
+</p>
+
+<pre><code># Prepare data for Kafka (must have 'value' column as STRING or BINARY)
+output_df = parsed_df \\
+    .select(
+        col("user_id").alias("key"),
+        to_json(struct("*")).alias("value")  # Convert DataFrame columns to JSON string
+    )
+
+# Write to Kafka topic
+query = output_df.writeStream \\
+    .format("kafka") \\
+    .option("kafka.bootstrap.servers", "pkc-619z3.us-east1.gcp.confluent.cloud:9092") \\
+    .option("kafka.security.protocol", "SASL_SSL") \\
+    .option("kafka.sasl.mechanism", "PLAIN") \\
+    .option("kafka.sasl.jaas.config", "...") \\
+    .option("topic", "processed-events") \\
+    .option("checkpointLocation", "/tmp/kafka-checkpoint") \\  # Required for fault tolerance
+    .outputMode("append") \\
+    .start()
+
+query.awaitTermination()
+</code></pre>
+
+<h3>Checkpointing & Fault Tolerance</h3>
+
+<p>
+Structured Streaming uses <strong>checkpoints</strong> to track processed offsets and enable exactly-once processing. The checkpoint location stores:
+</p>
+
+<ul>
+<li>Kafka offsets (which messages have been processed)</li>
+<li>Query metadata (configuration, schema)</li>
+<li>State for stateful operations (aggregations, joins)</li>
+</ul>
+
+<div class="info-box">
+<strong>🔒 Exactly-Once Guarantee:</strong> Databricks Structured Streaming with Kafka + Delta Lake achieves true exactly-once semantics:
+<ol style="margin-top: 10px;">
+<li>Kafka provides at-least-once delivery (with retries)</li>
+<li>Structured Streaming deduplicates via checkpoints and idempotent writes</li>
+<li>Delta Lake's ACID transactions ensure atomic commits</li>
+<li>Result: Each Kafka message processed <strong>exactly once</strong>, no duplicates or loss</li>
+</ol>
+</div>
+
+<hr>
+
+<h2 id="delta-lake">8. Delta Lake</h2>
+
+<p>
+<strong>Delta Lake</strong> is an open-source storage layer that brings ACID transactions, scalable metadata handling, and time travel to data lakes. It extends Parquet files with a transaction log.
+</p>
+
+<h3>Core Features</h3>
+
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ACID Transactions</strong></td>
+<td>Multiple concurrent writes, reads, and modifications with full isolation</td>
+</tr>
+<tr>
+<td><strong>Schema Enforcement</strong></td>
+<td>Prevent bad data from entering tables; automatic schema validation</td>
+</tr>
+<tr>
+<td><strong>Time Travel</strong></td>
+<td>Query historical versions of data; rollback to previous states</td>
+</tr>
+<tr>
+<td><strong>Upserts & Deletes</strong></td>
+<td>MERGE, UPDATE, DELETE operations on data lake files (not possible with Parquet alone)</td>
+</tr>
+<tr>
+<td><strong>Scalable Metadata</strong></td>
+<td>Handle petabyte-scale tables with billions of files efficiently</td>
+</tr>
+<tr>
+<td><strong>Unified Batch & Streaming</strong></td>
+<td>Single table serves both batch and streaming reads/writes</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Streaming Kafka to Delta Lake</h3>
+
+<pre><code># Read from Kafka, process, write to Delta Lake
+from delta.tables import *
+
+kafka_df = spark.readStream \\
+    .format("kafka") \\
+    .option("kafka.bootstrap.servers", "...") \\
+    .option("subscribe", "orders") \\
+    .load()
+
+# Parse and transform
+orders_df = kafka_df \\
+    .select(from_json(col("value").cast("string"), order_schema).alias("data")) \\
+    .select("data.*")
+
+# Write to Delta Lake with exactly-once guarantees
+query = orders_df.writeStream \\
+    .format("delta") \\
+    .outputMode("append") \\
+    .option("checkpointLocation", "/delta/checkpoints/orders") \\
+    .trigger(processingTime="10 seconds") \\  # Micro-batch every 10 seconds
+    .start("/delta/tables/orders")
+
+# Now you can query the Delta table with SQL!
+# spark.sql("SELECT * FROM delta.`/delta/tables/orders` WHERE amount > 1000")
+</code></pre>
+
+<hr>
+
+<h2 id="code-examples">9. Complete Code Examples</h2>
+
+<h3>Python Kafka Consumer (Production-Grade)</h3>
+
+<pre><code>#!/usr/bin/env python3
+from confluent_kafka import Consumer, KafkaError
+import json
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Kafka configuration
+conf = {
+    'bootstrap.servers': 'pkc-619z3.us-east1.gcp.confluent.cloud:9092',
+    'security.protocol': 'SASL_SSL',
+    'sasl.mechanisms': 'PLAIN',
+    'sasl.username': 'YOUR_API_KEY',
+    'sasl.password': 'YOUR_API_SECRET',
+    'group.id': 'workshop-consumer-group',
+    'auto.offset.reset': 'earliest',
+    'enable.auto.commit': False,
+    'max.poll.interval.ms': 300000,
+}
+
+def process_message(message):
+    """Your business logic here"""
+    try:
+        data = json.loads(message.value().decode('utf-8'))
+        logger.info(f"Processing: {data}")
+        # ... your processing logic ...
+        return True
+    except Exception as e:
+        logger.error(f"Error processing message: {e}")
+        return False
+
+def main():
+    consumer = Consumer(conf)
+    consumer.subscribe(['ecommerce-events'])
+
+    try:
+        while True:
+            msg = consumer.poll(timeout=1.0)
+
+            if msg is None:
+                continue
+            if msg.error():
+                if msg.error().code() == KafkaError._PARTITION_EOF:
+                    logger.info(f"Reached end of partition {msg.partition()}")
+                else:
+                    logger.error(f"Consumer error: {msg.error()}")
+                continue
+
+            # Process message
+            if process_message(msg):
+                # Commit offset only after successful processing
+                consumer.commit(message=msg)
+
+    except KeyboardInterrupt:
+        logger.info("Shutting down consumer...")
+    finally:
+        consumer.close()
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+
+<hr>
+
+<p style="text-align: center; margin-top: 60px; color: #666; font-size: 0.9em;">
+End of Tutorial • Generated for USN Kafka Workshop • 2025
+</p>
+
+</div>
+</body>
+</html>
