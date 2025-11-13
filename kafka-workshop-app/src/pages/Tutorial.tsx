@@ -1230,6 +1230,22 @@ pip freeze > requirements.txt`} />
                         opacity: 0;
                       }
                     }
+                    @keyframes eventFlowConsumer {
+                      0% {
+                        left: 0;
+                        opacity: 0;
+                      }
+                      20% {
+                        opacity: 1;
+                      }
+                      80% {
+                        opacity: 1;
+                      }
+                      100% {
+                        left: 100%;
+                        opacity: 0;
+                      }
+                    }
                     @keyframes systemBlink {
                       0%, 100% {
                         opacity: 0.6;
@@ -1258,6 +1274,18 @@ pip freeze > requirements.txt`} />
                     .event-dot:nth-child(1) { animation-delay: 0s; }
                     .event-dot:nth-child(2) { animation-delay: 1s; }
                     .event-dot:nth-child(3) { animation-delay: 2s; }
+                    .event-dot-consumer {
+                      position: absolute;
+                      width: 10px;
+                      height: 10px;
+                      background: #4CAF50;
+                      border-radius: 50%;
+                      box-shadow: 0 0 10px rgba(76,175,80,0.8);
+                      animation: eventFlowConsumer 3s ease-in-out infinite;
+                    }
+                    .event-dot-consumer:nth-child(1) { animation-delay: 0s; }
+                    .event-dot-consumer:nth-child(2) { animation-delay: 1s; }
+                    .event-dot-consumer:nth-child(3) { animation-delay: 2s; }
                     .system-icon {
                       animation: systemBlink 2s ease-in-out infinite;
                     }
@@ -1281,6 +1309,21 @@ pip freeze > requirements.txt`} />
                   <Box className="event-dot" />
                   <Box className="event-dot" />
                   <Box className="event-dot" />
+                </Box>
+
+                {/* Animated event dots flowing from Kafka to Consumer Services */}
+                <Box sx={{
+                  position: 'absolute',
+                  top: 'calc(50% - 5px)',
+                  left: '52%',
+                  width: '29%',
+                  height: '10px',
+                  zIndex: 10,
+                  pointerEvents: 'none',
+                }}>
+                  <Box className="event-dot-consumer" />
+                  <Box className="event-dot-consumer" />
+                  <Box className="event-dot-consumer" />
                 </Box>
 
                 <Grid container spacing={2} alignItems="center">
