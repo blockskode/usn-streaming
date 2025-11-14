@@ -2941,15 +2941,15 @@ kafka_api_key = "your-api-key"
 kafka_api_secret = "your-api-secret"
 topic_name = "ecommerce-events"  # We'll use this existing topic with sample data
 
-# Create JAAS configuration string (note the semicolon at the end!)
+# IMPORTANT: Databricks uses shaded Kafka libraries, so use "kafkashaded" prefix!
 jaas_config = (
-    f'org.apache.kafka.common.security.plain.PlainLoginModule required '
+    f'kafkashaded.org.apache.kafka.common.security.plain.PlainLoginModule required '
     f'username="{kafka_api_key}" '
     f'password="{kafka_api_secret}";'
 )
 
 print(f"🎯 Configured to read from topic: {topic_name}")
-print(f"JAAS config created: {len(jaas_config)} characters")`} />
+print(f"✅ JAAS config created successfully")`} />
 
               <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
                 <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
@@ -2963,13 +2963,16 @@ print(f"JAAS config created: {len(jaas_config)} characters")`} />
                     <li style={{ marginBottom: '12px' }}>
                       <strong>kafka_api_key & kafka_api_secret:</strong> Authentication credentials to securely access your Kafka cluster.
                     </li>
-                    <li style={{ marginBottom: '0px' }}>
+                    <li style={{ marginBottom: '12px' }}>
                       <strong>topic_name:</strong> The Kafka topic we'll read from. We're using "ecommerce-events" which already has sample data flowing through it!
+                    </li>
+                    <li style={{ marginBottom: '0px' }}>
+                      <strong>kafkashaded prefix:</strong> Databricks uses shaded (renamed) Kafka libraries to avoid conflicts. You MUST use <code>kafkashaded.org.apache.kafka...</code> instead of <code>org.apache.kafka...</code> or you'll get JAAS errors!
                     </li>
                   </ul>
                 </Typography>
                 <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
-                  💡 <strong>Tip:</strong> The "ecommerce-events" topic contains realistic e-commerce data (orders, products, customers) perfect for learning streaming analytics!
+                  💡 <strong>Tip:</strong> The "kafkashaded" prefix is specific to Databricks. In other Spark environments, you might use the regular "org.apache.kafka" prefix.
                 </Typography>
               </Box>
 
@@ -3003,48 +3006,34 @@ print("✅ Connection successful!")
 print(f"Sample data from {topic_name}:")
 test_df.selectExpr("CAST(value AS STRING)").show(truncate=False)`} />
 
-              <Box sx={{ bgcolor: '#fff3cd', p: 2, borderRadius: 1, borderLeft: '4px solid #ffc107', mb: 3, mt: 2 }}>
-                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1, color: '#856404' }}>
-                  ⚠️ Troubleshooting Connection Errors:
+              <Box sx={{ bgcolor: '#d4edda', p: 2, borderRadius: 1, borderLeft: '4px solid #28a745', mb: 3, mt: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1, color: '#155724' }}>
+                  ✅ Common Fix: Use "kafkashaded" Prefix
                 </Typography>
-                <Typography variant="body2" component="div" sx={{ color: '#856404', lineHeight: 1.8 }}>
-                  <strong>If you get "JAAS config entry not terminated by semi-colon":</strong>
-                  <ul style={{ marginTop: 4, marginBottom: 8, paddingLeft: 20 }}>
-                    <li>Make sure the <code>jaas_config</code> string ends with a semicolon <code>;</code></li>
-                    <li>Check for any special characters in your API secret that need escaping</li>
-                    <li>Verify you copied the JAAS config code exactly as shown above</li>
+                <Typography variant="body2" component="div" sx={{ color: '#155724', lineHeight: 1.8 }}>
+                  <strong>The #1 reason for JAAS errors in Databricks:</strong> Using <code>org.apache.kafka...</code> instead of <code>kafkashaded.org.apache.kafka...</code>
+                  <ul style={{ marginTop: 8, marginBottom: 0, paddingLeft: 20 }}>
+                    <li>Databricks uses shaded Kafka libraries to avoid version conflicts</li>
+                    <li>Make sure your JAAS config starts with <code>kafkashaded.org.apache.kafka.common.security.plain.PlainLoginModule</code></li>
+                    <li>This is the correct prefix shown in Step 1 above!</li>
                   </ul>
-                  <strong>If you get "Failed to create new KafkaAdminClient":</strong>
-                  <ul style={{ marginTop: 4, marginBottom: 0, paddingLeft: 20 }}>
-                    <li>Verify API key/secret have no extra spaces, quotes, or line breaks</li>
-                    <li>Check bootstrap server URL is exact (include port :9092)</li>
-                    <li>Ensure Databricks workspace has internet access to Confluent Cloud</li>
-                    <li>Confirm the topic exists: <code>print(topic_name)</code></li>
-                  </ul>
-                </Typography>
-                <Typography variant="body2" sx={{ mt: 2, color: '#856404', fontWeight: 'bold' }}>
-                  💡 Tip: Run <code>print(jaas_config)</code> to see the full JAAS string and verify it's correctly formatted.
                 </Typography>
               </Box>
 
-              <Alert severity="warning" sx={{ mb: 3 }}>
-                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                  🚧 Network Connectivity Issue?
+              <Box sx={{ bgcolor: '#fff3cd', p: 2, borderRadius: 1, borderLeft: '4px solid #ffc107', mb: 3 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1, color: '#856404' }}>
+                  ⚠️ Other Troubleshooting Tips:
                 </Typography>
-                <Typography variant="body2" paragraph>
-                  If the connection still fails after verifying credentials, your Databricks workspace likely cannot reach Confluent Cloud due to network restrictions. This is common in corporate environments.
-                </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                  Solutions:
-                </Typography>
-                <Typography variant="body2" component="div">
+                <Typography variant="body2" component="div" sx={{ color: '#856404', lineHeight: 1.8 }}>
+                  <strong>If connection still fails after using "kafkashaded" prefix:</strong>
                   <ul style={{ marginTop: 4, marginBottom: 0, paddingLeft: 20 }}>
-                    <li><strong>Contact your Databricks admin</strong> to allowlist Confluent Cloud IPs or enable VPC peering</li>
-                    <li><strong>Use Databricks-managed Kafka</strong> if available in your workspace (check with your admin)</li>
-                    <li><strong>Skip to the next sections</strong> which show streaming concepts using simulated data instead of live Kafka</li>
+                    <li>Verify API key/secret have no extra spaces, quotes, or line breaks</li>
+                    <li>Check bootstrap server URL is exact (include port :9092)</li>
+                    <li>Ensure the <code>jaas_config</code> string ends with a semicolon <code>;</code></li>
+                    <li>Run <code>print(jaas_config)</code> to see the full JAAS string</li>
                   </ul>
                 </Typography>
-              </Alert>
+              </Box>
 
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
@@ -3130,32 +3119,21 @@ df.printSchema()`} />
                 Code Preview:
               </Typography>
 
-              <CodeBlock code={`from pyspark.sql.functions import col, from_json
-from pyspark.sql.types import StructType, StructField, StringType
+              <CodeBlock code={`from pyspark.sql.functions import col
 
-# Define the schema of your Kafka messages
-message_schema = StructType([
-    StructField("text", StringType(), True),
-    StructField("timestamp", StringType(), True),
-    StructField("message_id", StringType(), True)
-])
-
-# Parse the value column from binary to JSON
-parsed_df = (df
-    .select(
-        col("key").cast("string"),
-        from_json(col("value").cast("string"), message_schema).alias("data"),
-        col("topic"),
-        col("partition"),
-        col("offset"),
-        col("timestamp")
-    )
-    .select("data.*", "topic", "partition", "offset", "timestamp")
+# Convert binary value to string (keeps original JSON intact)
+parsed_df = df.select(
+    col("key").cast("string").alias("key"),
+    col("value").cast("string").alias("value"),  # Original JSON as string
+    col("topic"),
+    col("partition"),
+    col("offset"),
+    col("timestamp").alias("kafka_timestamp")
 )
 
-# Display the parsed data
-print("✅ Data parsed successfully!")
-parsed_df.printSchema()`} />
+print("✅ Data converted successfully!")
+print("Sample data:")
+parsed_df.show(5, truncate=False)`} />
 
               <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
                 <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
@@ -3164,30 +3142,21 @@ parsed_df.printSchema()`} />
                 <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
                   <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>from_json:</strong> A PySpark function that parses JSON strings into structured data (columns).
+                      <strong>col("key").cast("string"):</strong> Converts the binary message key to a string.
                     </li>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>StructType & StructField:</strong> Define the schema (structure) of your JSON data. Think of it as defining what columns and data types your messages have.
+                      <strong>col("value").cast("string"):</strong> Converts Kafka's binary message value to a string. This preserves the original JSON without parsing it into columns.
                     </li>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>message_schema:</strong> Describes your Kafka message structure. Here we expect three fields: <code>text</code>, <code>timestamp</code>, and <code>message_id</code> (all strings). Adjust this to match YOUR actual message format!
-                    </li>
-                    <li style={{ marginBottom: '12px' }}>
-                      <strong>col("value").cast("string"):</strong> Converts Kafka's binary <code>value</code> field to a readable string.
-                    </li>
-                    <li style={{ marginBottom: '12px' }}>
-                      <strong>from_json(...).alias("data"):</strong> Parses the JSON string using our schema and creates a nested column called <code>data</code>.
-                    </li>
-                    <li style={{ marginBottom: '12px' }}>
-                      <strong>.select("data.*", ...):</strong> Flattens the nested <code>data</code> column, bringing <code>text</code>, <code>timestamp</code>, and <code>message_id</code> to the top level. Also keeps Kafka metadata columns.
+                      <strong>topic, partition, offset:</strong> Kafka metadata fields that tell you where each message came from.
                     </li>
                     <li style={{ marginBottom: '0px' }}>
-                      <strong>parsed_df:</strong> The final DataFrame with clean, structured data ready for analysis or storage.
+                      <strong>timestamp → kafka_timestamp:</strong> Renamed to avoid conflicts with Delta table reserved column names.
                     </li>
                   </ul>
                 </Typography>
                 <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
-                  💡 <strong>Important:</strong> Make sure your <code>message_schema</code> matches the actual JSON structure of messages you sent to Kafka in Part 1!
+                  💡 <strong>Why save as string?</strong> Keeping the JSON as a string is flexible - you can query it later with JSON functions or parse specific fields as needed without predefining a schema!
                 </Typography>
               </Box>
 
@@ -3207,19 +3176,20 @@ parsed_df.printSchema()`} />
               <CodeBlock code={`# Create a clean table name (replace hyphens with underscores)
 table_name = topic_name.replace("-", "_") + "_data"
 
-# Write the streaming data to Delta Lake
+# Set up checkpoint location (use Unity Catalog volume)
+checkpoint_path = f"/Volumes/kafka_catalog/kafka_schema/kafka_schema/checkpoints/{table_name}"
+
+# Write the streaming data to Delta Lake table
 query = (parsed_df.writeStream
     .format("delta")
     .outputMode("append")  # Append new records
-    .option("checkpointLocation", "/tmp/kafka_checkpoint")  # For fault tolerance
-    .option("path", f"kafka_catalog.kafka_schema.{table_name}")  # Your table path
-    .start())
+    .option("checkpointLocation", checkpoint_path)  # For fault tolerance
+    .trigger(availableNow=True)  # Process all available data once and stop
+    .table(f"kafka_catalog.kafka_schema.{table_name}")  # Unity Catalog table
+)
 
 print(f"✅ Streaming to Delta table: kafka_catalog.kafka_schema.{table_name}")
-print("Stream is running... Data will be continuously written!")
-
-# To stop the stream later, run:
-# query.stop()`} />
+print("Stream will process all available data and then stop!")`} />
 
               <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
                 <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
@@ -3240,21 +3210,24 @@ print("Stream is running... Data will be continuously written!")
                       <strong>.outputMode("append"):</strong> Specifies how to write data. <code>"append"</code> adds new records without modifying existing ones. Other modes: <code>"complete"</code> (rewrites entire table) and <code>"update"</code> (updates changed rows).
                     </li>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>.option("checkpointLocation", ...):</strong> Critical for fault tolerance! The checkpoint directory stores progress information, so if your stream crashes, it can resume exactly where it left off without losing or duplicating data.
+                      <strong>checkpoint_path:</strong> Stores in a Unity Catalog volume for better manageability and persistence.
                     </li>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>.option("path", ...):</strong> Specifies the Delta table location using the three-level namespace: <code>catalog.schema.table_name</code>. This is where your data will be permanently stored.
+                      <strong>.option("checkpointLocation", ...):</strong> Critical for fault tolerance! Stores progress information so the stream can resume exactly where it left off without losing or duplicating data.
                     </li>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>.start():</strong> Begins the streaming query. This runs continuously in the background, processing new data as it arrives.
+                      <strong>.trigger(availableNow=True):</strong> Processes all available data once and stops (like a batch job). Remove this for continuous streaming, or use <code>.trigger(processingTime="30 seconds")</code> for micro-batches.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.table(...):</strong> Writes to a Unity Catalog managed table using the three-level namespace: <code>catalog.schema.table_name</code>.
                     </li>
                     <li style={{ marginBottom: '0px' }}>
-                      <strong>query:</strong> A handle to the running stream. Use <code>query.stop()</code> to halt the streaming process.
+                      <strong>query:</strong> A handle to the running stream. Use <code>query.awaitTermination()</code> to wait for completion.
                     </li>
                   </ul>
                 </Typography>
                 <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
-                  💡 <strong>The stream is now running continuously!</strong> Every message sent to your Kafka topic will be automatically read, parsed, and saved to your Delta table.
+                  💡 <strong>Tip:</strong> Using <code>availableNow=True</code> is perfect for workshops/testing - it processes all current data and stops. For production, remove this trigger to run continuously!
                 </Typography>
               </Box>
 
