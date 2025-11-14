@@ -2924,10 +2924,10 @@ admin.close()`} />
 
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 1: Set Up Kafka Credentials and List Topics
+                  📝 Step 1: Set Up Kafka Credentials
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  In your Databricks notebook, create a new cell and add your Kafka connection details. We'll use Spark to list all available topics:
+                  In your Databricks notebook, create a new cell and add your Kafka connection details with the topic name you created in Part 1:
                 </Typography>
               </Alert>
 
@@ -2939,33 +2939,17 @@ admin.close()`} />
 kafka_bootstrap_servers = "pkc-619z3.us-east1.gcp.confluent.cloud:9092"
 kafka_api_key = "your-api-key"
 kafka_api_secret = "your-api-secret"
+topic_name = "ecommerce-events"  # We'll use this existing topic with sample data
 
-# Create JAAS configuration for authentication
-jaas_config = f'org.apache.kafka.common.security.plain.PlainLoginModule required username="{kafka_api_key}" password="{kafka_api_secret}";'
-
-# Read available topics using Spark's Kafka batch reader
-topics_df = (spark.read
-    .format("kafka")
-    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
-    .option("kafka.security.protocol", "SASL_SSL")
-    .option("kafka.sasl.mechanism", "PLAIN")
-    .option("kafka.sasl.jaas.config", jaas_config)
-    .option("subscribe", ".*")  # Subscribe to all topics to discover them
-    .option("startingOffsets", "latest")
-    .option("endingOffsets", "latest")
-    .load()
-    .select("topic")
-    .distinct()
+# Create JAAS configuration string (note the semicolon at the end!)
+jaas_config = (
+    f'org.apache.kafka.common.security.plain.PlainLoginModule required '
+    f'username="{kafka_api_key}" '
+    f'password="{kafka_api_secret}";'
 )
 
-# Display all available topics
-print("📋 Available topics in your Kafka cluster:")
-print("=" * 50)
-topics = [row.topic for row in topics_df.collect()]
-for topic in sorted(topics):
-    print(f"  • {topic}")
-
-print(f"\\n✅ Found {len(topics)} topics. Choose one from the list above.")`} />
+print(f"🎯 Configured to read from topic: {topic_name}")
+print(f"JAAS config created: {len(jaas_config)} characters")`} />
 
               <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
                 <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
@@ -2974,62 +2958,27 @@ print(f"\\n✅ Found {len(topics)} topics. Choose one from the list above.")`} /
                 <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
                   <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>kafka_bootstrap_servers:</strong> The address of your Kafka cluster (broker). This tells Spark where to connect.
+                      <strong>kafka_bootstrap_servers:</strong> The address of your Kafka cluster (broker). This tells Databricks where to connect.
                     </li>
                     <li style={{ marginBottom: '12px' }}>
                       <strong>kafka_api_key & kafka_api_secret:</strong> Authentication credentials to securely access your Kafka cluster.
                     </li>
-                    <li style={{ marginBottom: '12px' }}>
-                      <strong>jaas_config:</strong> Java Authentication and Authorization Service configuration string for Kafka SASL authentication.
-                    </li>
-                    <li style={{ marginBottom: '12px' }}>
-                      <strong>spark.read.format("kafka"):</strong> Uses Spark's built-in Kafka connector (no external libraries needed!).
-                    </li>
-                    <li style={{ marginBottom: '12px' }}>
-                      <strong>.option("subscribe", ".*"):</strong> Pattern to discover all topics (Spark doesn't have a direct "list topics" API, so we use a pattern match).
-                    </li>
-                    <li style={{ marginBottom: '12px' }}>
-                      <strong>.select("topic").distinct():</strong> Extracts unique topic names from the Kafka metadata.
-                    </li>
                     <li style={{ marginBottom: '0px' }}>
-                      <strong>.collect():</strong> Brings the topic names to the driver to display them.
+                      <strong>topic_name:</strong> The Kafka topic we'll read from. We're using "ecommerce-events" which already has sample data flowing through it!
                     </li>
                   </ul>
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#fff3cd', borderRadius: 1, borderLeft: '4px solid #ffc107', color: '#856404', lineHeight: 1.8 }}>
-                  ⚠️ <strong>Note:</strong> This approach uses Spark's batch reader to discover topics. Alternatively, you can install kafka-python with <code>%pip install kafka-python</code> and use KafkaAdminClient for a simpler approach.
+                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
+                  💡 <strong>Tip:</strong> The "ecommerce-events" topic contains realistic e-commerce data (orders, products, customers) perfect for learning streaming analytics!
                 </Typography>
               </Box>
 
-              <Alert severity="success" sx={{ mb: 3 }}>
-                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                  ✅ Expected Output
-                </Typography>
-                <Typography variant="body2" paragraph>
-                  After running the code above, you should see all topics:
-                </Typography>
-                <Box sx={{ bgcolor: 'rgba(0,0,0,0.05)', p: 2, borderRadius: 1, fontFamily: 'monospace', fontSize: '0.85rem', whiteSpace: 'pre-line' }}>
-                  {`📋 Available topics in your Kafka cluster:
-==================================================
-  • _confluent-command
-  • _confluent-metrics
-  • jane-topic
-  • john-topic
-  • test-topic
-
-✅ Found 5 topics. Choose one from the list above.`}
-                </Box>
-                <Typography variant="body2" sx={{ mt: 2 }}>
-                  Topics starting with <code>_</code> are system topics. Look for your topic from Part 1!
-                </Typography>
-              </Alert>
-
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 1b: Select Your Topic
+                  📝 Step 2: Test Connection with Batch Read (Optional but Recommended)
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  Now that you've seen all available topics, set the <code>topic_name</code> variable:
+                  Before streaming, let's test the connection by reading a small batch of data:
                 </Typography>
               </Alert>
 
@@ -3037,33 +2986,72 @@ print(f"\\n✅ Found {len(topics)} topics. Choose one from the list above.")`} /
                 Code Preview:
               </Typography>
 
-              <CodeBlock code={`# Choose your topic from the list above
-topic_name = "john-topic"  # Replace with YOUR topic name
+              <CodeBlock code={`# Test connection with a batch read first
+test_df = (spark.read
+    .format("kafka")
+    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
+    .option("kafka.security.protocol", "SASL_SSL")
+    .option("kafka.sasl.mechanism", "PLAIN")
+    .option("kafka.sasl.jaas.config", jaas_config)
+    .option("subscribe", topic_name)
+    .option("startingOffsets", "earliest")
+    .option("endingOffsets", "latest")
+    .load()
+    .limit(5))
 
-print(f"🎯 Selected topic: {topic_name}")`} />
+print("✅ Connection successful!")
+print(f"Sample data from {topic_name}:")
+test_df.selectExpr("CAST(value AS STRING)").show(truncate=False)`} />
 
-              <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
-                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
-                  📚 Understanding the Code:
+              <Box sx={{ bgcolor: '#fff3cd', p: 2, borderRadius: 1, borderLeft: '4px solid #ffc107', mb: 3, mt: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1, color: '#856404' }}>
+                  ⚠️ Troubleshooting Connection Errors:
                 </Typography>
-                <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
-                  <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
-                    <li style={{ marginBottom: '0px' }}>
-                      <strong>topic_name:</strong> The specific Kafka topic you want to read data from. Must match one of the topics from the list above.
-                    </li>
+                <Typography variant="body2" component="div" sx={{ color: '#856404', lineHeight: 1.8 }}>
+                  <strong>If you get "JAAS config entry not terminated by semi-colon":</strong>
+                  <ul style={{ marginTop: 4, marginBottom: 8, paddingLeft: 20 }}>
+                    <li>Make sure the <code>jaas_config</code> string ends with a semicolon <code>;</code></li>
+                    <li>Check for any special characters in your API secret that need escaping</li>
+                    <li>Verify you copied the JAAS config code exactly as shown above</li>
+                  </ul>
+                  <strong>If you get "Failed to create new KafkaAdminClient":</strong>
+                  <ul style={{ marginTop: 4, marginBottom: 0, paddingLeft: 20 }}>
+                    <li>Verify API key/secret have no extra spaces, quotes, or line breaks</li>
+                    <li>Check bootstrap server URL is exact (include port :9092)</li>
+                    <li>Ensure Databricks workspace has internet access to Confluent Cloud</li>
+                    <li>Confirm the topic exists: <code>print(topic_name)</code></li>
                   </ul>
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
-                  💡 <strong>Tip:</strong> Make sure you use the exact topic name (case-sensitive) from the list!
+                <Typography variant="body2" sx={{ mt: 2, color: '#856404', fontWeight: 'bold' }}>
+                  💡 Tip: Run <code>print(jaas_config)</code> to see the full JAAS string and verify it's correctly formatted.
                 </Typography>
               </Box>
 
-              <Alert severity="info" sx={{ mb: 3 }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 2: Read Streaming Data from Kafka
+              <Alert severity="warning" sx={{ mb: 3 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  🚧 Network Connectivity Issue?
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  Now let's create a streaming DataFrame that continuously reads from your Kafka topic:
+                  If the connection still fails after verifying credentials, your Databricks workspace likely cannot reach Confluent Cloud due to network restrictions. This is common in corporate environments.
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  Solutions:
+                </Typography>
+                <Typography variant="body2" component="div">
+                  <ul style={{ marginTop: 4, marginBottom: 0, paddingLeft: 20 }}>
+                    <li><strong>Contact your Databricks admin</strong> to allowlist Confluent Cloud IPs or enable VPC peering</li>
+                    <li><strong>Use Databricks-managed Kafka</strong> if available in your workspace (check with your admin)</li>
+                    <li><strong>Skip to the next sections</strong> which show streaming concepts using simulated data instead of live Kafka</li>
+                  </ul>
+                </Typography>
+              </Alert>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  📝 Step 3: Read Streaming Data from Kafka
+                </Typography>
+                <Typography variant="body2" paragraph>
+                  Now that the connection works, let's create a streaming DataFrame:
                 </Typography>
               </Alert>
 
@@ -3077,8 +3065,7 @@ df = (spark.readStream
     .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
     .option("kafka.security.protocol", "SASL_SSL")
     .option("kafka.sasl.mechanism", "PLAIN")
-    .option("kafka.sasl.jaas.config",
-        f'org.apache.kafka.common.security.plain.PlainLoginModule required username="{kafka_api_key}" password="{kafka_api_secret}";')
+    .option("kafka.sasl.jaas.config", jaas_config)
     .option("subscribe", topic_name)
     .option("startingOffsets", "earliest")  # Read from beginning
     .load())
@@ -3132,7 +3119,7 @@ df.printSchema()`} />
 
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 3: Parse the Message Value
+                  📝 Step 4: Parse the Message Value
                 </Typography>
                 <Typography variant="body2" paragraph>
                   Kafka stores messages as binary data. Let's convert the <code>value</code> field to a readable string:
@@ -3206,7 +3193,7 @@ parsed_df.printSchema()`} />
 
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 4: Write Stream to Delta Lake
+                  📝 Step 5: Write Stream to Delta Lake
                 </Typography>
                 <Typography variant="body2" paragraph>
                   Finally, let's save the streaming data to a Delta table in your catalog:
@@ -3217,15 +3204,18 @@ parsed_df.printSchema()`} />
                 Code Preview:
               </Typography>
 
-              <CodeBlock code={`# Write the streaming data to Delta Lake
+              <CodeBlock code={`# Create a clean table name (replace hyphens with underscores)
+table_name = topic_name.replace("-", "_") + "_data"
+
+# Write the streaming data to Delta Lake
 query = (parsed_df.writeStream
     .format("delta")
     .outputMode("append")  # Append new records
     .option("checkpointLocation", "/tmp/kafka_checkpoint")  # For fault tolerance
-    .option("path", f"kafka_catalog.kafka_schema.{topic_name}_data")  # Your table path
+    .option("path", f"kafka_catalog.kafka_schema.{table_name}")  # Your table path
     .start())
 
-print(f"✅ Streaming to Delta table: kafka_catalog.kafka_schema.{topic_name}_data")
+print(f"✅ Streaming to Delta table: kafka_catalog.kafka_schema.{table_name}")
 print("Stream is running... Data will be continuously written!")
 
 # To stop the stream later, run:
@@ -3237,6 +3227,9 @@ print("Stream is running... Data will be continuously written!")
                 </Typography>
                 <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
                   <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>table_name:</strong> Creates a valid table name by replacing hyphens with underscores (e.g., "ecommerce-events" → "ecommerce_events_data"). Delta table names can't contain hyphens!
+                    </li>
                     <li style={{ marginBottom: '12px' }}>
                       <strong>parsed_df.writeStream:</strong> Initiates writing a streaming DataFrame (similar to <code>df.write</code> for batch processing).
                     </li>
