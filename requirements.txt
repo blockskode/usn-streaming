@@ -15,7 +15,7 @@ simplejson==3.19.3
 # ============================================
 
 # Data Processing (uncomment if you need pandas/numpy)
-# pandas>=2.2.0
+pandas>=2.2.0
 # numpy>=1.26.0
 
 # Avro support (uncomment if needed)

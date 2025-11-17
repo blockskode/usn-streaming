@@ -1,3 +1,40 @@
+# ============================================
+# STUDENT REPO: Only share examples/ and requirements.txt
+# Ignore everything else (workshop app, credentials, plans, etc.)
+# ============================================
+
+# Ignore the entire workshop app
+kafka-workshop-app/
+
+# Ignore workshop planning documents
+app-build-plan.md
+firebase-workshop-app-plan.md
+implementation-plan.md
+workshope.md
+
+# Ignore credentials and sensitive files
+api-key-*.txt
+fireabse_config.js
+.env
+.env.example
+
+# Ignore build artifacts and utilities
+about/
+venv/
+create_pdf.py
+
+# macOS files
+.DS_Store
+
+# Keep only these files for students:
+# - examples/ folder (contains all code examples)
+# - requirements.txt (Python dependencies)
+# - README.md (instructions)
+
+# ============================================
+# Standard Python .gitignore rules below
+# ============================================
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
