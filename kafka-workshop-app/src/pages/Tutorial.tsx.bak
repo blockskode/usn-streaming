@@ -22,7 +22,6 @@ import {
   LinearProgress,
   Chip,
   Badge,
-  Stack,
 } from '@mui/material';
 import {
   Storage,
@@ -42,11 +41,8 @@ import {
   EmojiEvents,
   Star,
   Whatshot,
-  Psychology,
 } from '@mui/icons-material';
 import { Header } from '../components/layout/Header';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const drawerWidth = 280;
 
@@ -105,39 +101,6 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = 'bash' }) => {
           <ContentCopy fontSize="small" />
         </IconButton>
       </Tooltip>
-
-      {/* Copied notification overlay */}
-      {copied && (
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: '#4CAF50',
-            color: 'white',
-            px: 3,
-            py: 1.5,
-            borderRadius: 2,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-            zIndex: 2,
-            animation: 'fadeIn 0.2s ease-in',
-            '@keyframes fadeIn': {
-              from: { opacity: 0, transform: 'translate(-50%, -50%) scale(0.9)' },
-              to: { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
-            },
-          }}
-        >
-          <ContentCopy fontSize="small" />
-          <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-            Code Copied!
-          </Typography>
-        </Box>
-      )}
-
       <Box sx={{ color: '#d4d4d4', p: 2, pr: 6, fontFamily: 'Courier, monospace', fontSize: '0.85rem', overflowX: 'auto' }}>
         <pre style={{ margin: 0 }}>{code}</pre>
       </Box>
@@ -156,7 +119,8 @@ const sections: Section[] = [
   { id: 'databricks-intro', title: 'What is Databricks?', icon: <PlayCircleOutline />, category: 'databricks' },
   { id: 'structured-streaming', title: 'Structured Streaming', icon: <Timeline />, category: 'databricks' },
   { id: 'delta-lake', title: 'Delta Lake', icon: <DataObject />, category: 'databricks' },
-  { id: 'code-examples', title: 'Code Examples', icon: <ContentCopy />, category: 'code' },
+  { id: 'code-python', title: 'Python Consumer', icon: <Code />, category: 'code' },
+  { id: 'code-databricks', title: 'Databricks Streaming', icon: <Speed />, category: 'code' },
 ];
 
 export const Tutorial: React.FC = () => {
@@ -489,14 +453,14 @@ export const Tutorial: React.FC = () => {
               ))}
             </List>
 
-            {/* Code Examples Section */}
+            <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.2)' }} />
+
             <Typography variant="overline" sx={{
+              color: '#ffeb99',
+              fontWeight: 'bold',
               display: 'block',
-              px: 2,
-              mb: 1,
-              mt: 2,
-              color: '#b0bec5',
-              fontWeight: 700,
+              mb: 1.5,
+              px: 1,
               fontSize: '0.75rem',
               letterSpacing: 1.2,
             }}>
@@ -987,12 +951,12 @@ __pycache__/
               </Typography>
 
               <Typography variant="body2" paragraph>
-                We've provided a test script to verify everything is working. You can find it in the <code>examples/00_test_connection.py</code> file:
+                Create a simple test script to verify everything is working:
               </Typography>
 
               <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 2, borderLeft: '4px solid #2196F3' }}>
                 <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                  📄 examples/00_test_connection.py
+                  📄 test_setup.py
                 </Typography>
                 <CodeBlock code={`#!/usr/bin/env python3
 """Test script to verify Kafka setup"""
@@ -1052,20 +1016,10 @@ if __name__ == "__main__":
               </Box>
 
               <Typography variant="body2" paragraph sx={{ mt: 2 }}>
-                Run the test script from your project directory:
+                Run the test script:
               </Typography>
 
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
-                  🐧 🍎 Linux / macOS
-                </Typography>
-                <CodeBlock code={`python3 examples/00_test_connection.py`} />
-
-                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
-                  🪟 Windows
-                </Typography>
-                <CodeBlock code={`python examples\\00_test_connection.py`} />
-              </Box>
+              <CodeBlock code={`python test_setup.py`} />
 
               <Alert severity="success" icon={<CheckCircle />} sx={{ mt: 3 }}>
                 <strong>✅ Setup Complete!</strong> If all tests passed, you're ready to start consuming Kafka messages. Proceed to the Python Consumer section below.
@@ -1266,22 +1220,6 @@ pip freeze > requirements.txt`} />
                         opacity: 0;
                       }
                     }
-                    @keyframes eventFlowConsumer {
-                      0% {
-                        left: 0;
-                        opacity: 0;
-                      }
-                      20% {
-                        opacity: 1;
-                      }
-                      80% {
-                        opacity: 1;
-                      }
-                      100% {
-                        left: 100%;
-                        opacity: 0;
-                      }
-                    }
                     @keyframes systemBlink {
                       0%, 100% {
                         opacity: 0.6;
@@ -1310,18 +1248,6 @@ pip freeze > requirements.txt`} />
                     .event-dot:nth-child(1) { animation-delay: 0s; }
                     .event-dot:nth-child(2) { animation-delay: 1s; }
                     .event-dot:nth-child(3) { animation-delay: 2s; }
-                    .event-dot-consumer {
-                      position: absolute;
-                      width: 10px;
-                      height: 10px;
-                      background: #4CAF50;
-                      border-radius: 50%;
-                      box-shadow: 0 0 10px rgba(76,175,80,0.8);
-                      animation: eventFlowConsumer 3s ease-in-out infinite;
-                    }
-                    .event-dot-consumer:nth-child(1) { animation-delay: 0s; }
-                    .event-dot-consumer:nth-child(2) { animation-delay: 1s; }
-                    .event-dot-consumer:nth-child(3) { animation-delay: 2s; }
                     .system-icon {
                       animation: systemBlink 2s ease-in-out infinite;
                     }
@@ -1345,21 +1271,6 @@ pip freeze > requirements.txt`} />
                   <Box className="event-dot" />
                   <Box className="event-dot" />
                   <Box className="event-dot" />
-                </Box>
-
-                {/* Animated event dots flowing from Kafka to Consumer Services */}
-                <Box sx={{
-                  position: 'absolute',
-                  top: 'calc(50% - 5px)',
-                  left: '52%',
-                  width: '29%',
-                  height: '10px',
-                  zIndex: 10,
-                  pointerEvents: 'none',
-                }}>
-                  <Box className="event-dot-consumer" />
-                  <Box className="event-dot-consumer" />
-                  <Box className="event-dot-consumer" />
                 </Box>
 
                 <Grid container spacing={2} alignItems="center">
@@ -2746,93 +2657,51 @@ admin.close()`} />
                 Key Components
               </Typography>
 
-              <Grid container spacing={3} sx={{ my: 2 }}>
-                {/* Core Infrastructure */}
-                <Grid item xs={12}>
-                  <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 'bold', mb: 1 }}>
-                    Core Infrastructure
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Card variant="outlined" sx={{ borderLeft: '4px solid #4CAF50', height: '100%' }}>
+              <Grid container spacing={2} sx={{ my: 2 }}>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #4CAF50' }}>
                     <CardContent>
                       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                        ⚡ Apache Spark
+                        ⚡ Apache Spark Engine
                       </Typography>
                       <Typography variant="body2">
-                        The engine that processes your data. It can handle both batch processing (all at once) and streaming processing (real-time). Spark powers the Databricks platform and lets you work with massive amounts of data efficiently.
+                        Optimized Spark runtime with performance improvements (Photon engine for 12x faster queries), auto-scaling clusters, and intelligent caching. Supports batch and streaming workloads with unified API.
                       </Typography>
                     </CardContent>
                   </Card>
                 </Grid>
-                <Grid item xs={12} md={4}>
-                  <Card variant="outlined" sx={{ borderLeft: '4px solid #2196F3', height: '100%' }}>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #2196F3' }}>
                     <CardContent>
                       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                        🗄️ Unity Catalog
+                        💾 Delta Lake
                       </Typography>
                       <Typography variant="body2">
-                        Where your data is organized, saved, and governed. Unity Catalog uses a three-level structure: <strong>catalog.schema.table</strong>
-                        <br/><br/>
-                        • <strong>Catalog</strong> - Top-level container (like a database)<br/>
-                        • <strong>Schema</strong> - Logical grouping (like folders)<br/>
-                        • <strong>Table</strong> - Where your data lives<br/><br/>
-                        Example: <code style={{ fontSize: '0.75rem' }}>kafka_catalog.kafka_schema.ecommerce_events_data</code>
+                        ACID transactions on data lakes. Combines reliability of data warehouses with scalability/flexibility of data lakes. Supports time travel, schema evolution, and upserts (MERGE operations).
                       </Typography>
                     </CardContent>
                   </Card>
                 </Grid>
-                <Grid item xs={12} md={4}>
-                  <Card variant="outlined" sx={{ borderLeft: '4px solid #9C27B0', height: '100%' }}>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #9C27B0' }}>
                     <CardContent>
                       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                        📓 Notebooks
+                        📓 Collaborative Notebooks
                       </Typography>
                       <Typography variant="body2">
-                        Interactive coding environment where you write and run your code. Notebooks let you mix code, comments, and visualizations all in one place. You can run code cell by cell and see results immediately.
+                        Interactive notebooks supporting Python, SQL, Scala, and R. Real-time collaboration, version control integration, and native visualization libraries. Schedule notebooks as production jobs.
                       </Typography>
                     </CardContent>
                   </Card>
                 </Grid>
-
-                {/* Use Cases */}
-                <Grid item xs={12} sx={{ mt: 2 }}>
-                  <Typography variant="subtitle2" sx={{ color: '#666', fontWeight: 'bold', mb: 1 }}>
-                    What You Can Build
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Card variant="outlined" sx={{ borderLeft: '4px solid #00BCD4', height: '100%' }}>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #FF6B35' }}>
                     <CardContent>
                       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                        🔧 Data Engineering
+                        🤖 MLflow Integration
                       </Typography>
                       <Typography variant="body2">
-                        Build data pipelines that transform raw data into analytics-ready tables. Schedule jobs to run automatically, monitor pipeline health, and manage dependencies between different data workflows.
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Card variant="outlined" sx={{ borderLeft: '4px solid #E91E63', height: '100%' }}>
-                    <CardContent>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                        🔬 Data Science & ML
-                      </Typography>
-                      <Typography variant="body2">
-                        Build machine learning models with popular libraries like scikit-learn, TensorFlow, and PyTorch. Databricks provides the computing power to train models on large datasets and deploy them to production.
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Card variant="outlined" sx={{ borderLeft: '4px solid #FF9800', height: '100%' }}>
-                    <CardContent>
-                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                        📊 Dashboards & Analytics
-                      </Typography>
-                      <Typography variant="body2">
-                        Create visual reports and interactive dashboards from your data. Turn your analysis into charts, graphs, and tables that stakeholders can explore. Share insights without requiring them to write code.
+                        End-to-end ML lifecycle management. Track experiments, package models, deploy to production with model registry, and monitor performance. Native integration with Spark ML and popular frameworks.
                       </Typography>
                     </CardContent>
                   </Card>
@@ -2900,7 +2769,7 @@ admin.close()`} />
                   <li>Calculate average temperature per sensor every minute</li>
                   <li>Detect anomalies (temperatures above threshold)</li>
                   <li>Store processed results for dashboards and reports</li>
-                  <li>Handle late-arriving data using watermarks <em>(advanced feature)</em></li>
+                  <li>Handle late-arriving data (sensors with network delays)</li>
                   <li>Ensure no data is lost if processing fails</li>
                 </ul>
               </Box>
@@ -3002,10 +2871,10 @@ admin.close()`} />
 
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 1: Set Up Kafka Credentials
+                  📝 Step 1: Set Up Kafka Credentials and List Topics
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  In your Databricks notebook, create a new cell and add your Kafka connection details with the topic name you created in Part 1:
+                  In your Databricks notebook, create a new cell and add your Kafka connection details. We'll use Spark to list all available topics:
                 </Typography>
               </Alert>
 
@@ -3017,17 +2886,33 @@ admin.close()`} />
 kafka_bootstrap_servers = "pkc-619z3.us-east1.gcp.confluent.cloud:9092"
 kafka_api_key = "your-api-key"
 kafka_api_secret = "your-api-secret"
-topic_name = "ecommerce-events"  # We'll use this existing topic with sample data
 
-# IMPORTANT: Databricks uses shaded Kafka libraries, so use "kafkashaded" prefix!
-jaas_config = (
-    f'kafkashaded.org.apache.kafka.common.security.plain.PlainLoginModule required '
-    f'username="{kafka_api_key}" '
-    f'password="{kafka_api_secret}";'
+# Create JAAS configuration for authentication
+jaas_config = f'org.apache.kafka.common.security.plain.PlainLoginModule required username="{kafka_api_key}" password="{kafka_api_secret}";'
+
+# Read available topics using Spark's Kafka batch reader
+topics_df = (spark.read
+    .format("kafka")
+    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
+    .option("kafka.security.protocol", "SASL_SSL")
+    .option("kafka.sasl.mechanism", "PLAIN")
+    .option("kafka.sasl.jaas.config", jaas_config)
+    .option("subscribe", ".*")  # Subscribe to all topics to discover them
+    .option("startingOffsets", "latest")
+    .option("endingOffsets", "latest")
+    .load()
+    .select("topic")
+    .distinct()
 )
 
-print(f"🎯 Configured to read from topic: {topic_name}")
-print(f"✅ JAAS config created successfully")`} />
+# Display all available topics
+print("📋 Available topics in your Kafka cluster:")
+print("=" * 50)
+topics = [row.topic for row in topics_df.collect()]
+for topic in sorted(topics):
+    print(f"  • {topic}")
+
+print(f"\\n✅ Found {len(topics)} topics. Choose one from the list above.")`} />
 
               <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
                 <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
@@ -3036,55 +2921,62 @@ print(f"✅ JAAS config created successfully")`} />
                 <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
                   <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>kafka_bootstrap_servers:</strong> The address of your Kafka cluster (broker). This tells Databricks where to connect.
+                      <strong>kafka_bootstrap_servers:</strong> The address of your Kafka cluster (broker). This tells Spark where to connect.
                     </li>
                     <li style={{ marginBottom: '12px' }}>
                       <strong>kafka_api_key & kafka_api_secret:</strong> Authentication credentials to securely access your Kafka cluster.
                     </li>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>topic_name:</strong> The Kafka topic we'll read from. We're using "ecommerce-events" which already has sample data flowing through it!
+                      <strong>jaas_config:</strong> Java Authentication and Authorization Service configuration string for Kafka SASL authentication.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>spark.read.format("kafka"):</strong> Uses Spark's built-in Kafka connector (no external libraries needed!).
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.option("subscribe", ".*"):</strong> Pattern to discover all topics (Spark doesn't have a direct "list topics" API, so we use a pattern match).
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.select("topic").distinct():</strong> Extracts unique topic names from the Kafka metadata.
                     </li>
                     <li style={{ marginBottom: '0px' }}>
-                      <strong>kafkashaded prefix:</strong> Databricks uses shaded (renamed) Kafka libraries to avoid conflicts. You MUST use <code>kafkashaded.org.apache.kafka...</code> instead of <code>org.apache.kafka...</code> or you'll get JAAS errors!
+                      <strong>.collect():</strong> Brings the topic names to the driver to display them.
                     </li>
                   </ul>
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
-                  💡 <strong>Tip:</strong> The "kafkashaded" prefix is specific to Databricks. In other Spark environments, you might use the regular "org.apache.kafka" prefix.
+                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#fff3cd', borderRadius: 1, borderLeft: '4px solid #ffc107', color: '#856404', lineHeight: 1.8 }}>
+                  ⚠️ <strong>Note:</strong> This approach uses Spark's batch reader to discover topics. Alternatively, you can install kafka-python with <code>%pip install kafka-python</code> and use KafkaAdminClient for a simpler approach.
                 </Typography>
               </Box>
 
-              {/* Step Separator */}
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                my: 6,
-                '&::before, &::after': {
-                  content: '""',
-                  flex: 1,
-                  borderBottom: '3px solid #2196F3',
-                }
-              }}>
-                <Box sx={{
-                  mx: 3,
-                  px: 3,
-                  py: 1,
-                  bgcolor: '#2196F3',
-                  color: 'white',
-                  borderRadius: 2,
-                  fontWeight: 'bold',
-                  fontSize: '0.9rem'
-                }}>
-                  • • •
+              <Alert severity="success" sx={{ mb: 3 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  ✅ Expected Output
+                </Typography>
+                <Typography variant="body2" paragraph>
+                  After running the code above, you should see all topics:
+                </Typography>
+                <Box sx={{ bgcolor: 'rgba(0,0,0,0.05)', p: 2, borderRadius: 1, fontFamily: 'monospace', fontSize: '0.85rem', whiteSpace: 'pre-line' }}>
+                  {`📋 Available topics in your Kafka cluster:
+==================================================
+  • _confluent-command
+  • _confluent-metrics
+  • jane-topic
+  • john-topic
+  • test-topic
+
+✅ Found 5 topics. Choose one from the list above.`}
                 </Box>
-              </Box>
+                <Typography variant="body2" sx={{ mt: 2 }}>
+                  Topics starting with <code>_</code> are system topics. Look for your topic from Part 1!
+                </Typography>
+              </Alert>
 
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 2: Test Connection with Batch Read (Optional but Recommended)
+                  📝 Step 1b: Select Your Topic
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  Before streaming, let's test the connection by reading a small batch of data:
+                  Now that you've seen all available topics, set the <code>topic_name</code> variable:
                 </Typography>
               </Alert>
 
@@ -3092,159 +2984,33 @@ print(f"✅ JAAS config created successfully")`} />
                 Code Preview:
               </Typography>
 
-              <CodeBlock code={`# Test connection with a batch read first
-from pyspark.sql.functions import col, from_json
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+              <CodeBlock code={`# Choose your topic from the list above
+topic_name = "john-topic"  # Replace with YOUR topic name
 
-test_df = (spark.read
-    .format("kafka")
-    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
-    .option("kafka.security.protocol", "SASL_SSL")
-    .option("kafka.sasl.mechanism", "PLAIN")
-    .option("kafka.sasl.jaas.config", jaas_config)
-    .option("subscribe", topic_name)
-    .option("startingOffsets", "earliest")
-    .option("endingOffsets", "latest")
-    .load()
-    .limit(100))
+print(f"🎯 Selected topic: {topic_name}")`} />
 
-print("✅ Connection successful!")
-print(f"Sample data from {topic_name}:")
-test_df.selectExpr("CAST(value AS STRING)").show(5, truncate=False)
-
-# Define the schema matching ecommerce-events topic
-message_schema = StructType([
-    StructField("event_id", StringType(), True),
-    StructField("timestamp", StringType(), True),
-    StructField("user_id", StringType(), True),
-    StructField("action", StringType(), True),
-    StructField("product", StructType([
-        StructField("id", StringType(), True),
-        StructField("name", StringType(), True),
-        StructField("price", IntegerType(), True),
-        StructField("category", StringType(), True)
-    ]), True),
-    StructField("session_id", StringType(), True)
-])
-
-# Parse and flatten the test data
-test_parsed = (
-    test_df.select(
-        from_json(col("value").cast("string"), message_schema).alias("data"),
-        col("topic"),
-        col("partition"),
-        col("offset"),
-        col("timestamp").alias("kafka_timestamp")
-    )
-    .select(
-        col("data.event_id"),
-        col("data.timestamp").alias("event_timestamp"),
-        col("data.user_id"),
-        col("data.action"),
-        col("data.product.id").alias("product_id"),
-        col("data.product.name").alias("product_name"),
-        col("data.product.price").alias("product_price"),
-        col("data.product.category").alias("product_category"),
-        col("data.session_id"),
-        col("topic"),
-        col("partition"),
-        col("offset"),
-        col("kafka_timestamp")
-    )
-)
-
-# Show parsed data
-print("✅ Parsed test data:")
-test_parsed.show(5, truncate=False)
-
-# Save to test table
-test_table_name = f"{topic_name.replace('-', '_')}_test"
-test_parsed.write.mode("overwrite").saveAsTable(f"kafka_catalog.kafka_schema.{test_table_name}")
-
-print(f"✅ Test data saved to: kafka_catalog.kafka_schema.{test_table_name}")
-print(f"Total rows: {test_parsed.count()}")`} />
-
-              <Box sx={{ bgcolor: '#d4edda', p: 3, borderRadius: 2, borderLeft: '4px solid #28a745', mb: 3, mt: 2 }}>
-                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, color: '#155724' }}>
-                  ✅ Verify Test Data in Unity Catalog
+              <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
+                  📚 Understanding the Code:
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#155724', mb: 2, lineHeight: 1.8 }}>
-                  Before moving to streaming, verify that the test data was saved successfully:
-                </Typography>
-                <Typography variant="body2" component="div" sx={{ color: '#155724', lineHeight: 1.8 }}>
-                  <ol style={{ marginTop: 8, marginBottom: 0, paddingLeft: 20 }}>
-                    <li style={{ marginBottom: '8px' }}>In the Databricks left sidebar, click <strong>Catalog</strong></li>
-                    <li style={{ marginBottom: '8px' }}>Navigate to: <code>kafka_catalog</code> → <code>kafka_schema</code></li>
-                    <li style={{ marginBottom: '8px' }}>Find the table: <code>ecommerce_events_test</code></li>
-                    <li style={{ marginBottom: '8px' }}>Click on the table to see the schema and preview data</li>
-                    <li style={{ marginBottom: '0px' }}>Verify you see columns like: <code>event_id</code>, <code>user_id</code>, <code>action</code>, <code>product_id</code>, etc.</li>
-                  </ol>
-                </Typography>
-                <Typography variant="body2" sx={{ mt: 2, p: 2, bgcolor: 'rgba(255,255,255,0.7)', borderRadius: 1, fontStyle: 'italic', color: '#155724' }}>
-                  💡 If you see the table with data, you're ready to move on to streaming!
-                </Typography>
-              </Box>
-
-              <Box sx={{ bgcolor: '#d4edda', p: 2, borderRadius: 1, borderLeft: '4px solid #28a745', mb: 3 }}>
-                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1, color: '#155724' }}>
-                  ✅ Common Fix: Use "kafkashaded" Prefix
-                </Typography>
-                <Typography variant="body2" component="div" sx={{ color: '#155724', lineHeight: 1.8 }}>
-                  <strong>The #1 reason for JAAS errors in Databricks:</strong> Using <code>org.apache.kafka...</code> instead of <code>kafkashaded.org.apache.kafka...</code>
-                  <ul style={{ marginTop: 8, marginBottom: 0, paddingLeft: 20 }}>
-                    <li>Databricks uses shaded Kafka libraries to avoid version conflicts</li>
-                    <li>Make sure your JAAS config starts with <code>kafkashaded.org.apache.kafka.common.security.plain.PlainLoginModule</code></li>
-                    <li>This is the correct prefix shown in Step 1 above!</li>
+                <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
+                  <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
+                    <li style={{ marginBottom: '0px' }}>
+                      <strong>topic_name:</strong> The specific Kafka topic you want to read data from. Must match one of the topics from the list above.
+                    </li>
                   </ul>
                 </Typography>
-              </Box>
-
-              <Box sx={{ bgcolor: '#fff3cd', p: 2, borderRadius: 1, borderLeft: '4px solid #ffc107', mb: 4 }}>
-                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1, color: '#856404' }}>
-                  ⚠️ Other Troubleshooting Tips:
+                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
+                  💡 <strong>Tip:</strong> Make sure you use the exact topic name (case-sensitive) from the list!
                 </Typography>
-                <Typography variant="body2" component="div" sx={{ color: '#856404', lineHeight: 1.8 }}>
-                  <strong>If connection still fails after using "kafkashaded" prefix:</strong>
-                  <ul style={{ marginTop: 4, marginBottom: 0, paddingLeft: 20 }}>
-                    <li>Verify API key/secret have no extra spaces, quotes, or line breaks</li>
-                    <li>Check bootstrap server URL is exact (include port :9092)</li>
-                    <li>Ensure the <code>jaas_config</code> string ends with a semicolon <code>;</code></li>
-                    <li>Run <code>print(jaas_config)</code> to see the full JAAS string</li>
-                  </ul>
-                </Typography>
-              </Box>
-
-              {/* Step Separator */}
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                my: 6,
-                '&::before, &::after': {
-                  content: '""',
-                  flex: 1,
-                  borderBottom: '3px solid #2196F3',
-                }
-              }}>
-                <Box sx={{
-                  mx: 3,
-                  px: 3,
-                  py: 1,
-                  bgcolor: '#2196F3',
-                  color: 'white',
-                  borderRadius: 2,
-                  fontWeight: 'bold',
-                  fontSize: '0.9rem'
-                }}>
-                  • • •
-                </Box>
               </Box>
 
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 3: Read Streaming Data from Kafka
+                  📝 Step 2: Read Streaming Data from Kafka
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  Now that the connection works, let's create a streaming DataFrame:
+                  Now let's create a streaming DataFrame that continuously reads from your Kafka topic:
                 </Typography>
               </Alert>
 
@@ -3258,7 +3024,8 @@ df = (spark.readStream
     .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
     .option("kafka.security.protocol", "SASL_SSL")
     .option("kafka.sasl.mechanism", "PLAIN")
-    .option("kafka.sasl.jaas.config", jaas_config)
+    .option("kafka.sasl.jaas.config",
+        f'org.apache.kafka.common.security.plain.PlainLoginModule required username="{kafka_api_key}" password="{kafka_api_secret}";')
     .option("subscribe", topic_name)
     .option("startingOffsets", "earliest")  # Read from beginning
     .load())
@@ -3310,34 +3077,9 @@ df.printSchema()`} />
                 </Typography>
               </Box>
 
-              {/* Step Separator */}
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                my: 6,
-                '&::before, &::after': {
-                  content: '""',
-                  flex: 1,
-                  borderBottom: '3px solid #2196F3',
-                }
-              }}>
-                <Box sx={{
-                  mx: 3,
-                  px: 3,
-                  py: 1,
-                  bgcolor: '#2196F3',
-                  color: 'white',
-                  borderRadius: 2,
-                  fontWeight: 'bold',
-                  fontSize: '0.9rem'
-                }}>
-                  • • •
-                </Box>
-              </Box>
-
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 4: Parse the Message Value
+                  📝 Step 3: Parse the Message Value
                 </Typography>
                 <Typography variant="body2" paragraph>
                   Kafka stores messages as binary data. Let's convert the <code>value</code> field to a readable string:
@@ -3349,47 +3091,26 @@ df.printSchema()`} />
               </Typography>
 
               <CodeBlock code={`from pyspark.sql.functions import col, from_json
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+from pyspark.sql.types import StructType, StructField, StringType
 
-# Define the schema matching ecommerce-events topic
+# Define the schema of your Kafka messages
 message_schema = StructType([
-    StructField("event_id", StringType(), True),
+    StructField("text", StringType(), True),
     StructField("timestamp", StringType(), True),
-    StructField("user_id", StringType(), True),
-    StructField("action", StringType(), True),
-    StructField("product", StructType([
-        StructField("id", StringType(), True),
-        StructField("name", StringType(), True),
-        StructField("price", IntegerType(), True),
-        StructField("category", StringType(), True)
-    ]), True),
-    StructField("session_id", StringType(), True)
+    StructField("message_id", StringType(), True)
 ])
 
 # Parse the value column from binary to JSON
-parsed_df = (
-    df.select(
+parsed_df = (df
+    .select(
+        col("key").cast("string"),
         from_json(col("value").cast("string"), message_schema).alias("data"),
         col("topic"),
         col("partition"),
         col("offset"),
-        col("timestamp").alias("kafka_timestamp")
+        col("timestamp")
     )
-    .select(
-        col("data.event_id"),
-        col("data.timestamp").alias("event_timestamp"),
-        col("data.user_id"),
-        col("data.action"),
-        col("data.product.id").alias("product_id"),
-        col("data.product.name").alias("product_name"),
-        col("data.product.price").alias("product_price"),
-        col("data.product.category").alias("product_category"),
-        col("data.session_id"),
-        col("topic"),
-        col("partition"),
-        col("offset"),
-        col("kafka_timestamp")
-    )
+    .select("data.*", "topic", "partition", "offset", "timestamp")
 )
 
 # Display the parsed data
@@ -3403,52 +3124,36 @@ parsed_df.printSchema()`} />
                 <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
                   <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>col("key").cast("string"):</strong> Converts the binary message key to a string.
+                      <strong>from_json:</strong> A PySpark function that parses JSON strings into structured data (columns).
                     </li>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>col("value").cast("string"):</strong> Converts Kafka's binary message value to a string. This preserves the original JSON without parsing it into columns.
+                      <strong>StructType & StructField:</strong> Define the schema (structure) of your JSON data. Think of it as defining what columns and data types your messages have.
                     </li>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>topic, partition, offset:</strong> Kafka metadata fields that tell you where each message came from.
+                      <strong>message_schema:</strong> Describes your Kafka message structure. Here we expect three fields: <code>text</code>, <code>timestamp</code>, and <code>message_id</code> (all strings). Adjust this to match YOUR actual message format!
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>col("value").cast("string"):</strong> Converts Kafka's binary <code>value</code> field to a readable string.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>from_json(...).alias("data"):</strong> Parses the JSON string using our schema and creates a nested column called <code>data</code>.
+                    </li>
+                    <li style={{ marginBottom: '12px' }}>
+                      <strong>.select("data.*", ...):</strong> Flattens the nested <code>data</code> column, bringing <code>text</code>, <code>timestamp</code>, and <code>message_id</code> to the top level. Also keeps Kafka metadata columns.
                     </li>
                     <li style={{ marginBottom: '0px' }}>
-                      <strong>timestamp → kafka_timestamp:</strong> Renamed to avoid conflicts with Delta table reserved column names.
+                      <strong>parsed_df:</strong> The final DataFrame with clean, structured data ready for analysis or storage.
                     </li>
                   </ul>
                 </Typography>
                 <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
-                  💡 <strong>Why save as string?</strong> Keeping the JSON as a string is flexible - you can query it later with JSON functions or parse specific fields as needed without predefining a schema!
+                  💡 <strong>Important:</strong> Make sure your <code>message_schema</code> matches the actual JSON structure of messages you sent to Kafka in Part 1!
                 </Typography>
-              </Box>
-
-              {/* Step Separator */}
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                my: 6,
-                '&::before, &::after': {
-                  content: '""',
-                  flex: 1,
-                  borderBottom: '3px solid #2196F3',
-                }
-              }}>
-                <Box sx={{
-                  mx: 3,
-                  px: 3,
-                  py: 1,
-                  bgcolor: '#2196F3',
-                  color: 'white',
-                  borderRadius: 2,
-                  fontWeight: 'bold',
-                  fontSize: '0.9rem'
-                }}>
-                  • • •
-                </Box>
               </Box>
 
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  📝 Step 5: Write Stream to Delta Lake
+                  📝 Step 4: Write Stream to Delta Lake
                 </Typography>
                 <Typography variant="body2" paragraph>
                   Finally, let's save the streaming data to a Delta table in your catalog:
@@ -3459,36 +3164,19 @@ parsed_df.printSchema()`} />
                 Code Preview:
               </Typography>
 
-              <CodeBlock code={`# Create a clean table name (replace hyphens with underscores)
-table_name = topic_name.replace("-", "_") + "_data"
-print(table_name)
-
-# Use a Unity Catalog volume for checkpointing
-checkpoint_path = f"/Volumes/kafka_catalog/kafka_schema/kafka_schema/checkpoints/{table_name}_checkpoint"
-
-parsed_df = (
-    parsed_df.withColumnRenamed("kafka_timestamp", "kafka_event_time")
-)
-
-query = (
-    parsed_df.writeStream
+              <CodeBlock code={`# Write the streaming data to Delta Lake
+query = (parsed_df.writeStream
     .format("delta")
-    .outputMode("append")
-    .option("checkpointLocation", checkpoint_path)
-    .trigger(availableNow=True)
-    .table(f"kafka_catalog.kafka_schema.{table_name}")
-)
+    .outputMode("append")  # Append new records
+    .option("checkpointLocation", "/tmp/kafka_checkpoint")  # For fault tolerance
+    .option("path", f"kafka_catalog.kafka_schema.{topic_name}_data")  # Your table path
+    .start())
 
-print(f"✅ Streaming to Delta table: kafka_catalog.kafka_schema.{table_name}")
-print("Stream is running... Data will be written once and then stop!")
+print(f"✅ Streaming to Delta table: kafka_catalog.kafka_schema.{topic_name}_data")
+print("Stream is running... Data will be continuously written!")
 
-# Wait for the stream to complete
-query.awaitTermination()
-print("✅ Stream completed!")
-
-# Verify data was written
-row_count = spark.table(f"kafka_catalog.kafka_schema.{table_name}").count()
-print(f"Total rows in table: {row_count}")`} />
+# To stop the stream later, run:
+# query.stop()`} />
 
               <Box sx={{ bgcolor: '#f5f5f5', p: 3, borderRadius: 2, mt: 2, mb: 3 }}>
                 <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1rem' }}>
@@ -3496,9 +3184,6 @@ print(f"Total rows in table: {row_count}")`} />
                 </Typography>
                 <Typography variant="body2" component="div" sx={{ lineHeight: 2 }}>
                   <ul style={{ marginTop: 0, marginBottom: 0, paddingLeft: 20 }}>
-                    <li style={{ marginBottom: '12px' }}>
-                      <strong>table_name:</strong> Creates a valid table name by replacing hyphens with underscores (e.g., "ecommerce-events" → "ecommerce_events_data"). Delta table names can't contain hyphens!
-                    </li>
                     <li style={{ marginBottom: '12px' }}>
                       <strong>parsed_df.writeStream:</strong> Initiates writing a streaming DataFrame (similar to <code>df.write</code> for batch processing).
                     </li>
@@ -3509,24 +3194,21 @@ print(f"Total rows in table: {row_count}")`} />
                       <strong>.outputMode("append"):</strong> Specifies how to write data. <code>"append"</code> adds new records without modifying existing ones. Other modes: <code>"complete"</code> (rewrites entire table) and <code>"update"</code> (updates changed rows).
                     </li>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>checkpoint_path:</strong> Stores in a Unity Catalog volume for better manageability and persistence.
+                      <strong>.option("checkpointLocation", ...):</strong> Critical for fault tolerance! The checkpoint directory stores progress information, so if your stream crashes, it can resume exactly where it left off without losing or duplicating data.
                     </li>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>.option("checkpointLocation", ...):</strong> Critical for fault tolerance! Stores progress information so the stream can resume exactly where it left off without losing or duplicating data.
+                      <strong>.option("path", ...):</strong> Specifies the Delta table location using the three-level namespace: <code>catalog.schema.table_name</code>. This is where your data will be permanently stored.
                     </li>
                     <li style={{ marginBottom: '12px' }}>
-                      <strong>.trigger(availableNow=True):</strong> Processes all available data once and stops (like a batch job). This is required for Databricks Community Edition (free tier), which doesn't support continuous streaming. In paid tiers, you can remove this for continuous streaming or use <code>.trigger(processingTime="30 seconds")</code> for micro-batches.
-                    </li>
-                    <li style={{ marginBottom: '12px' }}>
-                      <strong>.table(...):</strong> Writes to a Unity Catalog managed table using the three-level namespace: <code>catalog.schema.table_name</code>.
+                      <strong>.start():</strong> Begins the streaming query. This runs continuously in the background, processing new data as it arrives.
                     </li>
                     <li style={{ marginBottom: '0px' }}>
-                      <strong>query:</strong> A handle to the running stream. Use <code>query.awaitTermination()</code> to wait for completion.
+                      <strong>query:</strong> A handle to the running stream. Use <code>query.stop()</code> to halt the streaming process.
                     </li>
                   </ul>
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#fff3cd', borderRadius: 1, borderLeft: '4px solid #ffc107', color: '#856404', lineHeight: 1.8 }}>
-                  ⚠️ <strong>Community Edition Limitation:</strong> We use <code>availableNow=True</code> because Databricks Community Edition (free tier) doesn't support continuous streaming. This trigger processes all available data once and stops. In paid Databricks workspaces, you can enable true continuous streaming by removing this trigger or using <code>processingTime</code> for micro-batch processing.
+                <Typography variant="body2" sx={{ mt: 3, p: 2, bgcolor: '#e3f2fd', borderRadius: 1, fontStyle: 'italic', color: '#1565c0', lineHeight: 1.8 }}>
+                  💡 <strong>The stream is now running continuously!</strong> Every message sent to your Kafka topic will be automatically read, parsed, and saved to your Delta table.
                 </Typography>
               </Box>
 
@@ -3731,180 +3413,8 @@ print(f"Total rows in table: {row_count}")`} />
               </Alert>
             </Paper>
 
-            {/* ==================== ADVANCED: UNIVERSAL SCHEMA APPROACH ==================== */}
-            <Paper id="advanced-universal-schema" sx={{ p: 4, mb: 4, border: '2px solid #FF9800' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Psychology sx={{ fontSize: 40, mr: 2, color: '#FF9800' }} />
-                <Box>
-                  <Typography variant="h4" sx={{ color: '#2c5aa0' }}>
-                    Advanced: Universal Schema Approach
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Build reusable code that works with any Kafka topic
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Alert severity="info" sx={{ mb: 3 }}>
-                <Typography variant="body2" paragraph>
-                  <strong>🎯 The Challenge:</strong> In the steps above, we hardcoded the schema for ecommerce-events. But what if you need to handle IoT sensors, social media feeds, or any new topic? You'd have to rewrite the code each time!
-                </Typography>
-                <Typography variant="body2">
-                  <strong>✨ The Solution:</strong> Build universal code that automatically infers schemas and flattens nested structures. This is what you'll implement in Challenges 6 & 7.
-                </Typography>
-              </Alert>
-
-              <Typography variant="h6" sx={{ color: '#4a7ba7', mt: 3, mb: 2 }}>
-                Key Concepts for Universal Approach
-              </Typography>
-
-              <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 2, mb: 1 }}>
-                1. Automatic Schema Inference
-              </Typography>
-              <Typography variant="body2" paragraph>
-                Instead of manually defining <code>StructType</code>, use <code>schema_of_json()</code> to automatically detect the schema from sample data:
-              </Typography>
-
-              <CodeBlock code={`from pyspark.sql.functions import schema_of_json
-
-# Get a sample JSON message
-sample_json = test_df.selectExpr("CAST(value AS STRING) as json").first()["json"]
-
-# Automatically infer the schema
-inferred_schema = schema_of_json(sample_json)
-
-# Parse with inferred schema
-parsed_df = test_df.select(
-    from_json(col("value").cast("string"), inferred_schema).alias("data"),
-    col("topic"),
-    col("partition"),
-    col("offset"),
-    col("timestamp").alias("kafka_timestamp")
-)`} />
-
-              <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 3, mb: 1 }}>
-                2. Automatic Flattening of Nested Structures
-              </Typography>
-              <Typography variant="body2" paragraph>
-                Create a function that recursively flattens nested <code>StructType</code> fields:
-              </Typography>
-
-              <CodeBlock code={`from pyspark.sql.types import StructType
-
-def flatten_df(nested_df, parent_col="data"):
-    """
-    Recursively flatten nested structs in a DataFrame
-    Example: product.id → product_id, location.lat → location_lat
-    """
-    flat_cols = []
-    nested_cols = []
-
-    # Get schema of the data column
-    schema = nested_df.schema[parent_col].dataType
-
-    for field in schema.fields:
-        col_name = f"{parent_col}.{field.name}"
-
-        if isinstance(field.dataType, StructType):
-            # This is a nested struct - mark for flattening
-            nested_cols.append((field.name, col_name))
-        else:
-            # Simple field - just select it
-            flat_cols.append(col(col_name).alias(field.name))
-
-    # Select all flat columns plus kafka metadata
-    result_df = nested_df.select(
-        *flat_cols,
-        col("topic"),
-        col("partition"),
-        col("offset"),
-        col("kafka_timestamp")
-    )
-
-    # Flatten nested structures
-    for field_name, col_path in nested_cols:
-        nested_schema = [f for f in schema.fields if f.name == field_name][0].dataType
-        for nested_field in nested_schema.fields:
-            result_df = result_df.withColumn(
-                f"{field_name}_{nested_field.name}",
-                col(f"{parent_col}.{field_name}.{nested_field.name}")
-            )
-
-    return result_df
-
-# Apply flattening
-test_parsed = flatten_df(parsed_df)`} />
-
-              <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 3, mb: 1 }}>
-                3. Complete Universal Pipeline
-              </Typography>
-              <Typography variant="body2" paragraph>
-                Combine both approaches for a fully reusable solution:
-              </Typography>
-
-              <CodeBlock code={`# Works with ANY topic!
-topic_name = "iot-sensor-data"  # or "social-media-feed" or "financial-transactions"
-
-# 1. Read from Kafka
-test_df = (spark.read
-    .format("kafka")
-    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
-    .option("kafka.security.protocol", "SASL_SSL")
-    .option("kafka.sasl.mechanism", "PLAIN")
-    .option("kafka.sasl.jaas.config", jaas_config)
-    .option("subscribe", topic_name)
-    .option("startingOffsets", "earliest")
-    .option("endingOffsets", "latest")
-    .load()
-    .limit(100))
-
-# 2. Infer schema automatically
-sample_json = test_df.selectExpr("CAST(value AS STRING) as json").first()["json"]
-inferred_schema = schema_of_json(sample_json)
-
-# 3. Parse with inferred schema
-parsed_df = test_df.select(
-    from_json(col("value").cast("string"), inferred_schema).alias("data"),
-    col("topic"),
-    col("partition"),
-    col("offset"),
-    col("timestamp").alias("kafka_timestamp")
-)
-
-# 4. Flatten automatically
-test_parsed = flatten_df(parsed_df)
-
-# 5. Save to Delta Lake
-table_name = f"{topic_name.replace('-', '_')}_data"
-test_parsed.write.mode("overwrite").saveAsTable(f"kafka_catalog.kafka_schema.{table_name}")
-
-print(f"✅ Universal pipeline completed for {topic_name}!")
-print(f"✅ Data saved to: kafka_catalog.kafka_schema.{table_name}")`} />
-
-              <Alert severity="success" icon={<CheckCircle />} sx={{ mt: 3 }}>
-                <strong>🎓 Next Steps:</strong> You'll implement this universal approach in <strong>Challenge 6 (IoT Data)</strong> and <strong>Challenge 7 (Social Media)</strong>. The same code will work for both topics without modification - that's the power of universal patterns!
-              </Alert>
-
-              <Box sx={{ bgcolor: '#fff3cd', p: 3, borderRadius: 2, borderLeft: '4px solid #ffc107', mt: 3 }}>
-                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1, color: '#856404' }}>
-                  💡 Why This Matters
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#856404' }}>
-                  In production, you'll handle dozens of topics with different schemas. Writing hardcoded parsers for each one is unmaintainable. Universal patterns let you build once and reuse everywhere, saving time and reducing bugs.
-                </Typography>
-              </Box>
-            </Paper>
-
-            {/* ==================== CODE EXAMPLES ==================== */}
-            <Paper
-              id="code-examples"
-              elevation={0}
-              sx={{
-                p: 4,
-                mb: 4,
-                bgcolor: '#ffffff',
-              }}
-            >
+            {/* ==================== ENVIRONMENT SETUP ==================== */}
+            <Paper id="env-setup" sx={{ p: 4, mb: 4 }}>
               <Box
                 sx={{
                   bgcolor: '#4CAF50',
@@ -3916,1042 +3426,794 @@ print(f"✅ Data saved to: kafka_catalog.kafka_schema.{table_name}")`} />
                   alignItems: 'center'
                 }}
               >
-                <ContentCopy sx={{ fontSize: 48, mr: 2 }} />
+                <Settings sx={{ fontSize: 48, mr: 2 }} />
                 <Box>
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'white' }}>
-                    Code Examples
+                    Environment Setup
                   </Typography>
                   <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)', mt: 1 }}>
-                    Production-ready Kafka streaming code for your challenges
+                    Prepare your development environment for Kafka streaming
                   </Typography>
                 </Box>
               </Box>
 
-              <Typography variant="body1" sx={{ mb: 3, color: '#424242' }}>
-                Ready-to-use code examples for your challenges. These examples demonstrate production-ready patterns you can adapt for your own projects.
+              <Typography variant="body1" paragraph>
+                Follow these step-by-step instructions to set up your environment on Linux, macOS, or Windows. We'll install Python, create a virtual environment, and install all necessary dependencies.
               </Typography>
 
-              <Divider sx={{ my: 3 }} />
+              {/* Prerequisites Section */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                📋 Prerequisites
+              </Typography>
 
-              {/* Example 1: Python Kafka Consumer */}
-              <Box sx={{ mb: 4 }}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#667eea', mb: 2 }}>
-                  Example 1: Python Kafka Consumer (Challenge 1)
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <strong>Before you begin:</strong> Make sure you have administrator/sudo access on your machine and a stable internet connection.
+              </Alert>
+
+              <Grid container spacing={2} sx={{ mb: 4 }}>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #4CAF50' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        🐧 Linux (Ubuntu/Debian)
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #2196F3' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        🍎 macOS
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined" sx={{ borderLeft: '4px solid #FF6B35' }}>
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        🪟 Windows
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+
+              {/* Step 1: Python Installation */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 1: Install Python 3.13
+              </Typography>
+
+              <Typography variant="body1" paragraph>
+                Choose the instructions for your operating system:
+              </Typography>
+
+              <Box sx={{ mb: 3 }}>
+                {/* Linux */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
+                  🐧 Linux (Ubuntu/Debian)
                 </Typography>
-                <Typography variant="body2" sx={{ mb: 2, color: '#666' }}>
-                  Production-ready Python consumer that reads from Kafka and saves to CSV. Includes proper error handling and manual offset commits.
+                <CodeBlock code={`# Update package list
+sudo apt update
+
+# Install Python 3 and pip
+sudo apt install python3 python3-pip python3-venv -y
+
+# Verify installation
+python3 --version
+pip3 --version`} />
+
+                {/* macOS */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🍎 macOS
                 </Typography>
+                <CodeBlock code={`# Install Homebrew (if not already installed)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-                <Paper
-                  elevation={0}
-                  sx={{
-                    bgcolor: '#1e1e1e',
-                    p: 3,
-                    borderRadius: 2,
-                    position: 'relative',
-                    overflow: 'auto',
-                  }}
-                >
-                  <IconButton
-                    onClick={() => {
-                      const code = `from kafka import KafkaConsumer
-import json
-import csv
+# Install Python
+brew install python3
 
-# Kafka configuration
-consumer = KafkaConsumer(
-    'ecommerce-events',
-    bootstrap_servers=['pkc-619z3.us-east1.gcp.confluent.cloud:9092'],
-    security_protocol='SASL_SSL',
-    sasl_mechanism='PLAIN',
-    sasl_plain_username='YOUR_API_KEY',
-    sasl_plain_password='YOUR_API_SECRET',
-    value_deserializer=lambda m: json.loads(m.decode('utf-8')),
-    auto_offset_reset='earliest',
-    enable_auto_commit=False,
-    group_id='ecommerce-consumer-group'
-)
+# Verify installation
+python3 --version
+pip3 --version`} />
 
-print("Connected to Kafka! Reading messages...")
-
-messages = []
-message_count = 0
-max_messages = 100
-
-try:
-    for message in consumer:
-        data = message.value
-
-        # Extract fields (flatten nested product structure)
-        row = {
-            'event_id': data.get('event_id'),
-            'timestamp': data.get('timestamp'),
-            'user_id': data.get('user_id'),
-            'action': data.get('action'),
-            'product_id': data['product'].get('id'),
-            'product_name': data['product'].get('name'),
-            'product_price': data['product'].get('price'),
-            'product_category': data['product'].get('category'),
-            'session_id': data.get('session_id')
-        }
-
-        messages.append(row)
-        message_count += 1
-
-        if message_count % 10 == 0:
-            print(f"Read {message_count} messages...")
-
-        if message_count >= max_messages:
-            break
-
-    # Save to CSV
-    csv_filename = 'ecommerce_events.csv'
-    with open(csv_filename, 'w', newline='') as csvfile:
-        fieldnames = ['event_id', 'timestamp', 'user_id', 'action',
-                      'product_id', 'product_name', 'product_price',
-                      'product_category', 'session_id']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        writer.writeheader()
-        writer.writerows(messages)
-
-    print(f"\\n✅ Successfully saved {message_count} messages to {csv_filename}")
-
-    # Commit offsets after successful processing
-    consumer.commit()
-
-except KeyboardInterrupt:
-    print("\\nStopped by user")
-except Exception as e:
-    print(f"\\n❌ Error: {e}")
-finally:
-    consumer.close()
-    print("Consumer closed")`;
-                      navigator.clipboard.writeText(code);
-                    }}
-                    size="small"
-                    sx={{
-                      position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      color: 'white',
-                      bgcolor: 'rgba(255,255,255,0.1)',
-                      '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }
-                    }}
-                  >
-                    <ContentCopy fontSize="small" />
-                  </IconButton>
-
-                  <SyntaxHighlighter language="python" style={vscDarkPlus} customStyle={{ margin: 0, background: 'transparent' }}>
-{`from kafka import KafkaConsumer
-import json
-import csv
-
-# Kafka configuration
-consumer = KafkaConsumer(
-    'ecommerce-events',
-    bootstrap_servers=['pkc-619z3.us-east1.gcp.confluent.cloud:9092'],
-    security_protocol='SASL_SSL',
-    sasl_mechanism='PLAIN',
-    sasl_plain_username='YOUR_API_KEY',
-    sasl_plain_password='YOUR_API_SECRET',
-    value_deserializer=lambda m: json.loads(m.decode('utf-8')),
-    auto_offset_reset='earliest',
-    enable_auto_commit=False,
-    group_id='ecommerce-consumer-group'
-)
-
-print("Connected to Kafka! Reading messages...")
-
-messages = []
-message_count = 0
-max_messages = 100
-
-try:
-    for message in consumer:
-        data = message.value
-
-        # Extract fields (flatten nested product structure)
-        row = {
-            'event_id': data.get('event_id'),
-            'timestamp': data.get('timestamp'),
-            'user_id': data.get('user_id'),
-            'action': data.get('action'),
-            'product_id': data['product'].get('id'),
-            'product_name': data['product'].get('name'),
-            'product_price': data['product'].get('price'),
-            'product_category': data['product'].get('category'),
-            'session_id': data.get('session_id')
-        }
-
-        messages.append(row)
-        message_count += 1
-
-        if message_count % 10 == 0:
-            print(f"Read {message_count} messages...")
-
-        if message_count >= max_messages:
-            break
-
-    # Save to CSV
-    csv_filename = 'ecommerce_events.csv'
-    with open(csv_filename, 'w', newline='') as csvfile:
-        fieldnames = ['event_id', 'timestamp', 'user_id', 'action',
-                      'product_id', 'product_name', 'product_price',
-                      'product_category', 'session_id']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        writer.writeheader()
-        writer.writerows(messages)
-
-    print(f"\\n✅ Successfully saved {message_count} messages to {csv_filename}")
-
-    # Commit offsets after successful processing
-    consumer.commit()
-
-except KeyboardInterrupt:
-    print("\\nStopped by user")
-except Exception as e:
-    print(f"\\n❌ Error: {e}")
-finally:
-    consumer.close()
-    print("Consumer closed")`}
-                  </SyntaxHighlighter>
-                </Paper>
-
-                <Alert severity="info" sx={{ mt: 2 }}>
-                  <Typography variant="body2">
-                    <strong>Key Features:</strong> Manual offset commits (enable_auto_commit=False) ensure messages are only committed after successful processing. The flatten pattern extracts nested product fields into flat columns for CSV compatibility.
-                  </Typography>
+                {/* Windows */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🪟 Windows
+                </Typography>
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                  <strong>Option 1 (Recommended):</strong> Download Python from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener noreferrer" style={{ color: '#FF6B35' }}>python.org</a> and check "Add Python to PATH" during installation.
+                  <br /><br />
+                  <strong>Option 2 (WSL2):</strong> Use Windows Subsystem for Linux and follow the Linux instructions above.
                 </Alert>
+                <CodeBlock code={`# After installation, verify in PowerShell or Command Prompt
+python --version
+pip --version`} />
               </Box>
 
-              {/* Example 2: Universal Databricks Streaming */}
-              <Box sx={{ mb: 4 }}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#667eea', mb: 2 }}>
-                  Example 2: Universal Databricks Streaming (Challenges 6 & 7)
+              {/* Step 2: Clone Workshop Repository */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 2: Clone Workshop Repository
+              </Typography>
+
+              <Typography variant="body1" paragraph>
+                Clone the workshop repository to get all starter files, requirements, and example code:
+              </Typography>
+
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <strong>📦 Workshop Repository:</strong> Contains requirements.txt, .env template, starter code, and examples
+              </Alert>
+
+              <CodeBlock code={`# Clone the workshop repository
+git clone [GITHUB_REPO_URL_PLACEHOLDER]
+
+# Navigate into the project directory
+cd kafka-workshop
+
+# Verify you're in the right directory
+pwd  # Linux/Mac
+# or
+cd  # Windows`} />
+
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontStyle: 'italic' }}>
+                Note: The GitHub repository URL will be provided by your instructor or at the workshop.
+              </Typography>
+
+              {/* Step 3: Virtual Environment */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 3: Create Virtual Environment
+              </Typography>
+
+              <Typography variant="body1" paragraph>
+                Virtual environments isolate your project dependencies from system-wide Python packages.
+              </Typography>
+
+              <Box sx={{ mb: 3 }}>
+                {/* Linux/macOS */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
+                  🐧 🍎 Linux / macOS
                 </Typography>
-                <Typography variant="body2" sx={{ mb: 2, color: '#666' }}>
-                  A complete, reusable Databricks notebook that works with <strong>any Kafka topic</strong>. This universal approach eliminates the need to hardcode schemas for each topic.
+                <CodeBlock code={`# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate
+
+# You should see (venv) prefix in your terminal`} />
+
+                {/* Windows */}
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🪟 Windows (PowerShell)
                 </Typography>
+                <CodeBlock code={`# Create virtual environment
+python -m venv venv
 
-                <Alert severity="info" sx={{ mb: 2 }}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    <strong>🎯 The Problem This Solves:</strong>
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Kafka messages are JSON with different structures (IoT has nested location, social media doesn't). Writing separate code for each topic is tedious and error-prone.
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>✨ The Solution:</strong> This code automatically discovers the schema and flattens any nested structures, so you write it once and reuse it for all topics!
-                  </Typography>
-                </Alert>
+# Activate virtual environment
+.\\venv\\Scripts\\Activate.ps1
 
-                <Box sx={{ mb: 2, p: 2, bgcolor: '#f8f9fa', borderRadius: 1, border: '1px solid #dee2e6' }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1, color: '#495057' }}>
-                    🔑 Key Components:
-                  </Typography>
-                  <Stack spacing={1}>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 'bold' }}>1.</Typography>
-                      <Typography variant="body2" sx={{ color: '#495057' }}>
-                        <strong>schema_of_json():</strong> Automatically detects the JSON structure from a sample message (no hardcoding!)
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 'bold' }}>2.</Typography>
-                      <Typography variant="body2" sx={{ color: '#495057' }}>
-                        <strong>flatten_df() function:</strong> Converts nested fields (like location.lat) into flat columns (location_lat) automatically
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 'bold' }}>3.</Typography>
-                      <Typography variant="body2" sx={{ color: '#495057' }}>
-                        <strong>Universal pipeline:</strong> Works with iot-sensor-data, social-media-feed, or any other topic by just changing one variable!
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </Box>
+# If you get execution policy error, run:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-                <Paper
-                  elevation={0}
-                  sx={{
-                    bgcolor: '#1e1e1e',
-                    p: 3,
-                    borderRadius: 2,
-                    position: 'relative',
-                    overflow: 'auto',
-                  }}
-                >
-                  <IconButton
-                    onClick={() => {
-                      const code = `from pyspark.sql.functions import col, from_json, schema_of_json
-from pyspark.sql.types import StructType
+# You should see (venv) prefix in your terminal`} />
 
-# ============================================
-# CONFIGURATION - Change these for any topic!
-# ============================================
-topic_name = "iot-sensor-data"  # Or: "social-media-feed", "financial-transactions"
-table_name = topic_name.replace("-", "_")
-
-# Kafka credentials (same for all topics)
-kafka_bootstrap_servers = "pkc-619z3.us-east1.gcp.confluent.cloud:9092"
-kafka_api_key = "YOUR_API_KEY"
-kafka_api_secret = "YOUR_API_SECRET"
-
-# JAAS configuration
-jaas_config = f'kafkashaded.org.apache.kafka.common.security.plain.PlainLoginModule required username="{kafka_api_key}" password="{kafka_api_secret}";'
-
-# ============================================
-# UNIVERSAL HELPER FUNCTIONS
-# ============================================
-
-def flatten_df(nested_df, parent_col="data"):
-    """
-    Recursively flatten nested structs in a DataFrame.
-    Example: location.lat → location_lat, location.lon → location_lon
-    Handles naming conflicts (e.g., data.topic vs Kafka metadata topic)
-    """
-    flat_cols = []
-
-    # Get schema of the data column
-    schema = nested_df.schema[parent_col].dataType
-
-    # Loop through all fields in the data column
-    for field in schema.fields:
-        col_name = f"{parent_col}.{field.name}"
-
-        if isinstance(field.dataType, StructType):
-            # Nested structure - flatten it
-            for nested_field in field.dataType.fields:
-                flat_cols.append(
-                    col(f"{col_name}.{nested_field.name}").alias(f"{field.name}_{nested_field.name}")
-                )
-        else:
-            # Handle naming conflicts with Kafka metadata fields
-            if field.name in ["topic", "partition", "offset", "timestamp"]:
-                # Rename conflicting field to content_{fieldname}
-                flat_cols.append(col(col_name).alias(f"content_{field.name}"))
-            else:
-                # Simple field - select with original name
-                flat_cols.append(col(col_name).alias(field.name))
-
-    # Return DataFrame with flat columns + Kafka metadata
-    return nested_df.select(
-        *flat_cols,
-        col("topic").alias("kafka_topic"),  # Rename to avoid conflicts
-        col("partition"),
-        col("offset"),
-        col("kafka_timestamp")
-    )
-
-# ============================================
-# STEP 1: INFER SCHEMA FROM BATCH SAMPLE
-# ============================================
-print(f"🔍 Inferring schema from topic: {topic_name}")
-
-# Quick batch read to infer schema
-test_df = (spark.read
-    .format("kafka")
-    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
-    .option("kafka.security.protocol", "SASL_SSL")
-    .option("kafka.sasl.mechanism", "PLAIN")
-    .option("kafka.sasl.jaas.config", jaas_config)
-    .option("subscribe", topic_name)
-    .option("startingOffsets", "earliest")
-    .option("endingOffsets", "latest")
-    .load()
-    .limit(10))
-
-sample_json = test_df.selectExpr("CAST(value AS STRING) as json").first()["json"]
-inferred_schema = schema_of_json(sample_json)
-
-print("✅ Schema inferred successfully!")
-
-# ============================================
-# STEP 2: STREAM TO DELTA LAKE
-# ============================================
-print(f"\\n🚀 Starting streaming pipeline to Delta Lake...")
-
-# Checkpoint location in Unity Catalog volume
-checkpoint_path = f"/Volumes/kafka_catalog/kafka_schema/kafka_schema/checkpoints/{table_name}_checkpoint"
-
-# Create streaming DataFrame
-stream_df = (spark.readStream
-    .format("kafka")
-    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
-    .option("kafka.security.protocol", "SASL_SSL")
-    .option("kafka.sasl.mechanism", "PLAIN")
-    .option("kafka.sasl.jaas.config", jaas_config)
-    .option("subscribe", topic_name)
-    .option("startingOffsets", "earliest")  # Process all messages from the beginning
-    .load())
-
-# Parse and flatten streaming data
-stream_parsed = stream_df.select(
-    from_json(col("value").cast("string"), inferred_schema).alias("data"),
-    col("topic"),
-    col("partition"),
-    col("offset"),
-    col("timestamp").alias("kafka_timestamp")
-)
-
-stream_flattened = flatten_df(stream_parsed)
-
-# Write to Delta Lake in Unity Catalog
-query = (stream_flattened.writeStream
-    .format("delta")
-    .outputMode("append")
-    .option("checkpointLocation", checkpoint_path)
-    .trigger(availableNow=True)  # Community Edition compatible
-    .table(f"kafka_catalog.kafka_schema.{table_name}"))
-
-# Wait for completion
-query.awaitTermination()
-
-print(f"\\n✅ Streaming pipeline completed!")
-print(f"✅ Data saved to: kafka_catalog.kafka_schema.{table_name}")
-
-# ============================================
-# STEP 3: VERIFY DATA IN UNITY CATALOG
-# ============================================
-print(f"\\n🔍 Verifying data in Unity Catalog...")
-
-result_df = spark.sql(f"SELECT * FROM kafka_catalog.kafka_schema.{table_name} LIMIT 10")
-display(result_df)
-
-row_count = spark.sql(f"SELECT COUNT(*) as count FROM kafka_catalog.kafka_schema.{table_name}").collect()[0]["count"]
-print(f"\\n✅ Total rows in table: {row_count:,}")
-
-# ============================================
-# 🎉 SUCCESS!
-# ============================================
-print(f"""
-╔══════════════════════════════════════════════════════════════╗
-║                   🎉 UNIVERSAL PIPELINE SUCCESS! 🎉          ║
-╠══════════════════════════════════════════════════════════════╣
-║  Topic:              {topic_name:<39} ║
-║  Table:              kafka_catalog.kafka_schema.{table_name:<14} ║
-║  Records Processed:  {row_count:<39} ║
-╚══════════════════════════════════════════════════════════════╝
-
-💡 This code works with ANY Kafka topic! Just change the topic_name variable.
-""")`;
-                      navigator.clipboard.writeText(code);
-                    }}
-                    size="small"
-                    sx={{
-                      position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      color: 'white',
-                      bgcolor: 'rgba(255,255,255,0.1)',
-                      '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }
-                    }}
-                  >
-                    <ContentCopy fontSize="small" />
-                  </IconButton>
-
-                  <SyntaxHighlighter language="python" style={vscDarkPlus} customStyle={{ margin: 0, background: 'transparent', fontSize: '0.85rem' }}>
-{`from pyspark.sql.functions import col, from_json, schema_of_json
-from pyspark.sql.types import StructType
-
-# ============================================
-# CONFIGURATION - Change these for any topic!
-# ============================================
-topic_name = "iot-sensor-data"  # Or: "social-media-feed", "financial-transactions"
-table_name = topic_name.replace("-", "_")
-
-# Kafka credentials (same for all topics)
-kafka_bootstrap_servers = "pkc-619z3.us-east1.gcp.confluent.cloud:9092"
-kafka_api_key = "YOUR_API_KEY"
-kafka_api_secret = "YOUR_API_SECRET"
-
-# JAAS configuration
-jaas_config = f'kafkashaded.org.apache.kafka.common.security.plain.PlainLoginModule required username="{kafka_api_key}" password="{kafka_api_secret}";'
-
-# ============================================
-# UNIVERSAL HELPER FUNCTIONS
-# ============================================
-
-def flatten_df(nested_df, parent_col="data"):
-    """
-    Recursively flatten nested structs in a DataFrame.
-    Example: location.lat → location_lat, location.lon → location_lon
-    Handles naming conflicts (e.g., data.topic vs Kafka metadata topic)
-    """
-    flat_cols = []
-
-    # Get schema of the data column
-    schema = nested_df.schema[parent_col].dataType
-
-    # Loop through all fields in the data column
-    for field in schema.fields:
-        col_name = f"{parent_col}.{field.name}"
-
-        if isinstance(field.dataType, StructType):
-            # Nested structure - flatten it
-            for nested_field in field.dataType.fields:
-                flat_cols.append(
-                    col(f"{col_name}.{nested_field.name}").alias(f"{field.name}_{nested_field.name}")
-                )
-        else:
-            # Handle naming conflicts with Kafka metadata fields
-            if field.name in ["topic", "partition", "offset", "timestamp"]:
-                # Rename conflicting field to content_{fieldname}
-                flat_cols.append(col(col_name).alias(f"content_{field.name}"))
-            else:
-                # Simple field - select with original name
-                flat_cols.append(col(col_name).alias(field.name))
-
-    # Return DataFrame with flat columns + Kafka metadata
-    return nested_df.select(
-        *flat_cols,
-        col("topic").alias("kafka_topic"),  # Rename to avoid conflicts
-        col("partition"),
-        col("offset"),
-        col("kafka_timestamp")
-    )
-
-# ============================================
-# STEP 1: INFER SCHEMA FROM BATCH SAMPLE
-# ============================================
-print(f"🔍 Inferring schema from topic: {topic_name}")
-
-# Quick batch read to infer schema
-test_df = (spark.read
-    .format("kafka")
-    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
-    .option("kafka.security.protocol", "SASL_SSL")
-    .option("kafka.sasl.mechanism", "PLAIN")
-    .option("kafka.sasl.jaas.config", jaas_config)
-    .option("subscribe", topic_name)
-    .option("startingOffsets", "earliest")
-    .option("endingOffsets", "latest")
-    .load()
-    .limit(10))
-
-sample_json = test_df.selectExpr("CAST(value AS STRING) as json").first()["json"]
-inferred_schema = schema_of_json(sample_json)
-
-print("✅ Schema inferred successfully!")
-
-# ============================================
-# STEP 2: STREAM TO DELTA LAKE
-# ============================================
-print(f"\\n🚀 Starting streaming pipeline to Delta Lake...")
-
-# Checkpoint location in Unity Catalog volume
-checkpoint_path = f"/Volumes/kafka_catalog/kafka_schema/kafka_schema/checkpoints/{table_name}_checkpoint"
-
-# Create streaming DataFrame
-stream_df = (spark.readStream
-    .format("kafka")
-    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
-    .option("kafka.security.protocol", "SASL_SSL")
-    .option("kafka.sasl.mechanism", "PLAIN")
-    .option("kafka.sasl.jaas.config", jaas_config)
-    .option("subscribe", topic_name)
-    .option("startingOffsets", "earliest")  # Process all messages from the beginning
-    .load())
-
-# Parse and flatten streaming data
-stream_parsed = stream_df.select(
-    from_json(col("value").cast("string"), inferred_schema).alias("data"),
-    col("topic"),
-    col("partition"),
-    col("offset"),
-    col("timestamp").alias("kafka_timestamp")
-)
-
-stream_flattened = flatten_df(stream_parsed)
-
-# Write to Delta Lake in Unity Catalog
-query = (stream_flattened.writeStream
-    .format("delta")
-    .outputMode("append")
-    .option("checkpointLocation", checkpoint_path)
-    .trigger(availableNow=True)  # Community Edition compatible
-    .table(f"kafka_catalog.kafka_schema.{table_name}"))
-
-# Wait for completion
-query.awaitTermination()
-
-print(f"\\n✅ Streaming pipeline completed!")
-print(f"✅ Data saved to: kafka_catalog.kafka_schema.{table_name}")
-
-# ============================================
-# STEP 3: VERIFY DATA IN UNITY CATALOG
-# ============================================
-print(f"\\n🔍 Verifying data in Unity Catalog...")
-
-result_df = spark.sql(f"SELECT * FROM kafka_catalog.kafka_schema.{table_name} LIMIT 10")
-display(result_df)
-
-row_count = spark.sql(f"SELECT COUNT(*) as count FROM kafka_catalog.kafka_schema.{table_name}").collect()[0]["count"]
-print(f"\\n✅ Total rows in table: {row_count:,}")
-
-# ============================================
-# 🎉 SUCCESS!
-# ============================================
-print(f"""
-╔══════════════════════════════════════════════════════════════╗
-║                   🎉 UNIVERSAL PIPELINE SUCCESS! 🎉          ║
-╠══════════════════════════════════════════════════════════════╣
-║  Topic:              {topic_name:<39} ║
-║  Table:              kafka_catalog.kafka_schema.{table_name:<14} ║
-║  Records Processed:  {row_count:<39} ║
-╚══════════════════════════════════════════════════════════════╝
-
-💡 This code works with ANY Kafka topic! Just change the topic_name variable.
-""")`}
-                  </SyntaxHighlighter>
-                </Paper>
-
-                <Alert severity="success" sx={{ mt: 2 }}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    <strong>✨ How This Universal Pattern Works:</strong>
-                  </Typography>
-                  <Stack spacing={1}>
-                    <Typography variant="body2">
-                      <strong>Step 1 - Test & Infer:</strong> Reads a sample message from Kafka and uses <code>schema_of_json()</code> to automatically discover the JSON structure
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Step 2 - Flatten:</strong> The <code>flatten_df()</code> function loops through all fields, detects nested structures, and creates flat columns (e.g., location.lat → location_lat)
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Step 3 - Stream:</strong> Applies the same schema and flattening to the continuous stream, writing results to Delta Lake
-                    </Typography>
-                    <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic' }}>
-                      🎯 Result: Change <code>topic_name = "iot-sensor-data"</code> to <code>topic_name = "social-media-feed"</code> and it just works! No schema changes needed.
-                    </Typography>
-                  </Stack>
-                </Alert>
-
-                <Box sx={{ mt: 2, p: 2, bgcolor: '#e8f5e9', borderRadius: 1, border: '1px solid #4CAF50' }}>
-                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                    💡 Why flatten_df() is Important:
-                  </Typography>
-                  <Typography variant="body2">
-                    Delta Lake tables work best with flat columns. Nested JSON (like <code>location: {"{"}lat: 37.7, lon: -122.4{"}"}</code>) is hard to query. The flatten function automatically converts this to <code>location_lat: 37.7, location_lon: -122.4</code> - much easier to analyze with SQL!
-                  </Typography>
-                </Box>
-
-                <Divider sx={{ my: 3 }} />
-
-                {/* Detailed Step-by-Step Breakdown */}
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: '#667eea' }}>
-                    📖 Complete Pipeline Walkthrough
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 2, color: '#666' }}>
-                    Here's exactly what happens when you run this code, step by step:
-                  </Typography>
-
-                  <Stack spacing={3}>
-                    {/* Step 1 */}
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8f9fa', border: '1px solid #dee2e6' }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#667eea', mb: 1 }}>
-                        Step 1: Configure Connection
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Set up your Kafka credentials and topic name:
-                      </Typography>
-                      <CodeBlock language="python" code={`topic_name = "iot-sensor-data"  # Choose your topic
-table_name = topic_name.replace("-", "_")  # Convert to table name
-
-# Kafka connection details
-kafka_bootstrap_servers = "pkc-619z3.us-east1.gcp.confluent.cloud:9092"
-kafka_api_key = "YOUR_API_KEY"       # From Confluent Cloud
-kafka_api_secret = "YOUR_API_SECRET" # From Confluent Cloud
-
-# ⚠️ IMPORTANT: Databricks uses shaded Kafka libraries
-# Must use "kafkashaded" prefix instead of "org.apache.kafka"!
-jaas_config = (
-    f'kafkashaded.org.apache.kafka.common.security.plain.PlainLoginModule required '
-    f'username="{kafka_api_key}" '
-    f'password="{kafka_api_secret}";'
-)`} />
-                      <Alert severity="warning" sx={{ mt: 2 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
-                          ⚠️ Critical: The "kafkashaded" Prefix
-                        </Typography>
-                        <Typography variant="body2">
-                          Databricks uses shaded Kafka libraries to avoid version conflicts. You MUST use <code>kafkashaded.org.apache.kafka...</code> instead of <code>org.apache.kafka...</code>. Without this prefix, authentication will fail!
-                        </Typography>
-                      </Alert>
-                      <Typography variant="body2" sx={{ mt: 2, fontStyle: 'italic', color: '#666' }}>
-                        💡 To switch topics: Just change <code>topic_name = "iot-sensor-data"</code> to <code>topic_name = "social-media-feed"</code>. Everything else stays the same!
-                      </Typography>
-                    </Paper>
-
-                    {/* Step 2 */}
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: '#e8f5e9', border: '1px solid #4CAF50' }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#2e7d32', mb: 1 }}>
-                        Step 2: Automatic Schema Inference 🔍
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Read sample messages and automatically discover the JSON structure:
-                      </Typography>
-                      <CodeBlock language="python" code={`# Quick batch read to get sample messages
-test_df = (spark.read
-    .format("kafka")
-    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
-    .option("kafka.security.protocol", "SASL_SSL")
-    .option("kafka.sasl.jaas.config", jaas_config)
-    .option("subscribe", topic_name)
-    .load()
-    .limit(100))
-
-# Extract one message and infer its schema automatically
-sample_json = test_df.selectExpr("CAST(value AS STRING) as json").first()["json"]
-inferred_schema = schema_of_json(sample_json)  # No hardcoding!`} />
-                      <Typography variant="body2" sx={{ mt: 1, color: '#2e7d32' }}>
-                        🎯 What happens: PySpark examines the JSON structure and creates a schema automatically. For IoT data, it discovers: sensor_id, timestamp, temperature, humidity, pressure, location (nested!), battery_level
-                      </Typography>
-                    </Paper>
-
-                    {/* Step 3 */}
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8f9fa', border: '1px solid #dee2e6' }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#667eea', mb: 1 }}>
-                        Step 3: Test Parse & Flatten with Sample Data
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Test your schema and flatten logic on the sample data before streaming:
-                      </Typography>
-                      <CodeBlock language="python" code={`# Parse with inferred schema
-parsed_df = test_df.select(
-    from_json(col("value").cast("string"), inferred_schema).alias("data"),
-    col("topic"), col("partition"), col("offset"),
-    col("timestamp").alias("kafka_timestamp")
-)
-
-# 🔄 First use of flatten_df() - converts nested JSON to flat columns
-flattened_df = flatten_df(parsed_df)
-display(flattened_df.limit(5))  # Preview the results`} />
-                      <Typography variant="body2" sx={{ mt: 1, color: '#666' }}>
-                        ✅ Result: Flat table with all fields accessible. Verify it looks good before streaming!
-                      </Typography>
-                      <Alert severity="info" sx={{ mt: 1 }}>
-                        <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
-                          <strong>📍 Where flatten_df() is used:</strong> After parsing the JSON with <code>from_json()</code>, we call <code>flatten_df(parsed_df)</code> to convert nested structures like <code>location.lat</code> into flat columns like <code>location_lat</code>.
-                        </Typography>
-                      </Alert>
-                    </Paper>
-
-                    {/* Step 4 */}
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: '#e8f5e9', border: '1px solid #4CAF50' }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#2e7d32', mb: 1 }}>
-                        Step 4: Understanding the flatten_df() Function 🔄
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        The <code>flatten_df()</code> function automatically creates flat columns:
-                      </Typography>
-                      <CodeBlock language="python" code={`flattened_df = flatten_df(parsed_df)
-
-# What it does:
-# 1. Loops through all fields in the "data" column
-# 2. For simple fields → creates regular columns (sensor_id, temperature)
-# 3. For nested fields → creates flat columns (location_lat, location_lon)
-# 4. Keeps Kafka metadata (topic, partition, offset, kafka_timestamp)`} />
-                      <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold', color: '#2e7d32' }}>
-                        Before flattening:
-                      </Typography>
-                      <CodeBlock language="python" code={`data: {sensor_id: "sensor_42", location: {lat: 37.7, lon: -122.4}}`} />
-                      <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold', color: '#2e7d32' }}>
-                        After flattening:
-                      </Typography>
-                      <CodeBlock language="python" code={`sensor_id: "sensor_42", location_lat: 37.7, location_lon: -122.4`} />
-                      <Typography variant="body2" sx={{ mt: 1, color: '#2e7d32' }}>
-                        ✅ Result: Completely flat table, easy to query with SQL!
-                      </Typography>
-                    </Paper>
-
-                    {/* Step 5 */}
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8f9fa', border: '1px solid #dee2e6' }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#667eea', mb: 1 }}>
-                        Step 5: Create Streaming DataFrame
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Now switch to continuous streaming - same schema and flatten logic works:
-                      </Typography>
-                      <CodeBlock language="python" code={`# Create streaming DataFrame (readStream instead of read!)
-stream_df = (spark.readStream
-    .format("kafka")
-    .option("kafka.bootstrap.servers", kafka_bootstrap_servers)
-    .option("kafka.security.protocol", "SASL_SSL")
-    .option("kafka.sasl.jaas.config", jaas_config)
-    .option("subscribe", topic_name)
-    .option("startingOffsets", "earliest")  # Process all messages from the beginning  # Only new messages
-    .load())
-
-# Apply same parsing and flattening
-stream_parsed = stream_df.select(
-    from_json(col("value").cast("string"), inferred_schema).alias("data"),
-    col("topic"), col("partition"), col("offset"),
-    col("timestamp").alias("kafka_timestamp")
-)
-
-# 🔄 Second use of flatten_df() - same function, now for streaming!
-stream_flattened = flatten_df(stream_parsed)`} />
-                      <Typography variant="body2" sx={{ mt: 1, color: '#666' }}>
-                        💡 The beauty: Same schema and flatten logic works for streaming!
-                      </Typography>
-                      <Alert severity="success" sx={{ mt: 1 }}>
-                        <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
-                          <strong>🎯 Key Insight:</strong> We use <code>flatten_df(stream_parsed)</code> here exactly the same way as in Step 3! The function works identically for both batch (Step 3) and streaming (Step 5) DataFrames. This is what makes the universal approach so powerful.
-                        </Typography>
-                      </Alert>
-                    </Paper>
-
-                    {/* Step 6 */}
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: '#e3f2fd', border: '1px solid #2196F3' }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#1565c0', mb: 1 }}>
-                        Step 6: Write to Delta Lake in Unity Catalog 💾
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Save the streaming data to a managed Delta table:
-                      </Typography>
-                      <CodeBlock language="python" code={`checkpoint_path = f"/Volumes/kafka_catalog/kafka_schema/kafka_schema/checkpoints/{table_name}_checkpoint"
-
-# Write the flattened streaming DataFrame (from Step 5) to Delta Lake
-query = (stream_flattened.writeStream  # ← Using the flattened data from flatten_df()
-    .format("delta")                    # Delta Lake format
-    .outputMode("append")               # Append new records
-    .option("checkpointLocation", checkpoint_path)  # For fault tolerance
-    .trigger(availableNow=True)         # Community Edition compatible
-    .table(f"kafka_catalog.kafka_schema.{table_name}"))  # Unity Catalog path
-
-query.awaitTermination()  # Wait for completion`} />
-                      <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold', color: '#1565c0' }}>
-                        What each part means:
-                      </Typography>
-                      <Stack spacing={0.5} sx={{ mt: 1 }}>
-                        <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
-                          • <code>kafka_catalog</code> - Your catalog name (top level)
-                        </Typography>
-                        <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
-                          • <code>kafka_schema</code> - Your schema name (namespace)
-                        </Typography>
-                        <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
-                          • <code>{"{table_name}"}</code> - Table name (e.g., iot_sensor_data)
-                        </Typography>
-                        <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
-                          • <code>checkpointLocation</code> - Tracks progress so you can resume after failures
-                        </Typography>
-                        <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
-                          • <code>trigger(availableNow=True)</code> - Process all available data then stop (for Community Edition)
-                        </Typography>
-                      </Stack>
-                      <Typography variant="body2" sx={{ mt: 2, color: '#1565c0' }}>
-                        ✅ Result: Data is now in Unity Catalog at <code>kafka_catalog.kafka_schema.iot_sensor_data</code>
-                      </Typography>
-                    </Paper>
-
-                    {/* Step 7 */}
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8f9fa', border: '1px solid #dee2e6' }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#667eea', mb: 1 }}>
-                        Step 7: Verify Data Landed Successfully ✅
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        Query the table to confirm data is there:
-                      </Typography>
-                      <CodeBlock language="python" code={`# Query the table
-result_df = spark.sql(f"SELECT * FROM kafka_catalog.kafka_schema.{table_name} LIMIT 10")
-display(result_df)
-
-# Count total rows
-row_count = spark.sql(f"SELECT COUNT(*) as count FROM kafka_catalog.kafka_schema.{table_name}").collect()[0]["count"]
-print(f"Total rows: {row_count:,}")`} />
-                      <Typography variant="body2" sx={{ mt: 1, color: '#666' }}>
-                        🎉 You can now query this data with SQL, create dashboards, or use it for ML!
-                      </Typography>
-                    </Paper>
-                  </Stack>
-
-                  <Alert severity="success" sx={{ mt: 3 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                      🚀 The Power of This Universal Approach:
-                    </Typography>
-                    <Typography variant="body2">
-                      To stream a different topic (like social-media-feed), just change ONE line: <code>topic_name = "social-media-feed"</code>. Everything else stays the same! The schema inference and flattening automatically adapt to the new structure. This is how production systems handle dozens of different Kafka topics.
-                    </Typography>
-                  </Alert>
-                </Box>
+                <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 3, mb: 1 }}>
+                  🪟 Windows (Command Prompt)
+                </Typography>
+                <CodeBlock code={`# Activate virtual environment
+venv\\Scripts\\activate.bat`} />
               </Box>
 
-              {/* Usage Tips */}
-              <Box
-                sx={{
-                  p: 3,
-                  bgcolor: '#f8f9fa',
-                  borderRadius: 2,
-                  border: '1px solid #dee2e6',
-                }}
-              >
-                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: '#495057' }}>
-                  💡 How to Use These Examples
+              {/* Step 4: Install Dependencies */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 4: Install Kafka Dependencies
+              </Typography>
+
+              <Typography variant="body1" paragraph>
+                The cloned repository includes a <code>requirements.txt</code> file with all necessary packages. Simply install them:
+              </Typography>
+
+              <CodeBlock code={`# Make sure virtual environment is activated (you should see (venv) prefix)
+
+# Upgrade pip first
+pip install --upgrade pip
+
+# Install all dependencies from requirements.txt
+pip install -r requirements.txt
+
+# Verify installation
+pip list | grep confluent  # Linux/Mac
+# or
+pip list | findstr confluent  # Windows`} />
+
+              <Alert severity="success" sx={{ mb: 3 }}>
+                <strong>✅ What gets installed:</strong> confluent-kafka, pandas, numpy, python-dotenv, and optional packages for Avro support and testing
+              </Alert>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 3, borderLeft: '4px solid #4CAF50' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  📄 requirements.txt (included in the repository)
                 </Typography>
-                <Stack spacing={1.5}>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 'bold' }}>1.</Typography>
-                    <Typography variant="body2" sx={{ color: '#495057' }}>
-                      <strong>Copy the code:</strong> Click the copy button in the top-right corner of each code block
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 'bold' }}>2.</Typography>
-                    <Typography variant="body2" sx={{ color: '#495057' }}>
-                      <strong>Replace credentials:</strong> Update YOUR_API_KEY and YOUR_API_SECRET with your actual Kafka credentials
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 'bold' }}>3.</Typography>
-                    <Typography variant="body2" sx={{ color: '#495057' }}>
-                      <strong>Start generators:</strong> Make sure the appropriate data generator is running in the Generators page
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Typography variant="body2" sx={{ color: '#667eea', fontWeight: 'bold' }}>4.</Typography>
-                    <Typography variant="body2" sx={{ color: '#495057' }}>
-                      <strong>Run and experiment:</strong> Execute the code and modify it to fit your challenge requirements
-                    </Typography>
-                  </Box>
-                </Stack>
+                <CodeBlock code={`# Kafka client library
+confluent-kafka==2.3.0
+
+# Data processing
+pandas==2.1.4
+numpy==1.26.2
+
+# Logging and utilities
+python-dotenv==1.0.0
+
+# Optional: For Avro/Schema Registry support
+fastavro==1.9.0
+
+# Optional: For testing
+pytest==7.4.3
+pytest-mock==3.12.0`} />
               </Box>
+
+              {/* Step 5: Environment Variables */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 5: Configure Environment Variables
+              </Typography>
+
+              <Alert severity="info" sx={{ mb: 3 }}>
+                <strong>📋 Your instructor will provide you with a credentials file</strong> (e.g., <code>api-key-XXXXX-student-consumer.txt</code>) containing your Kafka API key and secret.
+              </Alert>
+
+              <Typography variant="body1" paragraph>
+                The repository includes a <code>.env.example</code> template. Copy it to create your own <code>.env</code> file:
+              </Typography>
+
+              <CodeBlock code={`# Copy the example file to create your .env file
+cp .env.example .env
+
+# On Windows (PowerShell)
+Copy-Item .env.example .env
+
+# On Windows (Command Prompt)
+copy .env.example .env`} />
+
+              <Typography variant="body1" paragraph sx={{ mt: 2, fontWeight: 'bold' }}>
+                Then edit the <code>.env</code> file and replace the placeholder values with your actual credentials from the file provided by your instructor:
+              </Typography>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 2, borderLeft: '4px solid #FF6B35' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  📄 .env
+                </Typography>
+                <CodeBlock code={`# Kafka Configuration
+KAFKA_BOOTSTRAP_SERVERS=pkc-619z3.us-east1.gcp.confluent.cloud:9092
+KAFKA_SECURITY_PROTOCOL=SASL_SSL
+KAFKA_SASL_MECHANISM=PLAIN
+KAFKA_API_KEY=YOUR_API_KEY_HERE
+KAFKA_API_SECRET=YOUR_API_SECRET_HERE
+
+# Consumer Configuration
+KAFKA_TOPIC=ecommerce-events
+KAFKA_GROUP_ID=workshop-consumer-group`} />
+              </Box>
+
+              <Alert severity="warning" sx={{ mb: 3 }}>
+                <strong>⚠️ Security Warning:</strong> Add <code>.env</code> to your <code>.gitignore</code> file to prevent committing sensitive credentials!
+              </Alert>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 3, borderLeft: '4px solid #9C27B0' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  📄 .gitignore
+                </Typography>
+                <CodeBlock code={`# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp`} />
+              </Box>
+
+              {/* Step 6: Verify Installation */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                Step 6: Verify Your Setup
+              </Typography>
+
+              <Typography variant="body2" paragraph>
+                Create a simple test script to verify everything is working:
+              </Typography>
+
+              <Box sx={{ bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 2, borderLeft: '4px solid #2196F3' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  📄 test_setup.py
+                </Typography>
+                <CodeBlock code={`#!/usr/bin/env python3
+"""Test script to verify Kafka setup"""
+
+import sys
+from confluent_kafka import Consumer, KafkaError
+from dotenv import load_dotenv
+import os
+
+def test_setup():
+    print("🔍 Testing Kafka setup...\\n")
+
+    # Load environment variables
+    load_dotenv()
+
+    # Check required environment variables
+    required_vars = [
+        'KAFKA_BOOTSTRAP_SERVERS',
+        'KAFKA_API_KEY',
+        'KAFKA_API_SECRET',
+        'KAFKA_TOPIC'
+    ]
+
+    missing_vars = [var for var in required_vars if not os.getenv(var)]
+
+    if missing_vars:
+        print(f"❌ Missing environment variables: {', '.join(missing_vars)}")
+        print("Please check your .env file")
+        return False
+
+    print("✅ Environment variables loaded")
+
+    # Test Kafka connection
+    config = {
+        'bootstrap.servers': os.getenv('KAFKA_BOOTSTRAP_SERVERS'),
+        'security.protocol': 'SASL_SSL',
+        'sasl.mechanism': 'PLAIN',
+        'sasl.username': os.getenv('KAFKA_API_KEY'),
+        'sasl.password': os.getenv('KAFKA_API_SECRET'),
+        'group.id': 'test-group',
+    }
+
+    try:
+        consumer = Consumer(config)
+        print("✅ Kafka consumer created successfully")
+        consumer.close()
+        print("✅ Connection test passed")
+        print("\\n🎉 Your environment is ready!")
+        return True
+    except Exception as e:
+        print(f"❌ Connection failed: {e}")
+        return False
+
+if __name__ == "__main__":
+    success = test_setup()
+    sys.exit(0 if success else 1)`} />
+              </Box>
+
+              <Typography variant="body2" paragraph sx={{ mt: 2 }}>
+                Run the test script:
+              </Typography>
+
+              <CodeBlock code={`python test_setup.py`} />
+
+              <Alert severity="success" icon={<CheckCircle />} sx={{ mt: 3 }}>
+                <strong>✅ Setup Complete!</strong> If all tests passed, you're ready to start consuming Kafka messages. Proceed to the Python Consumer section below.
+              </Alert>
+
+              {/* Quick Reference */}
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mt: 4, mb: 2, color: '#2c5aa0' }}>
+                📚 Quick Reference
+              </Typography>
+
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#4CAF50">
+                        Activate Virtual Environment
+                      </Typography>
+                      <CodeBlock code={`# Linux/Mac
+source venv/bin/activate
+
+# Windows PowerShell
+.\\venv\\Scripts\\Activate.ps1
+
+# Windows CMD
+venv\\Scripts\\activate.bat`} />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#FF6B35">
+                        Deactivate Virtual Environment
+                      </Typography>
+                      <CodeBlock code={`# All platforms
+deactivate`} />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#2196F3">
+                        Install New Package
+                      </Typography>
+                      <CodeBlock code={`pip install package-name
+pip freeze > requirements.txt`} />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="subtitle1" fontWeight="bold" gutterBottom color="#9C27B0">
+                        Common Issues
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
+                        • Permission denied: Use <code>sudo</code> or run as admin
+                        <br />
+                        • Command not found: Add Python to PATH
+                        <br />
+                        • Module not found: Activate venv first
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
             </Paper>
 
-            {/* ==================== TROUBLESHOOTING ==================== */}
-            <Alert severity="warning" sx={{ mb: 4 }}>
-              <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                🔧 Troubleshooting: Table Shows as Empty
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>
-                If your Unity Catalog table shows as empty after running the code:
-              </Typography>
-              <Stack spacing={1.5} sx={{ ml: 2 }}>
-                <Box sx={{ bgcolor: '#fff3cd', p: 2, borderRadius: 1, border: '1px solid #ffc107' }}>
-                  <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#856404', mb: 0.5 }}>
-                    ⚠️ #1 Most Common Issue: Old Checkpoint Data
+            {/* ==================== PYTHON CONSUMER CODE ==================== */}
+            <Paper id="code-python" sx={{ p: 4, mb: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Code sx={{ fontSize: 40, mr: 2, color: '#FF6B35' }} />
+                <Box>
+                  <Typography variant="h4" sx={{ color: '#2c5aa0' }}>
+                    Python Consumer Example
                   </Typography>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    If you've run the code before, the checkpoint remembers where it stopped. Delete the checkpoint to reprocess all messages:
-                  </Typography>
-                  <Box component="code" sx={{ display: 'block', bgcolor: '#1e1e1e', color: '#d4d4d4', p: 1.5, borderRadius: 1, fontSize: '0.85rem' }}>
-                    dbutils.fs.rm(checkpoint_path, recurse=True)
-                  </Box>
-                  <Typography variant="body2" sx={{ mt: 1, fontSize: '0.9rem' }}>
-                    Then run the streaming code again - it will process all messages from the beginning.
+                  <Typography variant="caption" color="text.secondary">
+                    Production-ready Kafka consumer with manual offset commits
                   </Typography>
                 </Box>
-                <Typography variant="body2">
-                  <strong>2. Check if data exists in Kafka:</strong> Make sure generators are running in the "Generators" page and producing messages
-                </Typography>
-                <Typography variant="body2">
-                  <strong>3. Verify the table was created:</strong> Run <code>SHOW TABLES IN kafka_catalog.kafka_schema</code>
-                </Typography>
-                <Typography variant="body2">
-                  <strong>4. Check streaming query output:</strong> Look for "Rows processed" in the output after <code>query.awaitTermination()</code>
-                </Typography>
-              </Stack>
-            </Alert>
-
-            {/* ==================== NAMING CONFLICTS ==================== */}
-            <Alert severity="info" sx={{ mb: 4 }}>
-              <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                📝 Column Naming: Understanding content_* Columns
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>
-                When working with the <strong>social-media-feed</strong> topic, you'll notice some columns have a <code>content_</code> prefix:
-              </Typography>
-              <Stack spacing={1.5} sx={{ ml: 2 }}>
-                <Box sx={{ bgcolor: '#e3f2fd', p: 2, borderRadius: 1, border: '1px solid #2196f3' }}>
-                  <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#1565c0', mb: 0.5 }}>
-                    Why this happens:
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    The social media feed has a <code>topic</code> field (like "#sports", "#tech") that conflicts with Kafka's metadata <code>topic</code> field. The <code>flatten_df()</code> function automatically handles this:
-                  </Typography>
-                  <ul style={{ marginTop: '8px', marginBottom: '8px' }}>
-                    <li><Typography variant="body2">Data's topic → renamed to <code>content_topic</code> (contains "#sports", "#tech", etc.)</Typography></li>
-                    <li><Typography variant="body2">Kafka's topic → renamed to <code>kafka_topic</code> (contains "social-media-feed")</Typography></li>
-                  </ul>
-                  <Typography variant="body2" sx={{ mt: 1, fontSize: '0.9rem', fontStyle: 'italic' }}>
-                    This automatic conflict resolution works for any field that conflicts with Kafka metadata (topic, partition, offset, timestamp).
-                  </Typography>
-                </Box>
-                <Typography variant="body2">
-                  <strong>Example columns in social-media-feed table:</strong>
-                </Typography>
-                <Box component="code" sx={{ display: 'block', bgcolor: '#1e1e1e', color: '#d4d4d4', p: 1.5, borderRadius: 1, fontSize: '0.85rem', fontFamily: 'monospace' }}>
-                  event_id, user_id, action, content_id, <span style={{color: '#4CAF50'}}>content_topic</span>, engagement_score, <span style={{color: '#4CAF50'}}>kafka_topic</span>, partition, offset, kafka_timestamp
-                </Box>
-                <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
-                  Notice how the social media's "#sports" topic is in <code>content_topic</code>, while the Kafka topic name "social-media-feed" is in <code>kafka_topic</code>.
-                </Typography>
-              </Stack>
-            </Alert>
-
-            {/* ==================== NEXT STEPS: CHALLENGES ==================== */}
-            <Paper
-              sx={{
-                p: 4,
-                mb: 4,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                textAlign: 'center',
-                position: 'relative',
-                overflow: 'hidden',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
-                }
-              }}
-            >
-              <Box sx={{ position: 'relative', zIndex: 1 }}>
-                <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 2, textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
-                  🎉 Congratulations!
-                </Typography>
-                <Typography variant="h5" sx={{ mb: 3, opacity: 0.95 }}>
-                  You've completed the tutorial!
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 4, fontSize: '1.1rem', maxWidth: '800px', mx: 'auto', lineHeight: 1.8 }}>
-                  You've learned the fundamentals of Apache Kafka and Databricks Structured Streaming. Now it's time to put your knowledge into practice with hands-on coding challenges.
-                </Typography>
-
-                <Box
-                  onClick={() => window.location.href = '/challenges'}
-                  sx={{
-                    display: 'inline-block',
-                    bgcolor: 'white',
-                    color: '#667eea',
-                    px: 6,
-                    py: 2.5,
-                    borderRadius: 3,
-                    fontSize: '1.2rem',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 12px 32px rgba(0,0,0,0.4)',
-                      bgcolor: '#f8f9fa',
-                    }
-                  }}
-                >
-                  Start Coding Challenges →
-                </Box>
-
-                <Typography variant="body2" sx={{ mt: 4, opacity: 0.9, fontStyle: 'italic' }}>
-                  Test your skills with progressive challenges designed to reinforce what you've learned
-                </Typography>
               </Box>
+
+              <Typography variant="body1" paragraph>
+                Below is a complete Python consumer using <code>kafka-python</code> library with best practices for production deployments:
+              </Typography>
+
+              <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 2, mb: 1 }}>
+                Code Preview:
+              </Typography>
+
+              <CodeBlock code={`from kafka import KafkaConsumer
+import json
+import logging
+from typing import Dict, Any
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+def create_consumer() -> KafkaConsumer:
+    """Create and configure Kafka consumer with production settings."""
+    return KafkaConsumer(
+        'ecommerce-events',  # Topic name
+        bootstrap_servers=['pkc-619z3.us-east1.gcp.confluent.cloud:9092'],
+        group_id='python-analytics-group',
+
+        # Security configuration (Confluent Cloud)
+        security_protocol='SASL_SSL',
+        sasl_mechanism='PLAIN',
+        sasl_plain_username='YOUR_API_KEY',
+        sasl_plain_password='YOUR_API_SECRET',
+
+        # Deserialization
+        value_deserializer=lambda m: json.loads(m.decode('utf-8')),
+        key_deserializer=lambda m: m.decode('utf-8') if m else None,
+
+        # Consumer configuration
+        auto_offset_reset='earliest',  # Start from beginning if no offset
+        enable_auto_commit=False,      # Manual commit for at-least-once
+        max_poll_records=500,           # Batch size per poll
+        session_timeout_ms=45000,       # 45s before considered dead
+        max_poll_interval_ms=300000,    # 5 min max processing time
+
+        # Performance tuning
+        fetch_min_bytes=1024,           # Wait for 1KB before returning
+        fetch_max_wait_ms=500,          # Or wait max 500ms
+    )
+
+def process_message(message: Dict[str, Any]) -> bool:
+    """
+    Process individual message. Return True on success, False on failure.
+
+    In production, this might:
+    - Write to database
+    - Call external API
+    - Update cache
+    - Trigger alerts
+    """
+    try:
+        logger.info(f"Processing event: {message.get('event_id')}")
+
+        # Example: Track user activity
+        user_id = message.get('user_id')
+        action = message.get('action')
+        product = message.get('product', {})
+
+        logger.info(
+            f"User {user_id} performed {action} on "
+            f"{product.get('name')} (${'$'}{product.get('price')})"
+        )
+
+        # Simulate processing (replace with actual business logic)
+        # db.insert_event(message)
+        # cache.update_user_activity(user_id, action)
+
+        return True
+    except Exception as e:
+        logger.error(f"Error processing message: {e}", exc_info=True)
+        return False
+
+def main():
+    """Main consumer loop with error handling and graceful shutdown."""
+    consumer = create_consumer()
+    logger.info("Consumer started, waiting for messages...")
+
+    try:
+        batch_count = 0
+        success_count = 0
+        failure_count = 0
+
+        for message in consumer:
+            # Process message
+            success = process_message(message.value)
+
+            if success:
+                success_count += 1
+            else:
+                failure_count += 1
+
+            batch_count += 1
+
+            # Commit offsets every 100 messages
+            if batch_count >= 100:
+                try:
+                    consumer.commit()
+                    logger.info(
+                        f"Committed offsets. Processed: {success_count} success, "
+                        f"{failure_count} failures"
+                    )
+                    batch_count = 0
+                except Exception as e:
+                    logger.error(f"Commit failed: {e}")
+
+    except KeyboardInterrupt:
+        logger.info("Shutdown signal received")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}", exc_info=True)
+    finally:
+        # Graceful shutdown
+        consumer.commit()  # Commit final batch
+        consumer.close()
+        logger.info(
+            f"Consumer closed. Total: {success_count} success, "
+            f"{failure_count} failures"
+        )
+
+if __name__ == "__main__":
+    main()
+`} />
+
+              <Alert severity="info" sx={{ mt: 3 }}>
+                <strong>🔑 Key implementation details:</strong>
+                <ul style={{ marginTop: 8, marginBottom: 0, paddingLeft: 20 }}>
+                  <li><code>enable_auto_commit=False</code>: Manual commits provide at-least-once guarantee</li>
+                  <li>Batch commits every 100 messages: Balance between safety and performance</li>
+                  <li>Graceful shutdown: Final commit in <code>finally</code> block prevents message loss</li>
+                  <li>Error handling: Log failures but continue processing (dead letter queue in production)</li>
+                </ul>
+              </Alert>
+            </Paper>
+
+            {/* ==================== DATABRICKS STREAMING CODE ==================== */}
+            <Paper id="code-databricks" sx={{ p: 4, mb: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Speed sx={{ fontSize: 40, mr: 2, color: '#FF6B35' }} />
+                <Box>
+                  <Typography variant="h4" sx={{ color: '#2c5aa0' }}>
+                    Databricks Streaming Code
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    PySpark Structured Streaming with Delta Lake
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Typography variant="body1" paragraph>
+                Complete example of reading from Kafka, transforming data, and writing to Delta Lake with watermarking and aggregations:
+              </Typography>
+
+              <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 2, mb: 1 }}>
+                Code Preview:
+              </Typography>
+
+              <CodeBlock code={`from pyspark.sql import SparkSession
+from pyspark.sql.functions import (
+    col, from_json, window, count, sum as spark_sum, avg, current_timestamp
+)
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType
+
+# Initialize Spark session (automatically configured on Databricks)
+spark = SparkSession.builder \\
+    .appName("KafkaStreamingToDeltalake") \\
+    .getOrCreate()
+
+# Define schema for incoming JSON data
+event_schema = StructType([
+    StructField("event_id", StringType(), True),
+    StructField("timestamp", TimestampType(), True),
+    StructField("user_id", StringType(), True),
+    StructField("action", StringType(), True),
+    StructField("product", StructType([
+        StructField("id", StringType(), True),
+        StructField("name", StringType(), True),
+        StructField("price", DoubleType(), True),
+        StructField("category", StringType(), True),
+    ]), True),
+    StructField("session_id", StringType(), True),
+])
+
+# Read from Kafka (streaming DataFrame)
+kafka_df = spark.readStream \\
+    .format("kafka") \\
+    .option("kafka.bootstrap.servers", "pkc-619z3.us-east1.gcp.confluent.cloud:9092") \\
+    .option("subscribe", "ecommerce-events") \\
+    .option("startingOffsets", "latest") \\
+    .option("kafka.security.protocol", "SASL_SSL") \\
+    .option("kafka.sasl.mechanism", "PLAIN") \\
+    .option("kafka.sasl.jaas.config",
+        f'org.apache.kafka.common.security.plain.PlainLoginModule required '
+        f'username="YOUR_API_KEY" password="YOUR_API_SECRET";') \\
+    .load()
+
+# Parse JSON and extract fields
+parsed_df = kafka_df \\
+    .selectExpr("CAST(value AS STRING) as json_value") \\
+    .select(from_json(col("json_value"), event_schema).alias("data")) \\
+    .select("data.*") \\
+    .select(
+        col("event_id"),
+        col("timestamp"),
+        col("user_id"),
+        col("action"),
+        col("product.id").alias("product_id"),
+        col("product.name").alias("product_name"),
+        col("product.price").alias("product_price"),
+        col("product.category").alias("product_category"),
+        col("session_id")
+    )
+
+# ==== STREAM 1: Raw events to Delta Lake (bronze layer) ====
+raw_query = parsed_df \\
+    .withColumn("ingestion_time", current_timestamp()) \\
+    .writeStream \\
+    .format("delta") \\
+    .outputMode("append") \\
+    .option("checkpointLocation", "/mnt/delta/checkpoints/raw_events") \\
+    .option("mergeSchema", "true") \\
+    .trigger(processingTime="30 seconds") \\
+    .table("ecommerce_raw_events")
+
+# ==== STREAM 2: Aggregated metrics (silver layer) ====
+# Aggregate purchases by product with 5-minute tumbling windows
+aggregated_df = parsed_df \\
+    .filter(col("action") == "purchase") \\
+    .withWatermark("timestamp", "10 minutes") \\
+    .groupBy(
+        window(col("timestamp"), "5 minutes"),
+        col("product_id"),
+        col("product_name"),
+        col("product_category")
+    ) \\
+    .agg(
+        count("*").alias("purchase_count"),
+        spark_sum("product_price").alias("total_revenue"),
+        avg("product_price").alias("avg_price")
+    ) \\
+    .select(
+        col("window.start").alias("window_start"),
+        col("window.end").alias("window_end"),
+        col("product_id"),
+        col("product_name"),
+        col("product_category"),
+        col("purchase_count"),
+        col("total_revenue"),
+        col("avg_price")
+    )
+
+aggregated_query = aggregated_df \\
+    .writeStream \\
+    .format("delta") \\
+    .outputMode("update") \\
+    .option("checkpointLocation", "/mnt/delta/checkpoints/aggregated_metrics") \\
+    .trigger(processingTime="1 minute") \\
+    .table("ecommerce_product_metrics")
+
+# ==== STREAM 3: Real-time alerts (filter high-value purchases) ====
+high_value_purchases = parsed_df \\
+    .filter((col("action") == "purchase") & (col("product_price") > 500)) \\
+    .select(
+        col("timestamp"),
+        col("user_id"),
+        col("product_name"),
+        col("product_price")
+    )
+
+alert_query = high_value_purchases \\
+    .writeStream \\
+    .format("delta") \\
+    .outputMode("append") \\
+    .option("checkpointLocation", "/mnt/delta/checkpoints/high_value_alerts") \\
+    .trigger(processingTime="10 seconds") \\
+    .table("ecommerce_high_value_purchases")
+
+# Monitor stream status
+print("✅ Streaming queries started")
+print(f"Raw events: {raw_query.id}")
+print(f"Aggregated metrics: {aggregated_query.id}")
+print(f"High-value alerts: {alert_query.id}")
+
+# Keep streams running (Databricks notebooks)
+# In production, use .awaitTermination() or schedule as job
+spark.streams.awaitAnyTermination()
+`} />
+
+              <Typography variant="h6" sx={{ color: '#4a7ba7', mt: 4, mb: 2 }}>
+                Query Delta Tables
+              </Typography>
+
+              <Typography variant="body2" paragraph>
+                Once streaming data lands in Delta Lake, query it with SQL:
+              </Typography>
+
+              <Typography variant="body2" sx={{ fontWeight: 'bold', mt: 2, mb: 1 }}>
+                Code Preview:
+              </Typography>
+
+              <CodeBlock code={`-- Real-time product performance (last hour)
+SELECT
+    product_name,
+    SUM(purchase_count) as total_purchases,
+    SUM(total_revenue) as revenue,
+    AVG(avg_price) as avg_price
+FROM ecommerce_product_metrics
+WHERE window_start >= current_timestamp() - INTERVAL 1 HOUR
+GROUP BY product_name
+ORDER BY revenue DESC
+LIMIT 10;
+
+-- Time travel: Compare metrics from yesterday
+SELECT * FROM ecommerce_product_metrics
+TIMESTAMP AS OF '2024-01-14 00:00:00';
+
+-- Audit trail: All high-value purchases today
+SELECT
+    timestamp,
+    user_id,
+    product_name,
+    product_price
+FROM ecommerce_high_value_purchases
+WHERE DATE(timestamp) = CURRENT_DATE()
+ORDER BY product_price DESC;
+`} />
+
+              <Alert severity="success" icon={<CheckCircle />} sx={{ mt: 3 }}>
+                <strong>💡 Production recommendations:</strong> (1) Separate bronze (raw), silver (cleaned), and gold (aggregated) layers; (2) Use Delta Lake's MERGE for CDC instead of append; (3) Run OPTIMIZE on streaming tables weekly; (4) Monitor lag with <code>spark.streams.awaitAnyTermination()</code> metrics; (5) Set appropriate watermarks based on data lateness patterns.
+              </Alert>
             </Paper>
 
           </Container>
